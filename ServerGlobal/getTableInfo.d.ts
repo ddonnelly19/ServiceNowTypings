@@ -21,6 +21,10 @@ interface IElementInfo {
     choices?: IChoiceInfo[];
 }
 declare function getElementInfo(gr: GlideRecord): string;
+declare let internalTypeToClassNameMapping: {
+    [key: string]: string;
+};
+declare function internalTypeToClassName(internal_type: string): string;
 declare var gs: {
     info(o: any): any;
 };

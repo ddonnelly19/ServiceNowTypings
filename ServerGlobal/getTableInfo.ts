@@ -250,6 +250,26 @@ function getElementInfo(gr: GlideRecord): string {
     return r + lines.join(",\n\t\t") + "\n\t}\n}";
 }
 
+let internalTypeToClassNameMapping: { [key: string]: string; } = {
+    catalog_preview: "GlideElement", choice: "GlideElement", color: "GlideElement", composite_field: "GlideElement", decoration: "GlideElement", domain_path: "GlideElement", email: "GlideElement",
+    email_script: "GlideElement", field_list: "GlideElement", field_name: "GlideElement", GUID: "GlideElement", html_script: "GlideElement", image: "GlideElement", multi_two_lines: "GlideElement",
+    ph_number: "GlideElement", string: "GlideElement", sys_class_code: "GlideElement", sys_class_path: "GlideElement", sysevent_name: "GlideElement", table_name: "GlideElement", user_roles: "GlideElement",
+    version: "GlideElement", wide_text: "GlideElement", boolean: "GlideElementBoolean", compressed: "GlideElementCompressed", conditions: "GlideElementConditions", currency: "GlideElementCurrency",
+    data_object: "GlideElementDataObject", documentation_field: "GlideElementDocumentation", document_id: "GlideElementDocumentId", domain_id: "GlideElementDomainId", due_date: "GlideElementGlideObject",
+    glide_action_list: "GlideElementGlideObject", glide_date: "GlideElementGlideObject", glide_date_time: "GlideElementGlideObject", glide_duration: "GlideElementGlideObject",
+    glide_list: "GlideElementGlideObject", html: "GlideElementGlideObject", journal: "GlideElementGlideObject", journal_input: "GlideElementGlideObject", journal_list: "GlideElementGlideObject",
+    timer: "GlideElementGlideObject", user_input: "GlideElementGlideObject", glide_var: "GlideElementGlideVar", icon: "GlideElementIcon", name_values: "GlideElementNameValue", decimal: "GlideElementNumeric",
+    float: "GlideElementNumeric", integer: "GlideElementNumeric", percent_complete: "GlideElementNumeric", password: "GlideElementPassword", password2: "GlideElementPassword2", price: "GlideElementPrice",
+    reference: "GlideElementReference", script: "GlideElementScript", script_plain: "GlideElementScript", xml: "GlideElementScript", short_table_name: "GlideElementShortTableName",
+    sys_class_name: "GlideElementSysClassName", translated_field: "GlideElementTranslatedField", translated_html: "GlideElementTranslatedHTML", translated_text: "GlideElementTranslatedText",
+    url: "GlideElementURL", user_image: "GlideElementUserImage", variables: "GlideElementVariables", workflow: "GlideElementWorkflow", template_value: "GlideElementWorkflowConditions"
+};
+
+function internalTypeToClassName(internal_type: string): string {
+    let className: string = internalTypeToClassNameMapping[internal_type];
+    return (typeof className === "string") ? className : "IGlideElement";
+}
+
 gs.info(["pm_project_task"].map(function (n: string): string {
     var gr = new GlideRecord(n);
     gr.query();
