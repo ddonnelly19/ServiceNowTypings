@@ -1,81 +1,388 @@
-declare type Nullable<T> = T | null;
-declare type Nilable<T> = T extends string ? T | "" | null | undefined : T | null | undefined;
-declare type Defined<T> = T extends undefined ? never : T;
-declare type DefinedAndNotNull<T> = T extends undefined | null ? never : T;
-declare type NonNilable<T> = T extends "" | null | undefined ? never : T;
+import { type } from "os";
+import { StreamState } from "http2";
 
-declare type StringOrEmpty<T extends string> = T extends undefined | null ? never : T | "";
-declare type NonEmptyString<T> = T extends undefined | null | "" ? never : T;
-declare type BooleanString = "true" | "false";
-declare type BooleanstringOrEmpty = StringOrEmpty<BooleanString>;
-declare type NilableBooleanString = Nilable<BooleanString>;
-
-declare type BooleanLike = BooleanString | boolean;
-declare type BooleanLikeOrEmpty = BooleanstringOrEmpty | boolean;
-declare type NilableBooleanLike = NilableBooleanString | boolean;
-
-declare type NumberLike<N extends number, S extends string> = N | S;
-declare type NumberLikeOrEmpty<N extends number, S extends string> = N | StringOrEmpty<S>;
-declare type NullableNumberLike<N extends number, S extends string> = N | Nilable<S>;
-declare type JavaStringLike = Packages.java.lang.String | Packages.java.lang.Character;
-declare type JavaNumber = Packages.java.lang.Integer | Packages.java.lang.Long | Packages.java.lang.Double | Packages.java.lang.Byte | Packages.java.lang.Float | Packages.java.lang.Short;
-
-declare type AnyBoolean = BooleanLike | Packages.java.lang.Boolean;
-declare type AnyString = string | JavaStringLike;
-declare type AnyNumber = number | string | JavaNumber;
-
-declare interface IGlideDbObject {
+declare namespace JS {
     /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof IGlideDbObject
+     * Utility type for a string value that is equivalent to a boolean value.
+     * @typedef {("true" | "false")} BooleanString
      */
-    canCreate(): boolean;
+    export type BooleanString = "true" | "false";
+    export type BooleanLike = boolean | BooleanString;
+    export type BooleanLikeOrEmpty = BooleanLike | "";
+    export type NilableBooleanLike = BooleanLikeOrEmpty | null | undefined;
+    export type NumberLike<N extends number, S extends ExcludeEmptyString<string>> = N | S;
+    export type NumberLikeOrEmpty<N extends number, S extends ExcludeEmptyString<string>> = N | S | "";
+    export type NilableNumberLike<N extends number, S extends ExcludeEmptyString<string>> = N | S | "" | null | undefined;
 
     /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof IGlideDbObject
+     * Utility type to include a null type and exclude any undefined type.
+     * @typedef {(null | (T extends undefined ? never : T))} Nullable
+     * @template T - The type of value that is to include null type and exclude any undefined type.
      */
-    canRead(): boolean;
-
+    export type Nullable<T> = null | (T extends undefined ? never : T);
+    
     /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof IGlideDbObject
+     * Utility type to include null and undefined types.
+     * @typedef {(undefined | null | T)} Nilable
+     * @template T - The type of value that is to include null and undefined types.
      */
-    canWrite(): boolean;
-
+    export type Nilable<T> = undefined | null | T;
+    
     /**
-     * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof IGlideDbObject
+     * Utility type to include null and undefined types as well as the empty string type.
+     * @typedef {(Nilable<T> | "")} NilableOrEmptyString
+     * @template T - The type of value that is to include null and undefined types as well as the empty string type.
      */
-    getDisplayValue(maxCharacters?: number): string;
-
+    export type NilableOrEmptyString<T> = Nilable<T> | "";
+    
     /**
-     * Gets the current element descriptor.
-     * @returns {GlideElementDescriptor}
-     * @memberof IGlideDbObject
+     * Utility type to exclude null and undefined values.
+     * @typedef {(T extends undefined | null ? never : T)} ExcludeNil
+     * @template T - The type of value that is to exclude null and undefined types.
      */
-    getED(): GlideElementDescriptor;
-
+    export type ExcludeNil<T> = T extends undefined | null ? never : T;
+    
     /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof IGlideDbObject
+     * Utility type to exclude empty primitive javascript string values.
+     * @typedef {(S extends "" ? never : S)} ExcludeEmptyString
+     * @template S - Type of value that is to exclude empty primitive javascript string values.
      */
-    getLabel(): string;
-
-    /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof IGlideDbObject
-     */
-    getTableName(): string;
+    export type ExcludeEmptyString<S> = S extends "" ? never : S;
 }
 
-declare interface IGlideElement extends IGlideDbObject {
+declare namespace RHINO {
+    /**
+     * Utility type for javascript primitive string values and Java string-like objects.
+     * @typedef {(string | Packages.java.lang.String | Packages.java.lang.Character)} String
+     */
+    export type String = string | Packages.java.lang.String | Packages.java.lang.Character;
+    /**
+     * Utility type for javascript primitive boolean values and Java Boolean objects.
+     * @typedef {(boolean | Packages.java.lang.Boolean)} Boolean
+     */
+    export type Boolean = boolean | Packages.java.lang.Boolean;
+    export type BooleanLike = JS.BooleanLike | Packages.java.lang.Boolean;
+    /**
+     * Utility type for javascript primitive numbers values and Java Number objects.
+     * @typedef {(number | Packages.java.lang.Number)} Number
+     */
+    export type Number = number | Packages.java.lang.Number;
+    export type NumberLike<N extends number, S extends ExcludeEmptyString<string>> = N | Packages.java.lang.Number | S;
+    /**
+     * Utility type for javascript arrays and Java Collection objects.
+     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     */
+    export type Collection<E> = E[] | Packages.java.util.Collection<E>;
+    /**
+     * Utility type for javascript arrays and Java List objects.
+     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     */
+    export type List<E> = E[] | Packages.java.util.List<E>;
+    /**
+     * Utility type for javascript primitive string values and Java string-like objects that are empty.
+     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     */
+    export type EmptyString = "" | (Packages.java.lang.String & { size(): 0; });
+    /**
+     * Utility type to include empty string values.
+     * @typedef {(S | "")} IncludeEmptyString
+     * @template S - Type of value that is to include empty string values.
+     */
+    export type IncludeEmptyString<S> = S | EmptyString;
+    /**
+     * Utility type to exclude empty string values.
+     * @typedef {(S extends EmptyString ? never : S)} ExcludeEmptyJavaString
+     * @template S - Type of value that is to exclude empty string values.
+     */
+    export type ExcludeEmptyString<S> = S extends EmptyString ? never : S;
+    export type StringValue<S extends string> = S | Packages.java.lang.String;
+}
+
+declare namespace GLIDE {
+    /**
+     * Utility type for javascript primitive boolean values, Java Boolean values string values that represent a boolean value.
+     * @typedef {(RHINO.Boolean | BooleanString)} Boolean
+     */
+    export type Boolean = RHINO.BooleanLike | GlideElementBoolean;
+    export type BooleanOrEmpty = Boolean | RHINO.EmptyString;
+    export type NilableBoolean = BooleanOrEmpty | null | undefined;
+    export type Number<E extends IGlideElement> = RHINO.NumberLike<number, string> | Element<number, E, string>;
+    export type NumberOrEmpty<E extends IGlideElement> = RHINO.Number | Element<number, E, string> | RHINO.EmptyString;
+    export type NilableNumber<E extends IGlideElement> = NumberOrEmpty<E> | null | undefined;
+    export type Numeric = Number<GlideElementNumeric>;
+    export type NumericOrEmpty = NumberOrEmpty<GlideElementNumeric>;
+    export type NilableNumeric = NilableNumber<GlideElementNumeric>;
+
+    export type String = RHINO.String | StringElement;
+    export type NilableString = String | null | undefined;
+    export type NumberValue<N extends number, E extends IGlideElement, S extends string> = RHINO.NumberLike<N, S> | Element<N, E, S>;
+    export type NumberValueOrEmpty<N extends number, E extends IGlideElement, S extends string> = NumberValue<N, E, S> | RHINO.EmptyString;
+    export type NilableNumberValue<N extends number, E extends IGlideElement, S extends string> = NumberValueOrEmpty<N, E, S> | null | undefined;
+    export type NumericValue<N extends number, S extends string> = NumberValue<N, NumericValueElement<N, S>, S>;
+    export type NumericValueOrEmpty<N extends number, S extends string> = NumberValueOrEmpty<N, NumericValueElement<N, S>, S>;
+    export type NilableNumericValue<N extends number, S extends string> = NilableNumberValue<N, NumericValueElement<N, S>, S>;
+    export type StringValue<S extends string, E extends StringValueElement<S, StringElement>> = RHINO.StringValue<S> | StringValueElement<S, E>;
+    export type StringValueOrEmpty<S extends string, E extends StringValueElement<S, StringElement>> = StringValue<S | "", E>;
+    export type NilableStringValue<S extends string, E extends StringValueElement<S, StringElement>> = StringValueOrEmpty<S, E> | null | undefined;
+    export type RecordReference<R extends GlideRecord, E extends RecordReferenceElement<R, E>> = RHINO.String | R | E;
+    export type NilableRecordReference<R extends GlideRecord, E extends RecordReferenceElement<R, E>> = RecordReference<R, E> | null | undefined;
+
+    export type ElementProperty = StringValue<string, GlideElement>;
+    export type ElementPropertyOrEmpty = StringValueOrEmpty<string, GlideElement>;
+    export type NilableElementProperty = NilableStringValue<string, GlideElement>;
+
+    /**
+     * Utility type to include empty string values as well as well as null and undefined values.
+     * @typedef {(T | null | undefined | RHINO.EmptyString)} Nilable
+     * @template T - The type of value that is to include null and undefined values as well as empty string-like values.
+     */
+    export type Nilable<T> = T | null | undefined | RHINO.EmptyString;
+    /*
+     * Utility type for a value that is never undefined, null or an empty string-like value.
+     * @typedef {(T extends null | undefined ? never : ExcludeEmptyRhinoString<T>)} ExcludeGlideNil<T>
+     * @template T - The type of value that is to excclude null and undefined values as well as empty string-like values.
+     */
+    export type ExcludeNil<T> = T extends null | undefined ? never : RHINO.ExcludeEmptyString<T>;
+    /**
+     * Defines members that are common to both GlideRecord and GlideElement objects
+     * @export
+     * @interface IDbObject
+     */
+    export interface IDbObject {
+        /**
+         * Determines if the user's role permits the creation of new records in this field.
+         * @returns {boolean} True if the field can be created, false otherwise.
+         * @memberof IDbObject
+         */
+        canCreate(): boolean;
+    
+        /**
+         * Indicates whether the user's role permits them to read the associated GlideRecord.
+         * @returns {boolean} True if the field can be read, false otherwise.
+         * @memberof IDbObject
+         */
+        canRead(): boolean;
+    
+        /**
+         * Determines whether the user's role permits them to write to the associated GlideRecord.
+         * @returns {boolean} True if the user can write to the field, false otherwise.
+         * @memberof IDbObject
+         */
+        canWrite(): boolean;
+    
+        /**
+         * Gets the formatted display value of the field.
+         * @param {number} [maxCharacters] Maximum characters desired
+         * @memberof IDbObject
+         */
+        getDisplayValue(maxCharacters?: number): string;
+    
+        /**
+         * Gets the current element descriptor.
+         * @returns {GlideElementDescriptor}
+         * @memberof IDbObject
+         */
+        getED(): GlideElementDescriptor;
+    
+        /**
+         * Gets the object label.
+         * @returns {string} The object label.
+         * @memberof IDbObject
+         */
+        getLabel(): string;
+    
+        /**
+         * Gets the name of the table on which the field resides.
+         * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
+         * @memberof IDbObject
+         */
+        getTableName(): string;
+    }
+    
+    /**
+     *
+     *
+     * @interface IValueElement
+     * @extends {IGlideElement}
+     * @template V
+     * @template E
+     * @template S
+     */
+    export interface IValueElement<V extends string | number | boolean, E extends IGlideElement, S extends string> extends IGlideElement {
+        changesFrom(o: V | E | Nilable<S>): boolean;
+        changesTo(o: V | E | Nilable<S>): boolean;
+        getValue(): S | "";
+        setValue(obj: V | E | Nilable<S>): void;
+    }
+
+    export type Element<N extends string | number | boolean, E extends IGlideElement, S extends string> = IValueElement<N, E, S> & E;
+
+    export type NumericValueElement<N extends number, S extends string> = Element<N, GlideElementNumeric, S>;
+
+    export type StringElement = IValueElement<string, IGlideElement, string> & Packages.java.lang.String;
+    export type StringValueElement<S extends string, E extends StringElement> = Element<S, E, S>;
+
+    export class StringBasedElement<V extends string | number, E extends StringBasedElement<V, E, S>, S extends string> extends Packages.java.lang.String implements IValueElement<V, E, S> {
+        /**
+         * Determines if the user's role permits the creation of new records in this field.
+         * @returns {boolean} True if the field can be created, false otherwise.
+         * @memberof ValueElement
+         */
+        canCreate(): boolean;
+    
+        /**
+         * Indicates whether the user's role permits them to read the associated GlideRecord.
+         * @returns {boolean} True if the field can be read, false otherwise.
+         * @memberof ValueElement
+         */
+        canRead(): boolean;
+    
+        /**
+         * Determines whether the user's role permits them to write to the associated GlideRecord.
+         * @returns {boolean} True if the user can write to the field, false otherwise.
+         * @memberof ValueElement
+         */
+        canWrite(): boolean;
+    
+        /**
+         * Gets the formatted display value of the field.
+         * @param {number} [maxCharacters] Maximum characters desired
+         * @memberof ValueElement
+         */
+        getDisplayValue(maxCharacters?: number): string;
+    
+        /**
+         * Gets the current element descriptor.
+         * @returns {GlideElementDescriptor}
+         * @memberof ValueElement
+         */
+        getED(): GlideElementDescriptor;
+    
+        /**
+         * Gets the object label.
+         * @returns {string} The object label.
+         * @memberof ValueElement
+         */
+        getLabel(): string;
+    
+        /**
+         * Gets the name of the table on which the field resides.
+         * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
+         * @memberof ValueElement
+         */
+        getTableName(): string;
+        /**
+         * Determines if the new value of a field, after a change, matches the specified object.
+         * @returns {boolean} True if the fields have been changed, false if the field has not.
+         * @memberof ValueElement
+         */
+        changes(): boolean;
+    
+        /**
+         * Determines if the previous value of the current field matches the specified object.
+         * @param {(Nilable<V | E | S>)} o An object value to check against the previous value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @memberof ValueElement
+         */
+        changesFrom(o: Nilable<V | E | S>): boolean;
+    
+        /**
+         * Determines if the new value of a field, after a change, matches the specified object.
+         * @param {(Nilable<V | E | S>)} o An object value to check against the new value of the current field.
+         * @returns {boolean} True if the new value matches, false if it does not.
+         * @memberof ValueElement
+         */
+        changesTo(o: Nilable<V | E | S>): boolean;
+    
+        /**
+         * Returns the value of the specified attribute from the dictionary.
+         * @param {string} attributeName Attribute name
+         * @returns {string} Attribute value.
+         * @memberof ValueElement
+         */
+        getAttribute(attributeName: string): string;
+    
+        /**
+         * Returns the Boolean value of the specified attribute from the dictionary.
+         * @param {string} attributeName Attribute name.
+         * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
+         * @memberof ValueElement
+         */
+        getBooleanAttribute(attributeName: string): boolean;
+    
+        getChoiceValue(): string;
+    
+        getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
+    
+        getDecryptedValue(): string;
+    
+        getGlobalDisplayValue(): string;
+    
+        /**
+         * Returns the HTML value of a field.
+         * @param {number} [maxChars] Maximum number of characters to return.
+         * @returns {string} HTML value for the field.
+         * @memberof ValueElement
+         */
+        getHTMLValue(maxCharacters?: number): string;
+    
+        getJournalEntry(mostRecent: number): string;
+    
+        /**
+         * Gets the value of the current element.
+         * @returns {string}
+         * @memberof ValueElement
+         */
+        getValue(): S | "";
+    
+        /**
+         * Gets the name of the field.
+         * @returns {string} The name of the field.
+         * @memberof ValueElement
+         */
+        getName(): string;
+    
+        /**
+         * Determines if a field is null.
+         * @returns {boolean} True if the field is null or an empty string, false if not.
+         * @memberof ValueElement
+         */
+        nil(): boolean;
+    
+        /**
+         * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
+         * @param {number} milliseconds Number of milliseconds since 1/1/1970.
+         * @memberof ValueElement
+         */
+        setDateNumericValue(milliseconds: number): void;
+    
+        setDisplayValue(value: any): void;
+    
+        setError(errorMessage: string): void;
+    
+        setPhoneNumber(phoneNumber: any, strict: boolean): void;
+    
+        /**
+         * Sets the value of a field.
+         * @param {(Nilable<V | E | S>)} value Object value to set the field to.
+         * @memberof IGlideElement
+         */
+        setValue(value: Nilable<V | E | S>): void;
+    }
+    
+    export type RecordReferenceElement<R extends GlideRecord, E extends GlideElementReference> = IRecordReferenceElement<R, E> & GlideElementReference;
+
+    export interface IRecordReferenceElement<R extends GlideRecord, E extends GlideElementReference> extends IValueElement<string, E, string> {
+        changesFrom(o: NilableString | R | E): boolean;
+        changesTo(o: NilableString | R | E): boolean;
+        getReferenceTable(): string;
+        getRefRecord(): R | null | undefined;
+        setValue(obj: NilableString | R | E): void;
+    }
+}
+
+
+declare interface IGlideElement extends GLIDE.IDbObject {
     /**
      * Determines if the new value of a field, after a change, matches the specified object.
      * @returns {boolean} True if the fields have been changed, false if the field has not.
@@ -175,64 +482,16 @@ declare interface IGlideElement extends IGlideDbObject {
     setValue(value: any): void;
 }
 
-declare interface IGlideElementValue<V extends string | number | boolean, E extends IGlideElement, S extends string> extends IGlideElement {
-    changesFrom(o: V | E | Nilable<S>): boolean;
-    changesTo(o: V | E | Nilable<S>): boolean;
-    getValue(): Nilable<S>;
-    setValue(obj: V | E | Nilable<S>): void;
-}
-
-declare type GlideElementString<S extends string> = Packages.java.lang.String & IGlideElementValue<S, Packages.java.lang.String & IGlideElement, S>;
-declare type GlideElementNumber<N extends number, S extends string> = Packages.java.lang.String & IGlideElementValue<N, Packages.java.lang.String & IGlideElement, S>;
-
-declare type GlideBoolean = GlideElementBoolean | Packages.java.lang.Boolean | boolean | BooleanString;
-declare type GlideBooleanOrEmpty = GlideElementBoolean | Packages.java.lang.Boolean | boolean | StringOrEmpty<BooleanString>;
-declare type NilableGlideBoolean = GlideElementBoolean | Packages.java.lang.Boolean | boolean | Nilable<BooleanString>;
-declare type GlideStringValue<S extends string> = S | GlideElementString<S> | Packages.java.lang.String;
-declare type GlideStringValueOrEmpty<S extends string> = StringOrEmpty<S> | GlideElementString<S> | Packages.java.lang.String;
-declare type NilableGlideStringValue<S extends string> = Nilable<S> | GlideElementString<S> | Packages.java.lang.String;
-declare type GlideString = GlideStringValue<string>;
-declare type GlideStringOrEmpty = GlideStringValueOrEmpty<string>;
-declare type NilableGlideString = NilableGlideStringValue<string>;
-declare type GlideNumberValue<N extends number, S extends string> = N | GlideElementNumber<N, S> | Packages.java.lang.String | S;
-declare type GlideNumberValueOrEmpty<N extends number, S extends string> = N | GlideElementNumber<N, S> | Packages.java.lang.String | StringOrEmpty<S>;
-declare type NilableGlideNumberValue<N extends number, S extends string> = N | GlideElementNumber<N, S> | Packages.java.lang.String | Nilable<S>;
-declare type AnyGlideNumber = GlideNumberValue<number, string>;
-declare type GlideNumberOrEmpty = GlideNumberValueOrEmpty<number, string>;
-declare type NilableGlideNumber = NilableGlideNumberValue<number, string>;
-declare interface IGlideElementReference<R extends GlideRecord, E extends GlideElementReference> extends IGlideElementValue<string, E, string> {
-    changesFrom(o: NilableGlideString | R | E): boolean;
-    changesTo(o: NilableGlideString | R | E): boolean;
-    getReferenceTable(): string;
-    getRefRecord(): R | null | undefined;
-    setValue(obj: NilableGlideString | R | E): void;
-}
-declare type NilableGlideStringElementValue<S extends string, E extends IGlideElementValue<S, IGlideElement, S>> = E | NilableGlideStringValue<S>;
-declare type GlideReferenceElement<P extends IGlideTableProperties, R extends GlideRecord & IGlideTableProperties> = IGlideElementReference<R, GlideElementReference & P> & GlideElementReference;
-declare type GlideRecordReference<P extends IGlideTableProperties, E extends GlideReferenceElement<P, R>, R extends GlideRecord & IGlideTableProperties> = GlideReferenceElement<P, R> | R | GlideString;
-declare type GlideRecordReferenceOrEmpty<P extends IGlideTableProperties, E extends GlideReferenceElement<P, R>, R extends GlideRecord & IGlideTableProperties> = GlideReferenceElement<P, R> | R | GlideStringOrEmpty;
-declare type NilableGlideRecordReference<P extends IGlideTableProperties, E extends GlideReferenceElement<P, R>, R extends GlideRecord & IGlideTableProperties> = GlideReferenceElement<P, R> | R | NilableGlideString;
-declare type GlideReference = GlideRecordReference<IGlideTableProperties, GlideElementReference, GlideRecord>;
-declare type GlideReferenceOrEmpty = GlideRecordReferenceOrEmpty<IGlideTableProperties, GlideElementReference, GlideRecord>;
-declare type NilableGlideReference = NilableGlideRecordReference<IGlideTableProperties, GlideElementReference, GlideRecord>;
-
-declare type GlideElementValue<S extends string> = GlideElement | S;
-declare type GlideElementValueOrEmpty<S extends string> = GlideElement | StringOrEmpty<S>;
-declare type NilableGlideElementValue<S extends string> = GlideElement | Nilable<S>;
-declare type GlideElementOrString = GlideElement | Packages.java.lang.String | string;
-declare type GlideElementGlideObjectOrString = GlideElementGlideObject | Packages.java.lang.String | string;
-declare type GlideElementOrEmpty = GlideElement | Packages.java.lang.String | StringOrEmpty<string>;
-declare type NilableGlideElement = GlideElement | Packages.java.lang.String | Nilable<string>;
-declare type NilableGlideElementGlideObject = GlideElementGlideObject | Packages.java.lang.String | Nilable<string>;
+declare class GlideElementNumeric extends GLIDE.StringBasedElement<number, GlideElementNumeric, string> { }
 
 declare interface IGlideTableProperties {
     /**
      * Created by
-     * @type {GlideElementOrString}
+     * @type {GLIDE.ElementProperty}
      * @memberof GlideRecord
      * @description Max length: 40
      */
-    sys_created_by: GlideElementOrString;
+    sys_created_by: GLIDE.ElementProperty;
 
     /**
      * Created
@@ -327,6 +586,1626 @@ declare interface IJavaArray<E> extends Packages.java.util.List<E> {
      * Trims the capacity of this ArrayList instance to be the list's current size.
      */
     trimToSize(): void;
+}
+
+declare namespace Packages {
+    export namespace java {
+        export namespace lang {
+            /**
+             * Base Java object.
+             * @export
+             * @class Object
+             */
+            export class Object { protected constructor(); }
+            /**
+             * Java String object.
+             * @export
+             * @class String
+             * @extends {Object}
+             */
+            export class String extends Object {
+                protected constructor();
+                /**
+                 * Returns the char value at the specified index.
+                 * @param {number} index -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                charAt(index: Integer): number;
+                /**
+                 * Returns the character (Unicode code point) at the specified index.
+                 * @param {number} index -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                codePointAt(index: Integer): number;
+                /**
+                 * Returns the character (Unicode code point) before the specified index.
+                 * @param {number} index -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                codePointBefore(index: Integer): number;
+                /**
+                 * Returns the number of Unicode code points in the specified text range of this String.
+                 * @param {number} beginIndex -
+                 * @param {number} endIndex -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                codePointCount(beginIndex: number, endIndex: number): number;
+                /**
+                 * Compares two strings lexicographically.
+                 * @param {String} anotherString -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                compareTo(anotherString: String): number;
+                /**
+                 * Compares two strings lexicographically, ignoring case differences.
+                 * @param {String} str -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                compareToIgnoreCase(str: String): number;
+                /**
+                 * Concatenates the specified string to the end of this string.
+                 * @param {String} str -
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                concat(str: String): String;
+                /**
+                 * Tests if this string ends with the specified suffix.
+                 * @param {String} suffix -
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                endsWith(suffix: String): boolean;
+                /**
+                 * Compares this string to the specified object.
+                 * @param {Object} anObject -
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                equals(anObject: Object): boolean;
+                /**
+                 * Compares this String to another String, ignoring case considerations.
+                 * @param {String} anotherString -
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                equalsIgnoreCase(anotherString: String): boolean;
+                /**
+                 * Encodes this String into a sequence of bytes using the platform's default charset, storing the result into a new byte array.
+                 * @returns {IJavaArray<number>}
+                 * @memberof {String}
+                 */
+                getBytes(): IJavaArray<number>;
+                /**
+                 * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
+                 * @param {String} charsetName -
+                 * @returns {IJavaArray<number>}
+                 * @memberof {String}
+                 */
+                getBytes(charsetName: String): IJavaArray<number>;
+                /**
+                 * Copies characters from this string into the destination character array.
+                 * @param {number} srcBegin -
+                 * @param {number} srcEnd -
+                 * @param {IJavaArray<number>} dst -
+                 * @param {number} dstBegin -
+                 * @memberof {String}
+                 */
+                getChars(srcBegin: number, srcEnd: number, dst: IJavaArray<number>, dstBegin: number): void;
+                /**
+                 * Returns a hash code for this string.
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns the index within this string of the first occurrence of the specified character.
+                 * @param {number} ch -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                indexOf(ch: number): number;
+                /**
+                 * Returns the index within this string of the first occurrence of the specified character, starting the search at the specified index.
+                 * @param {number} ch -
+                 * @param {number} fromIndex -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                indexOf(ch: number, fromIndex: number): number;
+                /**
+                 * Returns the index within this string of the first occurrence of the specified substring.
+                 * @param {String} str -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                indexOf(str: String): number;
+                /**
+                 * Returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
+                 * @param {String} str -
+                 * @param {number} fromIndex -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                indexOf(str: String, fromIndex: number): number;
+                /**
+                 * Returns a canonical representation for the string object.
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                intern(): String;
+                /**
+                 * Returns true if, and only if, length() is 0.
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                isEmpty(): boolean;
+                /**
+                 * Returns the index within this string of the last occurrence of the specified character.
+                 * @param {number} ch -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                lastIndexOf(ch: number): number;
+                /**
+                 * Returns the index within this string of the last occurrence of the specified character, searching backward starting at the specified index.
+                 * @param {number} ch -
+                 * @param {number} fromIndex -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                lastIndexOf(ch: number, fromIndex: number): number;
+                /**
+                 * Returns the index within this string of the last occurrence of the specified substring.
+                 * @param {String} str -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                lastIndexOf(str: String): number;
+                /**
+                 * Returns the index within this string of the last occurrence of the specified substring, searching backward starting at the specified index.
+                 * @param {String} str -
+                 * @param {number} fromIndex -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                lastIndexOf(str: String, fromIndex: number): number;
+                /**
+                 * Returns the length of this string.
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                length(): number;
+                /**
+                 * Tells whether or not this string matches the given regular expression.
+                 * @param {String} regex -
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                matches(regex: String): boolean;
+                /**
+                 * Returns the index within this String that is offset from the given index by codePointOffset code points.
+                 * @param {number} index -
+                 * @param {number} codePointOffset -
+                 * @returns {number}
+                 * @memberof {String}
+                 */
+                offsetByCodePoints(index: Integer, codePointOffset: number): number;
+                /**
+                 * Tests if two string regions are equal.
+                 * @param {boolean} ignoreCase -
+                 * @param {number} toffset -
+                 * @param {String} other -
+                 * @param {number} ooffset -
+                 * @param {number} len -
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                regionMatches(ignoreCase: boolean, toffset: number, other: String, ooffset: number, len: number): boolean;
+                /**
+                 * Tests if two string regions are equal.
+                 * @param {number} toffset -
+                 * @param {String} other -
+                 * @param {number} ooffset -
+                 * @param {number} len -
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                regionMatches(toffset: number, other: String, ooffset: number, len: number): boolean;
+                /**
+                 * Returns a new string resulting from replacing all occurrences of oldChar in this string with newChar.
+                 * @param {number} oldChar -
+                 * @param {number} newChar -
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                replace(oldChar: number, newChar: number): String;
+                /**
+                 * Replaces each substring of this string that matches the given regular expression with the given replacement.
+                 * @param {String} regex -
+                 * @param {String} replacement -
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                replaceAll(regex: String, replacement: String): String;
+                /**
+                 * Replaces the first substring of this string that matches the given regular expression with the given replacement.
+                 * @param {String} regex -
+                 * @param {String} replacement -
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                replaceFirst(regex: String, replacement: String): String;
+                /**
+                 * Splits this string around matches of the given regular expression.
+                 * @param {String} regex -
+                 * @returns {IJavaArray<String>}
+                 * @memberof {String}
+                 */
+                split(regex: String): IJavaArray<String>;
+                /**
+                 * Splits this string around matches of the given regular expression.
+                 * @param {String} regex -
+                 * @param {number} limit -
+                 * @returns {IJavaArray<String>}
+                 * @memberof {String}
+                 */
+                split(regex: String, limit: number): IJavaArray<String>;
+                /**
+                 * Tests if this string starts with the specified prefix.
+                 * @param {String} prefix -
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                startsWith(prefix: String): boolean;
+                /**
+                 * Tests if the substring of this string beginning at the specified index starts with the specified prefix.
+                 * @param {String} prefix -
+                 * @param {number} toffset -
+                 * @returns {boolean}
+                 * @memberof {String}
+                 */
+                startsWith(prefix: String, toffset: number): boolean;
+                /**
+                 * Returns a new string that is a substring of this string.
+                 * @param {number} beginIndex -
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                substring(beginIndex: number): String;
+                /**
+                 * Returns a new string that is a substring of this string.
+                 * @param {number} beginIndex -
+                 * @param {number} endIndex -
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                substring(beginIndex: number, endIndex: number): String;
+                /**
+                 * Converts this string to a new character array.
+                 * @returns {IJavaArray<number>}
+                 * @memberof {String}
+                 */
+                toCharArray(): IJavaArray<number>;
+                /**
+                 * Converts all of the characters in this String to lower case using the rules of the default locale.
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                toLowerCase(): String;
+                /**
+                 * This object (which is already a string!) is itself returned.
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                toString(): String;
+                /**
+                 * Converts all of the characters in this String to upper case using the rules of the default locale.
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                toUpperCase(): String;
+                /**
+                 * Returns a copy of the string, with leading and trailing whitespace omitted.
+                 * @returns {String}
+                 * @memberof {String}
+                 */
+                trim(): String;
+            }
+            /**
+             * Java Character object.
+             * @export
+             * @class Character
+             * @extends {Object}
+             */
+            export class Character extends Object {
+                protected constructor();
+                /**
+                 * Returns the value of this Character object.
+                 * @returns {number}
+                 * @memberof {Character}
+                 */
+                charValue(): number;
+                /**
+                 * Compares two Character objects numerically.
+                 * @param {Character} anotherCharacter -
+                 * @returns {number}
+                 * @memberof {Character}
+                 */
+                compareTo(anotherCharacter: Character): number;
+                /**
+                 * Compares this object against the specified object.
+                 * @param {Object} obj -
+                 * @returns {boolean}
+                 * @memberof {Character}
+                 */
+                equals(obj: Object): boolean;
+                /**
+                 * Returns a hash code for this Character; equal to the result of invoking charValue().
+                 * @returns {number}
+                 * @memberof {Character}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns a String object representing this Character's value.
+                 * @returns {String}
+                 * @memberof {Character}
+                 */
+                toString(): String;
+            }
+            /**
+             * Java Number base object.
+             * @export
+             * @class Object
+             */
+            export class Number extends Object { protected constructor(); }
+            export class Boolean extends Object {
+                protected constructor();
+                /**
+                 * Returns the value of this Boolean object as a boolean primitive.
+                 * @returns {boolean}
+                 * @memberof {Boolean}
+                 */
+                booleanValue(): boolean;
+                /**
+                 * Compares this Boolean instance with another.
+                 * @param {Boolean} b -
+                 * @returns {number}
+                 * @memberof {Boolean}
+                 */
+                compareTo(b: Boolean): number;
+                /**
+                 * Returns true if and only if the argument is not null and is a Boolean object that represents the same boolean value as this object.
+                 * @param {Object} obj -
+                 * @returns {boolean}
+                 * @memberof {Boolean}
+                 */
+                equals(obj: Object): boolean;
+                /**
+                 * Returns a hash code for this Boolean object.
+                 * @returns {number}
+                 * @memberof {Boolean}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns a String object representing this Boolean's value.
+                 * @returns {String}
+                 * @memberof {Boolean}
+                 */
+                toString(): String;
+            }
+            /**
+             * Java Integer object.
+             * @export
+             * @class Integer
+             * @extends {Object}
+             */
+            export class Integer extends Number {
+                protected constructor();
+                /**
+                 * Returns the value of this Integer as a byte.
+                 * @returns {number}
+                 * @memberof {Integer}
+                 */
+                byteValue(): number;
+                /**
+                 * Compares two Integer objects numerically.
+                 * @param {Integer} anotherInteger -
+                 * @returns {number}
+                 * @memberof {Integer}
+                 */
+                compareTo(anotherInteger: Integer): number;
+                /**
+                 * Returns the value of this Integer as a double.
+                 * @returns {number}
+                 * @memberof {Integer}
+                 */
+                doubleValue(): number;
+                /**
+                 * Compares this object to the specified object.
+                 * @param {Object} obj -
+                 * @returns {boolean}
+                 * @memberof {Integer}
+                 */
+                equals(obj: Object): boolean;
+                /**
+                 * Returns the value of this Integer as a float.
+                 * @returns {number}
+                 * @memberof {Integer}
+                 */
+                floatValue(): number;
+                /**
+                 * Returns a hash code for this Integer.
+                 * @returns {number}
+                 * @memberof {Integer}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns the value of this Integer as an int.
+                 * @returns {number}
+                 * @memberof {Integer}
+                 */
+                intValue(): number;
+                /**
+                 * Returns the value of this Integer as a long.
+                 * @returns {number}
+                 * @memberof {Integer}
+                 */
+                longValue(): number;
+                /**
+                 * Returns the value of this Integer as a short.
+                 * @returns {number}
+                 * @memberof {Integer}
+                 */
+                shortValue(): number;
+                /**
+                 * Returns a String object representing this Integer's value.
+                 * @returns {String}
+                 * @memberof {Integer}
+                 */
+                toString(): String;
+            }
+            /**
+             * Java Long object.
+             * @export
+             * @class Long
+             * @extends {Object}
+             */
+            export class Long extends Number {
+                protected constructor();
+                /**
+                 * Returns the value of this Long as a byte.
+                 * @returns {number}
+                 * @memberof {Long}
+                 */
+                byteValue(): number;
+                /**
+                 * Compares two Long objects numerically.
+                 * @param {Long} anotherLong -
+                 * @returns {number}
+                 * @memberof {Long}
+                 */
+                compareTo(anotherLong: Long): number;
+                /**
+                 * Returns the value of this Long as a double.
+                 * @returns {number}
+                 * @memberof {Long}
+                 */
+                doubleValue(): number;
+                /**
+                 * Compares this object to the specified object.
+                 * @param {Object} obj -
+                 * @returns {boolean}
+                 * @memberof {Long}
+                 */
+                equals(obj: Object): boolean;
+                /**
+                 * Returns the value of this Long as a float.
+                 * @returns {number}
+                 * @memberof {Long}
+                 */
+                floatValue(): number;
+                /**
+                 * Returns a hash code for this Long.
+                 * @returns {number}
+                 * @memberof {Long}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns the value of this Long as an int.
+                 * @returns {number}
+                 * @memberof {Long}
+                 */
+                intValue(): number;
+                /**
+                 * Returns the value of this Long as a long value.
+                 * @returns {number}
+                 * @memberof {Long}
+                 */
+                longValue(): number;
+                /**
+                 * Returns the value of this Long as a short.
+                 * @returns {number}
+                 * @memberof {Long}
+                 */
+                shortValue(): number;
+                /**
+                 * Returns a String object representing this Long's value.
+                 * @returns {String}
+                 * @memberof {Long}
+                 */
+                toString(): String;
+            }
+            /**
+             * Java Double object.
+             * @export
+             * @class Double
+             * @extends {Object}
+             */
+            export class Double extends Number {
+                protected constructor();
+                /**
+                 * Returns the value of this Double as a byte (by casting to a byte).
+                 * @returns {number}
+                 * @memberof {Double}
+                 */
+                byteValue(): number;
+                /**
+                 * Compares two Double objects numerically.
+                 * @param {Double} anotherDouble -
+                 * @returns {number}
+                 * @memberof {Double}
+                 */
+                compareTo(anotherDouble: Double): number;
+                /**
+                 * Returns the double value of this Double object.
+                 * @returns {number}
+                 * @memberof {Double}
+                 */
+                doubleValue(): number;
+                /**
+                 * Compares this object against the specified object.
+                 * @param {Object} obj -
+                 * @returns {boolean}
+                 * @memberof {Double}
+                 */
+                equals(obj: Object): boolean;
+                /**
+                 * Returns the float value of this Double object.
+                 * @returns {number}
+                 * @memberof {Double}
+                 */
+                floatValue(): number;
+                /**
+                 * Returns a hash code for this Double object.
+                 * @returns {number}
+                 * @memberof {Double}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns the value of this Double as an int (by casting to type int).
+                 * @returns {number}
+                 * @memberof {Double}
+                 */
+                intValue(): number;
+                /**
+                 * Returns true if this Double value is infinitely large in magnitude, false otherwise.
+                 * @returns {boolean}
+                 * @memberof {Double}
+                 */
+                isInfinite(): boolean;
+                /**
+                 * Returns true if this Double value is a Not-a-Number (NaN), false otherwise.
+                 * @returns {boolean}
+                 * @memberof {Double}
+                 */
+                isNaN(): boolean;
+                /**
+                 * Returns the value of this Double as a long (by casting to type long).
+                 * @returns {number}
+                 * @memberof {Double}
+                 */
+                longValue(): number;
+                /**
+                 * Returns the value of this Double as a short (by casting to a short).
+                 * @returns {number}
+                 * @memberof {Double}
+                 */
+                shortValue(): number;
+                /**
+                 * Returns a string representation of this Double object.
+                 * @returns {String}
+                 * @memberof {Double}
+                 */
+                toString(): String;
+            }
+            /**
+             * Java Byte object.
+             * @export
+             * @class InteByteger
+             * @extends {Object}
+             */
+            export class Byte extends Number {
+                protected constructor();
+                /**
+                 * Returns the value of this Byte as a byte.
+                 * @returns {number}
+                 * @memberof {Byte}
+                 */
+                byteValue(): number;
+                /**
+                 * Compares two Byte objects numerically.
+                 * @param {Byte} anotherByte -
+                 * @returns {number}
+                 * @memberof {Byte}
+                 */
+                compareTo(anotherByte: Byte): number;
+                /**
+                 * Returns the value of this Byte as a double.
+                 * @returns {number}
+                 * @memberof {Byte}
+                 */
+                doubleValue(): number;
+                /**
+                 * Compares this object to the specified object.
+                 * @param {Object} obj -
+                 * @returns {boolean}
+                 * @memberof {Byte}
+                 */
+                equals(obj: Object): boolean;
+                /**
+                 * Returns the value of this Byte as a float.
+                 * @returns {number}
+                 * @memberof {Byte}
+                 */
+                floatValue(): number;
+                /**
+                 * Returns a hash code for this Byte; equal to the result of invoking intValue().
+                 * @returns {number}
+                 * @memberof {Byte}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns the value of this Byte as an int.
+                 * @returns {number}
+                 * @memberof {Byte}
+                 */
+                intValue(): number;
+                /**
+                 * Returns the value of this Byte as a long.
+                 * @returns {number}
+                 * @memberof {Byte}
+                 */
+                longValue(): number;
+                /**
+                 * Returns the value of this Byte as a short.
+                 * @returns {number}
+                 * @memberof {Byte}
+                 */
+                shortValue(): number;
+                /**
+                 * Returns a String object representing this Byte's value.
+                 * @returns {String}
+                 * @memberof {Byte}
+                 */
+                toString(): String;
+            }
+            /**
+             * Java Float object.
+             * @export
+             * @class Float
+             * @extends {Object}
+             */
+            export class Float extends Number {
+                protected constructor();
+                /**
+                 * Returns the value of this Float as a byte (by casting to a byte).
+                 * @returns {number}
+                 * @memberof {Float}
+                 */
+                byteValue(): number;
+                /**
+                 * Compares two Float objects numerically.
+                 * @param {Float} anotherFloat -
+                 * @returns {number}
+                 * @memberof {Float}
+                 */
+                compareTo(anotherFloat: Float): number;
+                /**
+                 * Returns the double value of this Float object.
+                 * @returns {number}
+                 * @memberof {Float}
+                 */
+                doubleValue(): number;
+                /**
+                 * Compares this object against the specified object.
+                 * @param {Object} obj -
+                 * @returns {boolean}
+                 * @memberof {Float}
+                 */
+                equals(obj: Object): boolean;
+                /**
+                 * Returns the float value of this Float object.
+                 * @returns {number}
+                 * @memberof {Float}
+                 */
+                floatValue(): number;
+                /**
+                 * Returns a hash code for this Float object.
+                 * @returns {number}
+                 * @memberof {Float}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns the value of this Float as an int (by casting to type int).
+                 * @returns {number}
+                 * @memberof {Float}
+                 */
+                intValue(): number;
+                /**
+                 * Returns true if this Float value is infinitely large in magnitude, false otherwise.
+                 * @returns {boolean}
+                 * @memberof {Float}
+                 */
+                isInfinite(): boolean;
+                /**
+                 * Returns true if this Float value is a Not-a-Number (NaN), false otherwise.
+                 * @returns {boolean}
+                 * @memberof {Float}
+                 */
+                isNaN(): boolean;
+                /**
+                 * Returns value of this Float as a long (by casting to type long).
+                 * @returns {number}
+                 * @memberof {Float}
+                 */
+                longValue(): number;
+                /**
+                 * Returns the value of this Float as a short (by casting to a short).
+                 * @returns {number}
+                 * @memberof {Float}
+                 */
+                shortValue(): number;
+                /**
+                 * Returns a string representation of this Float object.
+                 * @returns {String}
+                 * @memberof {Float}
+                 */
+                toString(): String;
+            }
+            /**
+             * Java Short object.
+             * @export
+             * @class Short
+             * @extends {Object}
+             */
+            export class Short extends Number {
+                protected constructor();
+                /**
+                 * Returns the value of this Short as a byte.
+                 * @returns {number}
+                 * @memberof {Short}
+                 */
+                byteValue(): number;
+                /**
+                 * Compares two Short objects numerically.
+                 * @param {Short} anotherShort -
+                 * @returns {number}
+                 * @memberof {Short}
+                 */
+                compareTo(anotherShort: Short): number;
+                /**
+                 * Returns the value of this Short as a double.
+                 * @returns {number}
+                 * @memberof {Short}
+                 */
+                doubleValue(): number;
+                /**
+                 * Compares this object to the specified object.
+                 * @param {Object} obj -
+                 * @returns {boolean}
+                 * @memberof {Short}
+                 */
+                equals(obj: Object): boolean;
+                /**
+                 * Returns the value of this Short as a float.
+                 * @returns {number}
+                 * @memberof {Short}
+                 */
+                floatValue(): number;
+                /**
+                 * Returns a hash code for this Short; equal to the result of invoking intValue().
+                 * @returns {number}
+                 * @memberof {Short}
+                 */
+                hashCode(): number;
+                /**
+                 * Returns the value of this Short as an int.
+                 * @returns {number}
+                 * @memberof {Short}
+                 */
+                intValue(): number;
+                /**
+                 * Returns the value of this Short as a long.
+                 * @returns {number}
+                 * @memberof {Short}
+                 */
+                longValue(): number;
+                /**
+                 * Returns the value of this Short as a short.
+                 * @returns {number}
+                 * @memberof {Short}
+                 */
+                shortValue(): number;
+                /**
+                 * Returns a String object representing this Short's value.
+                 * @returns {String}
+                 * @memberof {Short}
+                 */
+                toString(): String;
+            }
+        }
+        export namespace util {
+            export interface Iterable<E> {
+                /**
+                 * Returns an iterator over the elements in this collection in proper sequence.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+            }
+
+            /**
+             * Java Collection interface.
+             * @export
+             * @interface Collection<T>
+             */
+            export interface Collection<E> extends Iterable<E> {
+                /**
+                 * Ensures that this collection contains the specified element(optional operation).
+                 */
+                add(e: E): boolean;
+                //Adds all of the elements in the specified collection to this collection(optional operation).
+                /**
+                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator (optional operation).
+                 * @returns {boolean}
+                 */
+                addAll(c: Collection<E>): boolean;
+                //Removes all of the elements from this collection(optional operation).
+                /**
+                 * Removes all of the elements from this list (optional operation).
+                 */
+                clear(): void;
+                //Returns true if this collection contains the specified element.
+                /**
+                 * Returns true if this set contains the specified element.
+                 * @returns {boolean}
+                 */
+                contains(o: lang.Object): boolean;
+                //Returns true if this collection contains all of the elements in the specified collection.
+                /**
+                 * Returns true if this set contains all of the elements of the specified collection.
+                 * @returns {boolean}
+                 */
+                containsAll(c: Collection<any>): boolean;
+                //Compares the specified object with this collection for equality.
+                /**
+                 * Returns true if this list contains the specified element.
+                 * @returns {boolean}
+                 */
+                contains(o: lang.Object): boolean;
+                //Returns the hash code value for this collection.
+                /**
+                 * Returns the hash code value for this list.
+                 * @returns {lang.Integer}
+                 */
+                hashCode(): lang.Integer;
+                //Returns true if this collection contains no elements.
+                /**
+                 * Returns true if this list contains no elements.
+                 * @returns {boolean}
+                 */
+                isEmpty(): boolean;
+                /**
+                 * Removes a single instance of the specified element from this collection, if it is present(optional operation).
+                 * @returns {boolean}
+                 */
+                remove(o: lang.Object): boolean;
+                //Removes all of this collection's elements that are also contained in the specified collection (optional operation).
+                /**
+                 * Removes from this list all of its elements that are contained in the specified collection (optional operation).
+                 * @returns {boolean}
+                 */
+                removeAll(c: Collection<any>): boolean;
+                //Retains only the elements in this collection that are contained in the specified collection(optional operation).
+                /**
+                 * Retains only the elements in this list that are contained in the specified collection (optional operation).
+                 * @returns {boolean}
+                 */
+                retainAll(c: Collection<any>): boolean;
+                //Returns the number of elements in this collection.
+                /**
+                 * Returns the number of elements in this list.
+                 * @returns {int}
+                 */
+                size(): lang.Integer;
+                //Returns an array containing all of the elements in this collection.
+                toArray(): IJavaArray<lang.Object>;
+                //Returns an array containing all of the elements in this collection; the runtime type of the returned array is that of the specified array.
+                toArray(a: IJavaArray<E>): IJavaArray<E>;
+            }
+            export interface Iterator<E> {
+                /**
+                 * Returns true if the iteration has more elements.
+                 * @returns {boolean}
+                 */
+                hasNext(): boolean;
+                /**
+                 * Returns the next element in the iteration.
+                 * @returns {E}
+                 */
+                next(): E;
+                /**
+                 * Removes from the underlying collection the last element returned by this iterator (optional operation).
+                 */
+                remove(): void;
+            }
+            export interface ListIterator<E> extends Iterator<E> {
+                /**
+                 * Inserts the specified element into the list (optional operation).
+                 */
+                add(e: E): void;
+                /**
+                 * Returns true if this list iterator has more elements when traversing the list in the reverse direction.
+                 * @returns {boolean}
+                 */
+                hasPrevious(): boolean;
+                /**
+                 * Returns the index of the element that would be returned by a subsequent call to next().
+                 * @returns {int}
+                 */
+                nextIndex(): lang.Integer;
+                /**
+                 * Returns the previous element in the list and moves the cursor position backwards.
+                 * @returns {E}
+                 */
+                previous(): E;
+                /**
+                 * Returns the index of the element that would be returned by a subsequent call to previous().
+                 * @returns {int}
+                 */
+                previousIndex(): lang.Integer;
+                /**
+                 * Replaces the last element returned by next() or previous() with the specified element (optional operation).
+                 */
+                set(e: E): void;
+            }
+            export interface List<E> extends Collection<E> {
+                /**
+                 * Ensures that this collection contains the specified element(optional operation).
+                 */
+                add(e: E): boolean;
+                /**
+                 * Inserts the specified element at the specified position in this list (optional operation).
+                 */
+                add(index: lang.Integer, element: E): void;
+                /**
+                 * Inserts the specified element at the specified position in this list (optional operation).
+                 */
+                add(index: lang.Integer, element: E): void;
+                /**
+                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator (optional operation).
+                 * @returns {boolean}
+                 */
+                addAll(c: Collection<E>): boolean;
+                /**
+                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
+                 * @returns {boolean}
+                 */
+                addAll(index: lang.Integer, c: Collection<E>): boolean;
+                ///**
+                // * Removes all of the elements from this list (optional operation).
+                // */
+                //clear(): void;
+                ///**
+                // * Returns true if this list contains the specified element.
+                // * @returns {boolean}
+                // */
+                //    contains(o: lang.Object): boolean;
+                /**
+                 * Returns true if this list contains all of the elements of the specified collection.
+                 * @returns {boolean}
+                 */
+                containsAll(c: Collection<any>): boolean;
+                /**
+                 * Compares the specified object with this list for equality.
+                 * @returns {boolean}
+                 */
+                equals(o: lang.Object): boolean;
+                /**
+                 * Returns the element at the specified position in this list.
+                 * @returns {E}
+                 */
+                get(index: lang.Integer): E;
+                ///**
+                // * Returns the hash code value for this list.
+                // * @returns {lang.Integer}
+                // */
+                //    hashCode(): lang.Integer;
+                /**
+                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @returns {int}
+                 */
+                indexOf(o: lang.Object): lang.Integer;
+                ///**
+                // * Returns true if this list contains no elements.
+                // * @returns {boolean}
+                // */
+                //isEmpty(): boolean;
+                ///**
+                // * Returns an iterator over the elements in this list in proper sequence.
+                // * @returns {Iterator<E>}
+                // */
+                //iterator(): Iterator<E>;
+                /**
+                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @returns {int}
+                 */
+                lastIndexOf(o: lang.Object): lang.Integer;
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence).
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(): ListIterator<E>;
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(index: lang.Integer): ListIterator<E>;
+                /**
+                 * Removes the element at the specified position in this list (optional operation).
+                 * @returns {E}
+                 */
+                remove(index: lang.Integer): E;
+                /**
+                 * Removes the first occurrence of the specified element from this list, if it is present (optional operation).
+                 * @returns {boolean}
+                 */
+                remove(o: lang.Object): boolean;
+                ///**
+                // * Removes from this list all of its elements that are contained in the specified collection (optional operation).
+                // * @returns {boolean}
+                // */
+                //removeAll(Collection < any > c): boolean;
+                ///**
+                // * Retains only the elements in this list that are contained in the specified collection (optional operation).
+                // * @returns {boolean}
+                // */
+                //retainAll(Collection < any > c): boolean;
+                /**
+                 * Replaces the element at the specified position in this list with the specified element (optional operation).
+                 * @returns {E}
+                 */
+                set(index: lang.Integer, element: E): E;
+                ///**
+                // * Returns the number of elements in this list.
+                // * @returns {int}
+                // */
+                //    size(): lang.Integer;
+                /**
+                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+                 * @returns {List<E>}
+                 */
+                subList(fromIndex: lang.Integer, toIndex: lang.Integer): List<E>;
+            }
+            export class AbstractCollection<E> implements Collection<E>  {
+                protected constructor();
+                //Ensures that this collection contains the specified element(optional operation).
+                /**
+                 * Appends the specified element to the end of this list (optional operation).
+                 * @returns {boolean}
+                 */
+                add(e: E): boolean;
+                //Adds all of the elements in the specified collection to this collection(optional operation).
+                /**
+                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
+                 * @returns {boolean}
+                 */
+                addAll(c: Collection<E>): boolean;
+                //Removes all of the elements from this collection(optional operation).
+                /**
+                 * Removes all of the elements from this list (optional operation).
+                 */
+                clear(): void;
+                //Returns true if this collection contains the specified element.
+                /**
+                 * Returns true if this list contains the specified element.
+                 * @returns {boolean}
+                 */
+                contains(o: lang.Object): boolean;
+                //Returns true if this collection contains all of the elements in the specified collection.
+                containsAll(c: Collection<any>): boolean;
+                //Compares the specified object with this collection for equality.
+                /**
+                 * Compares the specified object with this list for equality.
+                 * @returns {boolean}
+                 */
+                equals(o: lang.Object): boolean;
+                //Returns the hash code value for this collection.
+                hashCode(): lang.Integer;
+                //Returns true if this collection contains no elements.
+                /**
+                 * Returns true if this list contains no elements.
+                 * @returns {boolean}
+                 */
+                isEmpty(): boolean;
+                /**
+                 * Returns an iterator over the elements in this list in proper sequence.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+                //Removes a single instance of the specified element from this collection, if it is present(optional operation).
+                /**
+                 * Removes the first occurrence of the specified element from this list, if it is present.
+                 * @returns {boolean}
+                 */
+                remove(o: Object): boolean;
+                //Removes all of this collection's elements that are also contained in the specified collection (optional operation).
+                /**
+                 * Removes from this list all of its elements that are contained in the specified collection.
+                 * @returns {boolean}
+                 */
+                removeAll(c: Collection<any>): boolean;
+                //Retains only the elements in this collection that are contained in the specified collection(optional operation).
+                /**
+                 * Retains only the elements in this list that are contained in the specified collection.
+                 * @returns {boolean}
+                 */
+                retainAll(c: Collection<any>): boolean;
+                //Returns the number of elements in this collection.
+                /**
+                 * Returns the number of elements in this list.
+                 * @returns {int}
+                 */
+                size(): lang.Integer;
+                //Returns an array containing all of the elements in this collection.
+                /**
+                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
+                 * @returns {IJavaArray<lang.Object>}
+                 */
+                toArray(): IJavaArray<lang.Object>;
+                //Returns an array containing all of the elements in this collection; the runtime type of the returned array is that of the specified array.
+                /**
+                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element); the runtime type of the returned array is that of the specified array.
+                 * @returns {IJavaArray<E>}
+                 */
+                toArray(a: IJavaArray<E>): IJavaArray<E>;
+                toString(): lang.String;
+            }
+            export class AbstractList<E> extends AbstractCollection<E> {
+                protected constructor();
+                /**
+                 * Appends the specified element to the end of this list (optional operation).
+                 * @returns {boolean}
+                 */
+                add(e: E): boolean;
+                /**
+                 * Inserts the specified element at the specified position in this list (optional operation).
+                 */
+                add(index: lang.Integer, element: E): void;
+                /**
+                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
+                 * @returns {boolean}
+                 */
+                addAll(c: Collection<E>): boolean;
+                /**
+                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
+                 * @returns {boolean}
+                 */
+                addAll(index: lang.Integer, c: Collection<E>): boolean;
+                /**
+                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @returns {int}
+                 */
+                indexOf(o: lang.Object): lang.Integer;
+                /**
+                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @returns {int}
+                 */
+                lastIndexOf(o: lang.Object): lang.Integer;
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence).
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(): ListIterator<E>;
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(index: lang.Integer): ListIterator<E>;
+                /**
+                 * Removes the element at the specified position in this list (optional operation).
+                 * @returns {E}
+                 */
+                remove(index: lang.Integer): E;
+                /**
+                 * Removes the first occurrence of the specified element from this list, if it is present.
+                 * @returns {boolean}
+                 */
+                remove(o: Object): boolean;
+                /**
+                 * Replaces the element at the specified position in this list with the specified element (optional operation).
+                 * @returns {E}
+                 */
+                set(index: lang.Integer, element: E): E;
+                /**
+                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+                 * @returns {List<E>}
+                 */
+                subList(fromIndex: lang.Integer, toIndex: lang.Integer): List<E>;
+            }
+            export class ArrayList<E> extends AbstractList<E> {
+                protected constructor();
+                /**
+                 * Returns a shallow copy of this ArrayList instance.
+                 * @returns {Object}
+                 */
+                clone(): lang.Object;
+                ///**
+                // * Returns true if this list contains the specified element.
+                // * @returns {boolean}
+                // */
+                //contains(o: Object): boolean;
+                /**
+                 * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
+                 */
+                ensureCapacity(minCapacity: lang.Integer | number): void;
+                /**
+                 * Returns the element at the specified position in this list.
+                 * @returns {E}
+                 */
+                get(index: lang.Integer | number): E;
+                /**
+                 * Trims the capacity of this ArrayList instance to be the list's current size.
+                 */
+                trimToSize(): void;
+            }
+            export interface MapEntry<K, V> {
+                /**
+                 * Compares the specified object with this entry for equality.
+                 * @returns {boolean}
+                 */
+                equals(o: lang.Object): boolean;
+                /**
+                 * Returns the key corresponding to this entry.
+                 * @returns {K}
+                 */
+                getKey(): K;
+                /**
+                 * Returns the value corresponding to this entry.
+                 * @returns {V}
+                 */
+                getValue(): V;
+                /**
+                 * Returns the hash code value for this map entry.
+                 * @returns {int}
+                 */
+                hashCode(): lang.Integer;
+                /**
+                 * Replaces the value corresponding to this entry with the specified value (optional operation).
+                 * @returns {V}
+                 */
+                setValue(value: V): V;
+            }
+            export interface Set<E> extends Collection<E> { }
+            export interface Map<K, V> {
+                /**
+                 * Removes all of the mappings from this map (optional operation).
+                 */
+                clear(): void;
+                /**
+                 * Returns true if this map contains a mapping for the specified key.
+                 * @returns {boolean}
+                 */
+                containsKey(key: lang.Object): boolean;
+                /**
+                 * Returns true if this map maps one or more keys to the specified value.
+                 * @returns {boolean}
+                 */
+                containsValue(value: lang.Object): boolean;
+                /**
+                 * Returns a Set view of the mappings contained in this map.
+                 * @returns {Set<Map.Entry<K,V>>}
+                 */
+                entrySet(): Set<MapEntry<K, V>>;
+                /**
+                 * Compares the specified object with this map for equality.
+                 * @returns {boolean}
+                 */
+                equals(o: lang.Object): boolean;
+                /**
+                 * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+                 * @returns {V}
+                 */
+                get(key: lang.Object): V;
+                /**
+                 * Returns the hash code value for this map.
+                 * @returns {int}
+                 */
+                hashCode(): lang.Integer;
+                /**
+                 * Returns true if this map contains no key-value mappings.
+                 * @returns {boolean}
+                 */
+                isEmpty(): boolean;
+                /**
+                 * Returns a Set view of the keys contained in this map.
+                 * @returns {Set<K>}
+                 */
+                keySet(): Set<K>;
+                /**
+                 * Associates the specified value with the specified key in this map (optional operation).
+                 * @returns {V}
+                 */
+                put(key: K, value: V): V;
+                /**
+                 * Copies all of the mappings from the specified map to this map (optional operation).
+                 */
+                putAll(m: Map<K, V>): void;
+                /**
+                 * Removes the mapping for a key from this map if it is present (optional operation).
+                 * @returns {V}
+                 */
+                remove(key: lang.Object): V;
+                /**
+                 * Returns the number of key-value mappings in this map.
+                 * @returns {int}
+                 */
+                size(): lang.Integer;
+                /**
+                 * Returns a Collection view of the values contained in this map.
+                 * @returns {Collection<V>}
+                 */
+                values(): Collection<V>;
+            }
+            export class AbstractMap<K, V> extends lang.Object implements Map<K, V> {
+                protected constructor();
+                /**
+                 * Removes all of the mappings from this map (optional operation).
+                 */
+                clear(): void;
+                /**
+                 * Returns true if this map contains a mapping for the specified key.
+                 * @returns {boolean}
+                 */
+                containsKey(key: Object): boolean;
+                /**
+                 * Returns true if this map maps one or more keys to the specified value.
+                 * @returns {boolean}
+                 */
+                containsValue(value: Object): boolean;
+                /**
+                 * Returns a Set view of the mappings contained in this map.
+                 * @returns {Set<Map.Entry<K,V>>}
+                 */
+                entrySet(): Set<MapEntry<K, V>>;
+                /**
+                 * Compares the specified object with this map for equality.
+                 * @returns {boolean}
+                 */
+                equals(o: lang.Object): boolean;
+                /**
+                 * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+                 * @returns {V}
+                 */
+                get(key: lang.Object): V;
+                /**
+                 * Returns the hash code value for this map.
+                 * @returns {int}
+                 */
+                hashCode(): lang.Integer;
+                /**
+                 * Returns true if this map contains no key-value mappings.
+                 * @returns {boolean}
+                 */
+                isEmpty(): boolean;
+                /**
+                 * Returns a Set view of the keys contained in this map.
+                 * @returns {Set<K>}
+                 */
+                keySet(): Set<K>;
+                /**
+                 * Associates the specified value with the specified key in this map (optional operation).
+                 * @returns {V}
+                 */
+                put(key: K, value: V): V;
+                /**
+                 * Copies all of the mappings from the specified map to this map (optional operation).
+                 */
+                putAll(m: Map<K, V>): void;
+                /**
+                 * Removes the mapping for a key from this map if it is present (optional operation).
+                 * @returns {V}
+                 */
+                remove(key: lang.Object): V;
+                /**
+                 * Returns the number of key-value mappings in this map.
+                 * @returns {int}
+                 */
+                size(): lang.Integer;
+                /**
+                 * Returns a Collection view of the values contained in this map.
+                 * @returns {Collection<V>}
+                 */
+                values(): Collection<V>;
+            }
+            export class HashMap<K, V> extends AbstractMap<K, V> {
+                protected constructor();
+                /**
+                 * Returns a shallow copy of this HashMap instance: the keys and values themselves are not cloned.
+                 * @returns {Object}
+                 */
+                clone(): lang.Object;
+                /**
+                 * Returns a Collection view of the values contained in this map.
+                 * @returns {Collection<V>}
+                 */
+                values(): Collection<V>;
+            }
+            export class AbstractSet<E> extends AbstractCollection<E> implements Set<E> { protected constructor(); }
+            export class HashSet<E> extends AbstractSet<E> {
+                protected constructor();
+                /**
+                 * Returns a shallow copy of this HashSet instance: the elements themselves are not cloned.
+                 * @returns {Object}
+                 */
+                clone(): lang.Object;
+            }
+            /**
+             * Java Date object.
+             * @export
+             * @class Date
+             * @extends {Object}
+             */
+            export class Date extends Object {
+                protected constructor();
+                /**
+                 * Tests if this date is after the specified date.
+                 * @returns {boolean}
+                 */
+                after(when: Date): boolean;
+                /**
+                 * Tests if this date is before the specified date.
+                 * @returns {boolean}
+                 */
+                before(when: Date): boolean;
+                /**
+                 * Return a copy of this object.
+                 * @returns {Object}
+                 */
+                clone(): lang.Object;
+                /**
+                 * Compares two Dates for ordering.
+                 * @returns {int}
+                 */
+                compareTo(anotherDate: Date): lang.Integer;
+                /**
+                 * Compares two dates for equality.
+                 * @returns {boolean}
+                 */
+                equals(obj: lang.Object): boolean;
+                /**
+                 * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this Date object.
+                 * @returns {long}
+                 */
+                getTime(): lang.Long;
+                /**
+                 * Returns a hash code value for this object.
+                 * @returns {int}
+                 */
+                hashCode(): lang.Integer;
+                /**
+                 * Sets this Date object to represent a point in time that is time milliseconds after January 1, 1970 00:00:00 GMT.
+                 */
+                setTime(time: lang.Long): void;
+            }
+            /**
+             * Represents a time zone offset, and also figures out daylight savings.
+             * @class TimeZone
+             */
+            export class TimeZone {
+                /**
+                 * Creates a copy of this TimeZone.
+                 * @returns {TimeZone}
+                 * @memberof TimeZone
+                 */
+                clone(): TimeZone;
+
+                /**
+                 * Returns the amount of time to be added to local standard time to get local wall clock time.
+                 * @returns {int}
+                 * @memberof TimeZone
+                 */
+                getDSTSavings(): lang.Integer;
+
+                /**
+                 * Returns a long standard time name of this TimeZone suitable for presentation to the user in the default locale.
+                 * @returns {string}
+                 * @memberof TimeZone
+                 */
+                getDisplayName(): lang.String;
+
+                /**
+                 * Returns a name in the specified style of this TimeZone suitable for presentation to the user in the default locale. If the specified daylight is true, a Daylight Saving Time name is returned (even if this TimeZone doesn't observe Daylight Saving Time). Otherwise, a Standard Time name is returned.
+                 * @param {boolean} daylight
+                 * @param {int} style
+                 * @memberof TimeZone
+                 */
+                getDisplayName(daylight: boolean, style: lang.Integer);
+
+                /**
+                 * Gets the ID of this time zone.
+                 * @returns {string}
+                 * @memberof TimeZone
+                 */
+                getID(): lang.String;
+
+                /**
+                 * Returns the offset of this time zone from UTC at the specified date. If Daylight Saving Time is in effect at the specified date, the offset value is adjusted with the amount of daylight saving.
+                 * @param {long} date
+                 * @returns {int}
+                 * @memberof TimeZone
+                 */
+                getOffset(date: lang.Long): lang.Integer;
+
+                /**
+                 * Gets the time zone offset, for current date, modified in case of daylight savings. This is the offset to add to UTC to get local time.
+                 * @param {int} era
+                 * @param {int} year
+                 * @param {int} month
+                 * @param {int} day
+                 * @param {int} dayOfWeek
+                 * @param {int} milliseconds
+                 * @returns {int}
+                 * @memberof TimeZone
+                 */
+                getOffset(era: lang.Integer, year: lang.Integer, month: lang.Integer, day: lang.Integer, dayOfWeek: lang.Integer, milliseconds: lang.Integer): lang.Integer;
+
+                /**
+                 * Returns true if this zone has the same rule and offset as another zone. That is, if this zone differs only in ID, if at all. Returns false if the other zone is null.
+                 * @param {TimeZone} other
+                 * @memberof TimeZone
+                 */
+                hasSameRules(other: TimeZone): boolean;
+
+                /**
+                 * Returns true if this TimeZone is currently in Daylight Saving Time, or if a transition from Standard Time to Daylight Saving Time occurs at any future time.
+                 * @returns {boolean}
+                 * @memberof TimeZone
+                 */
+                observesDaylightTime(): boolean;
+
+                /**
+                 * Sets the time zone ID. This does not change any other data in the time zone object.
+                 * @param {string} id
+                 * @memberof TimeZone
+                 */
+                setID(id: lang.String);
+
+                /**S
+                 * Queries if this TimeZone uses Daylight Saving Time.
+                 * @returns {boolean}
+                 * @memberof TimeZone
+                 */
+                useDaylightTime(): boolean;
+            }
+        }
+    }
 }
 
 /**
@@ -917,7 +2796,7 @@ export class GlideDateTime {
      */
     setDisplayValue(asDisplayed: string): void;
     /**
-     * Sets a date and time value using the current user's time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in the value parameter does not match the format parameter. You can retrieve the error message by calling getErrorMsg() on the GlideDateTime object after the exception is caught.
+     * Sets a date and time value using the current user's time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in theï¿½valueï¿½parameter does not match theï¿½formatï¿½parameter. You can retrieve the error message by calling getErrorMsg() on the GlideDateTime object after the exception is caught.
      * @memberof GlideDateTime
      * @param {string} value - The date and time in the current user's time zone.
      * @param {string} format - The date and time format to use to parse the value parameter.
@@ -954,7 +2833,7 @@ export class GlideDateTime {
      */
     setValue(o: string): void;
     /**
-     * Sets a date and time value using the UTC time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in the dt parameter does not match the format parameter. You can retrieve the error message by calling getErrorMsg() on the GlideDateTime object after the exception is caught.
+     * Sets a date and time value using the UTC time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in theï¿½dtï¿½parameter does not match theï¿½formatï¿½parameter. You can retrieve the error message by callingï¿½getErrorMsg()ï¿½on the GlideDateTime object after the exception is caught.
      * @memberof GlideDateTime
      * @param {string} dt - The date and time to use.
      * @param {string} format - The date and time format to use.
@@ -1207,7 +3086,7 @@ export class GlideTime {
  * The Scoped GlideElement API provides a number of convenient script methods for dealing with fields and their values. Scoped GlideElement methods are available for the fields of the current GlideRecord.
  * @class GlideElement
  */
-export class GlideElement implements Packages.java.lang.String, IGlideElementValue<string, GlideElement, string> {
+export class GlideElement implements Packages.java.lang.String, IValueElement<string, GlideElement, string> {
     /**
      * Returns the char value at the specified index.
      * @param {number} index -
@@ -1548,19 +3427,19 @@ export class GlideElement implements Packages.java.lang.String, IGlideElementVal
     /**
      * Determines if the previous value of the current field matches the specified object.
      * @memberof GlideElement
-     * @param {GlideElement | Packages.java.lang.String | Nilable<string>} o - An object value to check against the previous value of the current field.
+     * @param {GlideElement | Packages.java.lang.String | GlideNilable<string>} o - An object value to check against the previous value of the current field.
      * @returns {boolean} True if the previous value matches, false if it does not..
      * @description 
      */
-    changesFrom(o: GlideElement | Packages.java.lang.String | Nilable<string>): boolean;
+    changesFrom(o: GlideElement | Packages.java.lang.String | GlideNilable<string>): boolean;
     /**
      * Determines if the new value of a field, after a change, matches the specified object.
      * @memberof GlideElement
-     * @param {GlideElement | Packages.java.lang.String | Nilable<string>} o - An object value to check against the new value of the current field.
+     * @param {GlideElement | Packages.java.lang.String | GlideNilable<string>} o - An object value to check against the new value of the current field.
      * @returns {boolean} True if the previous value matches, false if it does not..
      * @description 
      */
-    changesTo(o: GlideElement | Packages.java.lang.String | Nilable<string>): boolean;
+    changesTo(o: GlideElement | Packages.java.lang.String | GlideNilable<string>): boolean;
     /**
      * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
      * @memberof GlideElement
@@ -1710,10 +3589,10 @@ export class GlideElement implements Packages.java.lang.String, IGlideElementVal
     /**
      * Sets the value of a field.
      * @memberof GlideElement
-     * @param {GlideElement | Packages.java.lang.String | Nilable<string>} value - Object value to set the field to.
+     * @param {GlideElement | Packages.java.lang.String | GlideNilable<string>} value - Object value to set the field to.
      * @description 
      */
-    setValue(value: GlideElement | Packages.java.lang.String | Nilable<string>): void;
+    setValue(value: GlideElement | Packages.java.lang.String | GlideNilable<string>): void;
     ///**
     // * Converts the value to a string.
     // * @memberof GlideElement
@@ -1722,7 +3601,7 @@ export class GlideElement implements Packages.java.lang.String, IGlideElementVal
     // */
     //toString(value?: any): string | Packages.java.lang.String;
 }
-declare class GlideElementBoolean implements  Packages.java.lang.Boolean, IGlideElementValue<boolean, GlideElementBoolean, BooleanString>  {
+declare class GlideElementBoolean implements  Packages.java.lang.Boolean, IValueElement<boolean, GlideElementBoolean, BooleanString>  {
     protected constructor();
     /**
      * Returns the value of this Boolean object as a boolean primitive.
@@ -1901,7 +3780,7 @@ declare class GlideElementBoolean implements  Packages.java.lang.Boolean, IGlide
 
     setPhoneNumber(phoneNumber: any, strict: boolean): void;
 }
-declare class GlideElementConditions implements Packages.java.lang.String, IGlideElementValue<string, GlideElementConditions, string> {
+declare class GlideElementConditions implements Packages.java.lang.String, IValueElement<string, GlideElementConditions, string> {
     protected constructor();
     /**
      * Returns the char value at the specified index.
@@ -2360,7 +4239,7 @@ declare class GlideElementConditions implements Packages.java.lang.String, IGlid
 
     setPhoneNumber(phoneNumber: any, strict: boolean): void;
 }
-declare class GlideElementDocumentation implements Packages.java.lang.String, IGlideElementValue<string, GlideElementDocumentation, string> {
+declare class GlideElementDocumentation implements Packages.java.lang.String, IValueElement<string, GlideElementDocumentation, string> {
     protected constructor();
     /**
      * Returns the char value at the specified index.
@@ -3350,7 +5229,7 @@ export class GlideElementReference implements Packages.java.lang.String, IGlideE
     setPhoneNumber(phoneNumber: any, strict: boolean): void;
 }
 
-export class GlideElementUserImage implements Packages.java.lang.String, IGlideElementValue<string, GlideElementUserImage, string>  {
+export class GlideElementUserImage implements Packages.java.lang.String, IValueElement<string, GlideElementUserImage, string>  {
     protected constructor();
     /**
      * Returns the char value at the specified index.
@@ -3810,7 +5689,7 @@ export class GlideElementUserImage implements Packages.java.lang.String, IGlideE
     setPhoneNumber(phoneNumber: any, strict: boolean): void;
 }
 
-export class GlideElementGlideObject implements Packages.java.lang.String, IGlideElementValue<string, GlideElementGlideObject, string> {
+export class GlideElementGlideObject implements Packages.java.lang.String, IValueElement<string, GlideElementGlideObject, string> {
     protected constructor();
     /**
      * Returns the char value at the specified index.
@@ -4276,7 +6155,7 @@ export class GlideElementGlideObject implements Packages.java.lang.String, IGlid
  * @class GlideRecord
  * @description A GlideRecord contains both records and fields. For information about GlideRecordSecure, which is a class inherited from GlideRecord that performs the same functions as GlideRecord, and also enforces ACLs, see the GlideServer APIs .Always test queries on a sub-production instance prior to deploying them on a production instance. An incorrectly constructed encoded query, such as including an invalid field name, produces an invalid query. When the invalid query is run, the invalid part of the query condition is dropped, and the results are based on the valid part of the query, which may return all records from the table. Using an insert(), update(), deleteRecord(), or deleteMultiple() method on bad query results can result in data loss.You can set the glide.invalid_query.returns_no_rows system property to true to have queries with invalid encoded queries return no records.
  */
-export class GlideRecord implements IGlideTableProperties, IGlideDbObject {
+export class GlideRecord implements IGlideTableProperties, IDbObject {
     /**
      * Created by
      * @type {GlideString}
@@ -4686,13 +6565,13 @@ export class GlideRecord implements IGlideTableProperties, IGlideDbObject {
      */
     updateMultiple(): void;
     /**
-     * Moves to the next record in the GlideRecord. Provides the same functionality as next(), it is intended to be used in cases where the GlideRecord has a column named next.
+     * Moves to the next record in the GlideRecord. Provides the same functionality asï¿½next(), it is intended to be used in cases where the GlideRecord has a column named next.
      * @memberof GlideRecord
      * @returns {boolean} True if there are more records in the query set..
      */
     _next(): boolean;
     /**
-     * Identical to query(). This method is intended to be used on tables where there is a column named query, which would interfere with using the query() method.
+     * Identical toï¿½query(). This method is intended to be used on tables where there is a column named query, which would interfere with using theï¿½query()ï¿½method.
      * @memberof GlideRecord
      * @param {*} name - Column name on which to query
      * @param {*} value - Value for which to query
@@ -5036,1621 +6915,4 @@ declare class Workflow {
      * @returns {string} The logged message.
      */
     warn(message: string, args: any): string;
-}
-
-declare namespace Packages {
-    export namespace java {
-        export namespace lang {
-            /**
-             * Java String object.
-             * @export
-             * @interface String
-             */
-            export interface String {
-                /**
-                 * Returns the char value at the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                charAt(index: Integer): number;
-                /**
-                 * Returns the character (Unicode code point) at the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                codePointAt(index: Integer): number;
-                /**
-                 * Returns the character (Unicode code point) before the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                codePointBefore(index: Integer): number;
-                /**
-                 * Returns the number of Unicode code points in the specified text range of this String.
-                 * @param {number} beginIndex -
-                 * @param {number} endIndex -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                codePointCount(beginIndex: number, endIndex: number): number;
-                /**
-                 * Compares two strings lexicographically.
-                 * @param {String} anotherString -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                compareTo(anotherString: String): number;
-                /**
-                 * Compares two strings lexicographically, ignoring case differences.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                compareToIgnoreCase(str: String): number;
-                /**
-                 * Concatenates the specified string to the end of this string.
-                 * @param {String} str -
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                concat(str: String): String;
-                /**
-                 * Tests if this string ends with the specified suffix.
-                 * @param {String} suffix -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                endsWith(suffix: String): boolean;
-                /**
-                 * Compares this string to the specified object.
-                 * @param {*} anObject -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                equals(anObject: any): boolean;
-                /**
-                 * Compares this String to another String, ignoring case considerations.
-                 * @param {String} anotherString -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                equalsIgnoreCase(anotherString: String): boolean;
-                /**
-                 * Encodes this String into a sequence of bytes using the platform's default charset, storing the result into a new byte array.
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
-                 */
-                getBytes(): IJavaArray<number>;
-                /**
-                 * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
-                 * @param {String} charsetName -
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
-                 */
-                getBytes(charsetName: String): IJavaArray<number>;
-                /**
-                 * Copies characters from this string into the destination character array.
-                 * @param {number} srcBegin -
-                 * @param {number} srcEnd -
-                 * @param {IJavaArray<number>} dst -
-                 * @param {number} dstBegin -
-                 * @memberof {String}
-                 */
-                getChars(srcBegin: number, srcEnd: number, dst: IJavaArray<number>, dstBegin: number): void;
-                /**
-                 * Returns a hash code for this string.
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the index within this string of the first occurrence of the specified character.
-                 * @param {number} ch -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                indexOf(ch: number): number;
-                /**
-                 * Returns the index within this string of the first occurrence of the specified character, starting the search at the specified index.
-                 * @param {number} ch -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                indexOf(ch: number, fromIndex: number): number;
-                /**
-                 * Returns the index within this string of the first occurrence of the specified substring.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                indexOf(str: String): number;
-                /**
-                 * Returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
-                 * @param {String} str -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                indexOf(str: String, fromIndex: number): number;
-                /**
-                 * Returns a canonical representation for the string object.
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                intern(): String;
-                /**
-                 * Returns true if, and only if, length() is 0.
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                isEmpty(): boolean;
-                /**
-                 * Returns the index within this string of the last occurrence of the specified character.
-                 * @param {number} ch -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                lastIndexOf(ch: number): number;
-                /**
-                 * Returns the index within this string of the last occurrence of the specified character, searching backward starting at the specified index.
-                 * @param {number} ch -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                lastIndexOf(ch: number, fromIndex: number): number;
-                /**
-                 * Returns the index within this string of the last occurrence of the specified substring.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                lastIndexOf(str: String): number;
-                /**
-                 * Returns the index within this string of the last occurrence of the specified substring, searching backward starting at the specified index.
-                 * @param {String} str -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                lastIndexOf(str: String, fromIndex: number): number;
-                /**
-                 * Returns the length of this string.
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                length(): number;
-                /**
-                 * Tells whether or not this string matches the given regular expression.
-                 * @param {String} regex -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                matches(regex: String): boolean;
-                /**
-                 * Returns the index within this String that is offset from the given index by codePointOffset code points.
-                 * @param {number} index -
-                 * @param {number} codePointOffset -
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                offsetByCodePoints(index: Integer, codePointOffset: number): number;
-                /**
-                 * Tests if two string regions are equal.
-                 * @param {boolean} ignoreCase -
-                 * @param {number} toffset -
-                 * @param {String} other -
-                 * @param {number} ooffset -
-                 * @param {number} len -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                regionMatches(ignoreCase: boolean, toffset: number, other: String, ooffset: number, len: number): boolean;
-                /**
-                 * Tests if two string regions are equal.
-                 * @param {number} toffset -
-                 * @param {String} other -
-                 * @param {number} ooffset -
-                 * @param {number} len -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                regionMatches(toffset: number, other: String, ooffset: number, len: number): boolean;
-                /**
-                 * Returns a new string resulting from replacing all occurrences of oldChar in this string with newChar.
-                 * @param {number} oldChar -
-                 * @param {number} newChar -
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                replace(oldChar: number, newChar: number): String;
-                /**
-                 * Replaces each substring of this string that matches the given regular expression with the given replacement.
-                 * @param {String} regex -
-                 * @param {String} replacement -
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                replaceAll(regex: String, replacement: String): String;
-                /**
-                 * Replaces the first substring of this string that matches the given regular expression with the given replacement.
-                 * @param {String} regex -
-                 * @param {String} replacement -
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                replaceFirst(regex: String, replacement: String): String;
-                /**
-                 * Splits this string around matches of the given regular expression.
-                 * @param {String} regex -
-                 * @returns {IJavaArray<String>}
-                 * @memberof {String}
-                 */
-                split(regex: String): IJavaArray<String>;
-                /**
-                 * Splits this string around matches of the given regular expression.
-                 * @param {String} regex -
-                 * @param {number} limit -
-                 * @returns {IJavaArray<String>}
-                 * @memberof {String}
-                 */
-                split(regex: String, limit: number): IJavaArray<String>;
-                /**
-                 * Tests if this string starts with the specified prefix.
-                 * @param {String} prefix -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                startsWith(prefix: String): boolean;
-                /**
-                 * Tests if the substring of this string beginning at the specified index starts with the specified prefix.
-                 * @param {String} prefix -
-                 * @param {number} toffset -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                startsWith(prefix: String, toffset: number): boolean;
-                /**
-                 * Returns a new string that is a substring of this string.
-                 * @param {number} beginIndex -
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                substring(beginIndex: number): String;
-                /**
-                 * Returns a new string that is a substring of this string.
-                 * @param {number} beginIndex -
-                 * @param {number} endIndex -
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                substring(beginIndex: number, endIndex: number): String;
-                /**
-                 * Converts this string to a new character array.
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
-                 */
-                toCharArray(): IJavaArray<number>;
-                /**
-                 * Converts all of the characters in this String to lower case using the rules of the default locale.
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                toLowerCase(): String;
-                /**
-                 * This object (which is already a string!) is itself returned.
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                toString(): String;
-                /**
-                 * Converts all of the characters in this String to upper case using the rules of the default locale.
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                toUpperCase(): String;
-                /**
-                 * Returns a copy of the string, with leading and trailing whitespace omitted.
-                 * @returns {String}
-                 * @memberof {String}
-                 */
-                trim(): String;
-            }
-            /**
-             * Java Character object.
-             * @export
-             * @interface Character
-             */
-            export interface Character {
-                /**
-                 * Returns the value of this Character object.
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                charValue(): number;
-                /**
-                 * Compares two Character objects numerically.
-                 * @param {Character} anotherCharacter -
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                compareTo(anotherCharacter: Character): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {*} obj -
-                 * @returns {boolean}
-                 * @memberof {Character}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns a hash code for this Character; equal to the result of invoking charValue().
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns a String object representing this Character's value.
-                 * @returns {String}
-                 * @memberof {Character}
-                 */
-                toString(): String;
-            }
-            /**
-             * Java Number base object.
-             * @export
-             * @interface Number
-             */
-            export interface Number { }
-            export interface Boolean {
-                /**
-                 * Returns the value of this Boolean object as a boolean primitive.
-                 * @returns {boolean}
-                 * @memberof {Boolean}
-                 */
-                booleanValue(): boolean;
-                /**
-                 * Compares this Boolean instance with another.
-                 * @param {Boolean} b -
-                 * @returns {number}
-                 * @memberof {Boolean}
-                 */
-                compareTo(b: Boolean): number;
-                /**
-                 * Returns true if and only if the argument is not null and is a Boolean object that represents the same boolean value as this object.
-                 * @param {*} obj -
-                 * @returns {boolean}
-                 * @memberof {Boolean}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns a hash code for this Boolean object.
-                 * @returns {number}
-                 * @memberof {Boolean}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns a String object representing this Boolean's value.
-                 * @returns {String}
-                 * @memberof {Boolean}
-                 */
-                toString(): String;
-            }
-            /**
-             * Java Integer object.
-             * @export
-             * @extends {Number}
-             * @interface Integer
-             */
-            export interface Integer extends Number {
-                /**
-                 * Returns the value of this Integer as a byte.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                byteValue(): number;
-                /**
-                 * Compares two Integer objects numerically.
-                 * @param {Integer} anotherInteger -
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                compareTo(anotherInteger: Integer): number;
-                /**
-                 * Returns the value of this Integer as a double.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {*} obj -
-                 * @returns {boolean}
-                 * @memberof {Integer}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns the value of this Integer as a float.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Integer.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Integer as an int.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Integer as a long.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Integer as a short.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Integer's value.
-                 * @returns {String}
-                 * @memberof {Integer}
-                 */
-                toString(): String;
-            }
-            /**
-             * Java Long object.
-             * @export
-             * @interface Long
-             * @extends {Number}
-             */
-            export interface Long extends Number {
-                /**
-                 * Returns the value of this Long as a byte.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                byteValue(): number;
-                /**
-                 * Compares two Long objects numerically.
-                 * @param {Long} anotherLong -
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                compareTo(anotherLong: Long): number;
-                /**
-                 * Returns the value of this Long as a double.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {*} obj -
-                 * @returns {boolean}
-                 * @memberof {Long}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns the value of this Long as a float.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Long.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Long as an int.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Long as a long value.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Long as a short.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Long's value.
-                 * @returns {String}
-                 * @memberof {Long}
-                 */
-                toString(): String;
-            }
-            /**
-             * Java Double object.
-             * @export
-             * @interface Double
-             * @extends {Number}
-             */
-            export interface Double extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Double as a byte (by casting to a byte).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                byteValue(): number;
-                /**
-                 * Compares two Double objects numerically.
-                 * @param {Double} anotherDouble -
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                compareTo(anotherDouble: Double): number;
-                /**
-                 * Returns the double value of this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {*} obj -
-                 * @returns {boolean}
-                 * @memberof {Double}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns the float value of this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Double as an int (by casting to type int).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                intValue(): number;
-                /**
-                 * Returns true if this Double value is infinitely large in magnitude, false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Double}
-                 */
-                isInfinite(): boolean;
-                /**
-                 * Returns true if this Double value is a Not-a-Number (NaN), false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Double}
-                 */
-                isNaN(): boolean;
-                /**
-                 * Returns the value of this Double as a long (by casting to type long).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Double as a short (by casting to a short).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a string representation of this Double object.
-                 * @returns {String}
-                 * @memberof {Double}
-                 */
-                toString(): String;
-            }
-            /**
-             * Java Byte object.
-             * @export
-             * @interface Byte
-             * @extends {Number}
-             */
-            export interface Byte extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Byte as a byte.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                byteValue(): number;
-                /**
-                 * Compares two Byte objects numerically.
-                 * @param {Byte} anotherByte -
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                compareTo(anotherByte: Byte): number;
-                /**
-                 * Returns the value of this Byte as a double.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {*} obj -
-                 * @returns {boolean}
-                 * @memberof {Byte}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns the value of this Byte as a float.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Byte; equal to the result of invoking intValue().
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Byte as an int.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Byte as a long.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Byte as a short.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Byte's value.
-                 * @returns {String}
-                 * @memberof {Byte}
-                 */
-                toString(): String;
-            }
-            /**
-             * Java Float object.
-             * @export
-             * @interface Float
-             * @extends {Number}
-             */
-            export interface Float extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Float as a byte (by casting to a byte).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                byteValue(): number;
-                /**
-                 * Compares two Float objects numerically.
-                 * @param {Float} anotherFloat -
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                compareTo(anotherFloat: Float): number;
-                /**
-                 * Returns the double value of this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {*} obj -
-                 * @returns {boolean}
-                 * @memberof {Float}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns the float value of this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Float as an int (by casting to type int).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                intValue(): number;
-                /**
-                 * Returns true if this Float value is infinitely large in magnitude, false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Float}
-                 */
-                isInfinite(): boolean;
-                /**
-                 * Returns true if this Float value is a Not-a-Number (NaN), false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Float}
-                 */
-                isNaN(): boolean;
-                /**
-                 * Returns value of this Float as a long (by casting to type long).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Float as a short (by casting to a short).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a string representation of this Float object.
-                 * @returns {String}
-                 * @memberof {Float}
-                 */
-                toString(): String;
-            }
-            /**
-             * Java Short object.
-             * @export
-             * @interface Short
-             * @extends {Number}
-             */
-            export interface Short extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Short as a byte.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                byteValue(): number;
-                /**
-                 * Compares two Short objects numerically.
-                 * @param {Short} anotherShort -
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                compareTo(anotherShort: Short): number;
-                /**
-                 * Returns the value of this Short as a double.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {*} obj -
-                 * @returns {boolean}
-                 * @memberof {Short}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns the value of this Short as a float.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Short; equal to the result of invoking intValue().
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Short as an int.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Short as a long.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Short as a short.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Short's value.
-                 * @returns {String}
-                 * @memberof {Short}
-                 */
-                toString(): String;
-            }
-        }
-        export namespace util {
-            export interface Iterable<E> {
-                /**
-                 * Returns an iterator over the elements in this collection in proper sequence.
-                 * @returns {Iterator<E>}
-                 */
-                iterator(): Iterator<E>;
-            }
-
-            /**
-             * Java Collection interface.
-             * @export
-             * @interface Collection<T>
-             */
-            export interface Collection<E> extends Iterable<E> {
-                /**
-                 * Ensures that this collection contains the specified element(optional operation).
-                 */
-                add(e: E): boolean;
-                //Adds all of the elements in the specified collection to this collection(optional operation).
-                /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator (optional operation).
-                 * @returns {boolean}
-                 */
-                addAll(c: Collection<E>): boolean;
-                //Removes all of the elements from this collection(optional operation).
-                /**
-                 * Removes all of the elements from this list (optional operation).
-                 */
-                clear(): void;
-                //Returns true if this collection contains the specified element.
-                /**
-                 * Returns true if this set contains the specified element.
-                 * @returns {boolean}
-                 */
-                contains(o: any): boolean;
-                //Returns true if this collection contains all of the elements in the specified collection.
-                /**
-                 * Returns true if this set contains all of the elements of the specified collection.
-                 * @returns {boolean}
-                 */
-                containsAll(c: Collection<any>): boolean;
-                //Compares the specified object with this collection for equality.
-                /**
-                 * Returns true if this list contains the specified element.
-                 * @returns {boolean}
-                 */
-                contains(o: any): boolean;
-                //Returns the hash code value for this collection.
-                /**
-                 * Returns the hash code value for this list.
-                 * @returns {lang.Integer}
-                 */
-                hashCode(): lang.Integer;
-                //Returns true if this collection contains no elements.
-                /**
-                 * Returns true if this list contains no elements.
-                 * @returns {boolean}
-                 */
-                isEmpty(): boolean;
-                /**
-                 * Removes a single instance of the specified element from this collection, if it is present(optional operation).
-                 * @returns {boolean}
-                 */
-                remove(o: any): boolean;
-                //Removes all of this collection's elements that are also contained in the specified collection (optional operation).
-                /**
-                 * Removes from this list all of its elements that are contained in the specified collection (optional operation).
-                 * @returns {boolean}
-                 */
-                removeAll(c: Collection<any>): boolean;
-                //Retains only the elements in this collection that are contained in the specified collection(optional operation).
-                /**
-                 * Retains only the elements in this list that are contained in the specified collection (optional operation).
-                 * @returns {boolean}
-                 */
-                retainAll(c: Collection<any>): boolean;
-                //Returns the number of elements in this collection.
-                /**
-                 * Returns the number of elements in this list.
-                 * @returns {int}
-                 */
-                size(): lang.Integer;
-                //Returns an array containing all of the elements in this collection.
-                toArray(): IJavaArray<any>;
-                //Returns an array containing all of the elements in this collection; the runtime type of the returned array is that of the specified array.
-                toArray(a: IJavaArray<E>): IJavaArray<E>;
-            }
-            export interface Iterator<E> {
-                /**
-                 * Returns true if the iteration has more elements.
-                 * @returns {boolean}
-                 */
-                hasNext(): boolean;
-                /**
-                 * Returns the next element in the iteration.
-                 * @returns {E}
-                 */
-                next(): E;
-                /**
-                 * Removes from the underlying collection the last element returned by this iterator (optional operation).
-                 */
-                remove(): void;
-            }
-            export interface ListIterator<E> extends Iterator<E> {
-                /**
-                 * Inserts the specified element into the list (optional operation).
-                 */
-                add(e: E): void;
-                /**
-                 * Returns true if this list iterator has more elements when traversing the list in the reverse direction.
-                 * @returns {boolean}
-                 */
-                hasPrevious(): boolean;
-                /**
-                 * Returns the index of the element that would be returned by a subsequent call to next().
-                 * @returns {int}
-                 */
-                nextIndex(): lang.Integer;
-                /**
-                 * Returns the previous element in the list and moves the cursor position backwards.
-                 * @returns {E}
-                 */
-                previous(): E;
-                /**
-                 * Returns the index of the element that would be returned by a subsequent call to previous().
-                 * @returns {int}
-                 */
-                previousIndex(): lang.Integer;
-                /**
-                 * Replaces the last element returned by next() or previous() with the specified element (optional operation).
-                 */
-                set(e: E): void;
-            }
-            export interface List<E> extends Collection<E> {
-                /**
-                 * Ensures that this collection contains the specified element(optional operation).
-                 */
-                add(e: E): boolean;
-                /**
-                 * Inserts the specified element at the specified position in this list (optional operation).
-                 */
-                add(index: lang.Integer, element: E): void;
-                /**
-                 * Inserts the specified element at the specified position in this list (optional operation).
-                 */
-                add(index: lang.Integer, element: E): void;
-                /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator (optional operation).
-                 * @returns {boolean}
-                 */
-                addAll(c: Collection<E>): boolean;
-                /**
-                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
-                 * @returns {boolean}
-                 */
-                addAll(index: lang.Integer, c: Collection<E>): boolean;
-                ///**
-                // * Removes all of the elements from this list (optional operation).
-                // */
-                //clear(): void;
-                ///**
-                // * Returns true if this list contains the specified element.
-                // * @returns {boolean}
-                // */
-                //    contains(o: any): boolean;
-                /**
-                 * Returns true if this list contains all of the elements of the specified collection.
-                 * @returns {boolean}
-                 */
-                containsAll(c: Collection<any>): boolean;
-                /**
-                 * Compares the specified object with this list for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: any): boolean;
-                /**
-                 * Returns the element at the specified position in this list.
-                 * @returns {E}
-                 */
-                get(index: lang.Integer): E;
-                ///**
-                // * Returns the hash code value for this list.
-                // * @returns {lang.Integer}
-                // */
-                //    hashCode(): lang.Integer;
-                /**
-                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                indexOf(o: any): lang.Integer;
-                ///**
-                // * Returns true if this list contains no elements.
-                // * @returns {boolean}
-                // */
-                //isEmpty(): boolean;
-                ///**
-                // * Returns an iterator over the elements in this list in proper sequence.
-                // * @returns {Iterator<E>}
-                // */
-                //iterator(): Iterator<E>;
-                /**
-                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                lastIndexOf(o: any): lang.Integer;
-                /**
-                 * Returns a list iterator over the elements in this list (in proper sequence).
-                 * @returns {ListIterator<E>}
-                 */
-                listIterator(): ListIterator<E>;
-                /**
-                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
-                 * @returns {ListIterator<E>}
-                 */
-                listIterator(index: lang.Integer): ListIterator<E>;
-                /**
-                 * Removes the element at the specified position in this list (optional operation).
-                 * @returns {E}
-                 */
-                remove(index: lang.Integer): E;
-                /**
-                 * Removes the first occurrence of the specified element from this list, if it is present (optional operation).
-                 * @returns {boolean}
-                 */
-                remove(o: any): boolean;
-                ///**
-                // * Removes from this list all of its elements that are contained in the specified collection (optional operation).
-                // * @returns {boolean}
-                // */
-                //removeAll(Collection < any > c): boolean;
-                ///**
-                // * Retains only the elements in this list that are contained in the specified collection (optional operation).
-                // * @returns {boolean}
-                // */
-                //retainAll(Collection < any > c): boolean;
-                /**
-                 * Replaces the element at the specified position in this list with the specified element (optional operation).
-                 * @returns {E}
-                 */
-                set(index: lang.Integer, element: E): E;
-                ///**
-                // * Returns the number of elements in this list.
-                // * @returns {int}
-                // */
-                //    size(): lang.Integer;
-                /**
-                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
-                 * @returns {List<E>}
-                 */
-                subList(fromIndex: lang.Integer, toIndex: lang.Integer): List<E>;
-            }
-            export interface AbstractCollection<E> extends Collection<E>  {
-                //Ensures that this collection contains the specified element(optional operation).
-                /**
-                 * Appends the specified element to the end of this list (optional operation).
-                 * @returns {boolean}
-                 */
-                add(e: E): boolean;
-                //Adds all of the elements in the specified collection to this collection(optional operation).
-                /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
-                 * @returns {boolean}
-                 */
-                addAll(c: Collection<E>): boolean;
-                //Removes all of the elements from this collection(optional operation).
-                /**
-                 * Removes all of the elements from this list (optional operation).
-                 */
-                clear(): void;
-                //Returns true if this collection contains the specified element.
-                /**
-                 * Returns true if this list contains the specified element.
-                 * @returns {boolean}
-                 */
-                contains(o: any): boolean;
-                //Returns true if this collection contains all of the elements in the specified collection.
-                containsAll(c: Collection<any>): boolean;
-                //Compares the specified object with this collection for equality.
-                /**
-                 * Compares the specified object with this list for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: any): boolean;
-                //Returns the hash code value for this collection.
-                hashCode(): lang.Integer;
-                //Returns true if this collection contains no elements.
-                /**
-                 * Returns true if this list contains no elements.
-                 * @returns {boolean}
-                 */
-                isEmpty(): boolean;
-                /**
-                 * Returns an iterator over the elements in this list in proper sequence.
-                 * @returns {Iterator<E>}
-                 */
-                iterator(): Iterator<E>;
-                //Removes a single instance of the specified element from this collection, if it is present(optional operation).
-                /**
-                 * Removes the first occurrence of the specified element from this list, if it is present.
-                 * @returns {boolean}
-                 */
-                remove(o: any): boolean;
-                //Removes all of this collection's elements that are also contained in the specified collection (optional operation).
-                /**
-                 * Removes from this list all of its elements that are contained in the specified collection.
-                 * @returns {boolean}
-                 */
-                removeAll(c: Collection<any>): boolean;
-                //Retains only the elements in this collection that are contained in the specified collection(optional operation).
-                /**
-                 * Retains only the elements in this list that are contained in the specified collection.
-                 * @returns {boolean}
-                 */
-                retainAll(c: Collection<any>): boolean;
-                //Returns the number of elements in this collection.
-                /**
-                 * Returns the number of elements in this list.
-                 * @returns {int}
-                 */
-                size(): lang.Integer;
-                //Returns an array containing all of the elements in this collection.
-                /**
-                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
-                 * @returns {IJavaArray<any>}
-                 */
-                toArray(): IJavaArray<any>;
-                //Returns an array containing all of the elements in this collection; the runtime type of the returned array is that of the specified array.
-                /**
-                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element); the runtime type of the returned array is that of the specified array.
-                 * @returns {IJavaArray<E>}
-                 */
-                toArray(a: IJavaArray<E>): IJavaArray<E>;
-                toString(): lang.String;
-            }
-            export interface AbstractList<E> extends AbstractCollection<E> {
-                /**
-                 * Appends the specified element to the end of this list (optional operation).
-                 * @returns {boolean}
-                 */
-                add(e: E): boolean;
-                /**
-                 * Inserts the specified element at the specified position in this list (optional operation).
-                 */
-                add(index: lang.Integer, element: E): void;
-                /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
-                 * @returns {boolean}
-                 */
-                addAll(c: Collection<E>): boolean;
-                /**
-                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
-                 * @returns {boolean}
-                 */
-                addAll(index: lang.Integer, c: Collection<E>): boolean;
-                /**
-                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                indexOf(o: any): lang.Integer;
-                /**
-                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                lastIndexOf(o: any): lang.Integer;
-                /**
-                 * Returns a list iterator over the elements in this list (in proper sequence).
-                 * @returns {ListIterator<E>}
-                 */
-                listIterator(): ListIterator<E>;
-                /**
-                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
-                 * @returns {ListIterator<E>}
-                 */
-                listIterator(index: lang.Integer): ListIterator<E>;
-                /**
-                 * Removes the element at the specified position in this list (optional operation).
-                 * @returns {E}
-                 */
-                remove(index: lang.Integer): E;
-                /**
-                 * Removes the first occurrence of the specified element from this list, if it is present.
-                 * @returns {boolean}
-                 */
-                remove(o: any): boolean;
-                /**
-                 * Replaces the element at the specified position in this list with the specified element (optional operation).
-                 * @returns {E}
-                 */
-                set(index: lang.Integer, element: E): E;
-                /**
-                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
-                 * @returns {List<E>}
-                 */
-                subList(fromIndex: lang.Integer, toIndex: lang.Integer): List<E>;
-            }
-            export interface ArrayList<E> extends AbstractList<E> {
-                /**
-                 * Returns a shallow copy of this ArrayList instance.
-                 * @returns {*}
-                 */
-                clone(): any;
-                ///**
-                // * Returns true if this list contains the specified element.
-                // * @returns {boolean}
-                // */
-                //contains(o: any): boolean;
-                /**
-                 * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
-                 */
-                ensureCapacity(minCapacity: lang.Integer | number): void;
-                /**
-                 * Returns the element at the specified position in this list.
-                 * @returns {E}
-                 */
-                get(index: lang.Integer | number): E;
-                /**
-                 * Trims the capacity of this ArrayList instance to be the list's current size.
-                 */
-                trimToSize(): void;
-            }
-            export interface MapEntry<K, V> {
-                /**
-                 * Compares the specified object with this entry for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: any): boolean;
-                /**
-                 * Returns the key corresponding to this entry.
-                 * @returns {K}
-                 */
-                getKey(): K;
-                /**
-                 * Returns the value corresponding to this entry.
-                 * @returns {V}
-                 */
-                getValue(): V;
-                /**
-                 * Returns the hash code value for this map entry.
-                 * @returns {int}
-                 */
-                hashCode(): lang.Integer;
-                /**
-                 * Replaces the value corresponding to this entry with the specified value (optional operation).
-                 * @returns {V}
-                 */
-                setValue(value: V): V;
-            }
-            export interface Set<E> extends Collection<E> { }
-            export interface Map<K, V> {
-                /**
-                 * Removes all of the mappings from this map (optional operation).
-                 */
-                clear(): void;
-                /**
-                 * Returns true if this map contains a mapping for the specified key.
-                 * @returns {boolean}
-                 */
-                containsKey(key: any): boolean;
-                /**
-                 * Returns true if this map maps one or more keys to the specified value.
-                 * @returns {boolean}
-                 */
-                containsValue(value: any): boolean;
-                /**
-                 * Returns a Set view of the mappings contained in this map.
-                 * @returns {Set<Map.Entry<K,V>>}
-                 */
-                entrySet(): Set<MapEntry<K, V>>;
-                /**
-                 * Compares the specified object with this map for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: any): boolean;
-                /**
-                 * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
-                 * @returns {V}
-                 */
-                get(key: any): V;
-                /**
-                 * Returns the hash code value for this map.
-                 * @returns {int}
-                 */
-                hashCode(): lang.Integer;
-                /**
-                 * Returns true if this map contains no key-value mappings.
-                 * @returns {boolean}
-                 */
-                isEmpty(): boolean;
-                /**
-                 * Returns a Set view of the keys contained in this map.
-                 * @returns {Set<K>}
-                 */
-                keySet(): Set<K>;
-                /**
-                 * Associates the specified value with the specified key in this map (optional operation).
-                 * @returns {V}
-                 */
-                put(key: K, value: V): V;
-                /**
-                 * Copies all of the mappings from the specified map to this map (optional operation).
-                 */
-                putAll(m: Map<K, V>): void;
-                /**
-                 * Removes the mapping for a key from this map if it is present (optional operation).
-                 * @returns {V}
-                 */
-                remove(key: any): V;
-                /**
-                 * Returns the number of key-value mappings in this map.
-                 * @returns {int}
-                 */
-                size(): lang.Integer;
-                /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
-                 */
-                values(): Collection<V>;
-            }
-            export interface AbstractMap<K, V> extends Map<K, V> {
-                /**
-                 * Removes all of the mappings from this map (optional operation).
-                 */
-                clear(): void;
-                /**
-                 * Returns true if this map contains a mapping for the specified key.
-                 * @returns {boolean}
-                 */
-                containsKey(key: any): boolean;
-                /**
-                 * Returns true if this map maps one or more keys to the specified value.
-                 * @returns {boolean}
-                 */
-                containsValue(value: any): boolean;
-                /**
-                 * Returns a Set view of the mappings contained in this map.
-                 * @returns {Set<Map.Entry<K,V>>}
-                 */
-                entrySet(): Set<MapEntry<K, V>>;
-                /**
-                 * Compares the specified object with this map for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: any): boolean;
-                /**
-                 * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
-                 * @returns {V}
-                 */
-                get(key: any): V;
-                /**
-                 * Returns the hash code value for this map.
-                 * @returns {int}
-                 */
-                hashCode(): lang.Integer;
-                /**
-                 * Returns true if this map contains no key-value mappings.
-                 * @returns {boolean}
-                 */
-                isEmpty(): boolean;
-                /**
-                 * Returns a Set view of the keys contained in this map.
-                 * @returns {Set<K>}
-                 */
-                keySet(): Set<K>;
-                /**
-                 * Associates the specified value with the specified key in this map (optional operation).
-                 * @returns {V}
-                 */
-                put(key: K, value: V): V;
-                /**
-                 * Copies all of the mappings from the specified map to this map (optional operation).
-                 */
-                putAll(m: Map<K, V>): void;
-                /**
-                 * Removes the mapping for a key from this map if it is present (optional operation).
-                 * @returns {V}
-                 */
-                remove(key: any): V;
-                /**
-                 * Returns the number of key-value mappings in this map.
-                 * @returns {int}
-                 */
-                size(): lang.Integer;
-                /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
-                 */
-                values(): Collection<V>;
-            }
-            export interface HashMap<K, V> extends AbstractMap<K, V> {
-                /**
-                 * Constructs an empty HashMap with the default initial capacity (16) and the default load factor (0.75).
-                 * @constructor
-                 */
-                constructor();
-                /**
-                 * Constructs an empty HashMap with the specified initial capacity and the default load factor (0.75).
-                 * @returns {constructor}
-                 */
-                constructor(initialCapacity: lang.Integer);
-                /**
-                 * Constructs an empty HashMap with the specified initial capacity and load factor.
-                 * @returns {constructor}
-                 */
-                constructor(initialCapacity: lang.Integer, loadFactor: lang.Float);
-                /**
-                 * Constructs a new HashMap with the same mappings as the specified Map.
-                 * @returns {constructor}
-                 */
-                constructor(m: Map<K, V>);
-                /**
-                 * Returns a shallow copy of this HashMap instance: the keys and values themselves are not cloned.
-                 * @returns {*}
-                 */
-                clone(): any;
-                /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
-                 */
-                values(): Collection<V>;
-            }
-            export type AbstractSet<E> = AbstractCollection<E> | Set<E>;
-            export type HashSet<E> = AbstractSet<E>;
-            /**
-             * Java Date object.
-             * @export
-             * @interface Date
-             */
-            export interface Date {
-                /**
-                 * Tests if this date is after the specified date.
-                 * @returns {boolean}
-                 */
-                after(when: Date): boolean;
-                /**
-                 * Tests if this date is before the specified date.
-                 * @returns {boolean}
-                 */
-                before(when: Date): boolean;
-                /**
-                 * Return a copy of this object.
-                 * @returns {*}
-                 */
-                clone(): any;
-                /**
-                 * Compares two Dates for ordering.
-                 * @returns {int}
-                 */
-                compareTo(anotherDate: Date): lang.Integer;
-                /**
-                 * Compares two dates for equality.
-                 * @returns {boolean}
-                 */
-                equals(obj: any): boolean;
-                /**
-                 * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this Date object.
-                 * @returns {long}
-                 */
-                getTime(): lang.Long;
-                /**
-                 * Returns a hash code value for this object.
-                 * @returns {int}
-                 */
-                hashCode(): lang.Integer;
-                /**
-                 * Sets this Date object to represent a point in time that is time milliseconds after January 1, 1970 00:00:00 GMT.
-                 */
-                setTime(time: lang.Long): void;
-            }
-            /**
-             * Represents a time zone offset, and also figures out daylight savings.
-             * @interface TimeZone
-             */
-            export interface TimeZone {
-                /**
-                 * Creates a copy of this TimeZone.
-                 * @returns {TimeZone}
-                 * @memberof TimeZone
-                 */
-                clone(): TimeZone;
-
-                /**
-                 * Returns the amount of time to be added to local standard time to get local wall clock time.
-                 * @returns {int}
-                 * @memberof TimeZone
-                 */
-                getDSTSavings(): lang.Integer;
-
-                /**
-                 * Returns a long standard time name of this TimeZone suitable for presentation to the user in the default locale.
-                 * @returns {string}
-                 * @memberof TimeZone
-                 */
-                getDisplayName(): lang.String;
-
-                /**
-                 * Returns a name in the specified style of this TimeZone suitable for presentation to the user in the default locale. If the specified daylight is true, a Daylight Saving Time name is returned (even if this TimeZone doesn't observe Daylight Saving Time). Otherwise, a Standard Time name is returned.
-                 * @param {boolean} daylight
-                 * @param {int} style
-                 * @memberof TimeZone
-                 */
-                getDisplayName(daylight: boolean, style: lang.Integer);
-
-                /**
-                 * Gets the ID of this time zone.
-                 * @returns {string}
-                 * @memberof TimeZone
-                 */
-                getID(): lang.String;
-
-                /**
-                 * Returns the offset of this time zone from UTC at the specified date. If Daylight Saving Time is in effect at the specified date, the offset value is adjusted with the amount of daylight saving.
-                 * @param {long} date
-                 * @returns {int}
-                 * @memberof TimeZone
-                 */
-                getOffset(date: lang.Long): lang.Integer;
-
-                /**
-                 * Gets the time zone offset, for current date, modified in case of daylight savings. This is the offset to add to UTC to get local time.
-                 * @param {int} era
-                 * @param {int} year
-                 * @param {int} month
-                 * @param {int} day
-                 * @param {int} dayOfWeek
-                 * @param {int} milliseconds
-                 * @returns {int}
-                 * @memberof TimeZone
-                 */
-                getOffset(era: lang.Integer, year: lang.Integer, month: lang.Integer, day: lang.Integer, dayOfWeek: lang.Integer, milliseconds: lang.Integer): lang.Integer;
-
-                /**
-                 * Returns true if this zone has the same rule and offset as another zone. That is, if this zone differs only in ID, if at all. Returns false if the other zone is null.
-                 * @param {TimeZone} other
-                 * @memberof TimeZone
-                 */
-                hasSameRules(other: TimeZone): boolean;
-
-                /**
-                 * Returns true if this TimeZone is currently in Daylight Saving Time, or if a transition from Standard Time to Daylight Saving Time occurs at any future time.
-                 * @returns {boolean}
-                 * @memberof TimeZone
-                 */
-                observesDaylightTime(): boolean;
-
-                /**
-                 * Sets the time zone ID. This does not change any other data in the time zone object.
-                 * @param {string} id
-                 * @memberof TimeZone
-                 */
-                setID(id: lang.String);
-
-                /**S
-                 * Queries if this TimeZone uses Daylight Saving Time.
-                 * @returns {boolean}
-                 * @memberof TimeZone
-                 */
-                useDaylightTime(): boolean;
-            }
-        }
-    }
 }
