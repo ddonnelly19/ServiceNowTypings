@@ -1,291 +1,965 @@
-declare type Nullable<T> = T | null;
-declare type Nilable<T> = T extends string ? T | "" | null | undefined : T | null | undefined;
-declare type Defined<T> = T extends undefined ? never : T;
-declare type DefinedAndNotNull<T> = T extends undefined | null ? never : T;
-declare type NonNilable<T> = T extends "" | null | undefined ? never : T;
-
-declare type StringOrEmpty<T extends string> = T extends undefined | null ? never : T | "";
-declare type NonEmptyString<T> = T extends undefined | null | "" ? never : T;
-declare type BooleanString = "true" | "false";
-declare type BooleanstringOrEmpty = StringOrEmpty<BooleanString>;
-declare type NilableBooleanString = Nilable<BooleanString>;
-
-declare type BooleanLike = BooleanString | boolean;
-declare type BooleanLikeOrEmpty = BooleanstringOrEmpty | boolean;
-declare type NilableBooleanLike = NilableBooleanString | boolean;
-
-declare type NumberLike<N extends number, S extends string> = N | S;
-declare type NumberLikeOrEmpty<N extends number, S extends string> = N | StringOrEmpty<S>;
-declare type NullableNumberLike<N extends number, S extends string> = N | Nilable<S>;
-declare type JavaStringLike = Packages.java.lang.String | Packages.java.lang.Character;
-declare type JavaNumber = Packages.java.lang.Integer | Packages.java.lang.Long | Packages.java.lang.Double | Packages.java.lang.Byte | Packages.java.lang.Float | Packages.java.lang.Short;
-
-declare type AnyBoolean = BooleanLike | Packages.java.lang.Boolean;
-declare type AnyString = string | JavaStringLike;
-declare type AnyNumber = number | string | JavaNumber;
-
-declare interface IGlideDbObject {
+declare namespace JS {
     /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof GlideElement
+     * Utility type for a string value that is equivalent to a boolean value.
+     * @typedef {("true" | "false")} BooleanString
      */
-    canCreate(): boolean;
+    export type BooleanString = "true" | "false";
+    export type BooleanLike = boolean | BooleanString;
+    export type BooleanLikeOrEmpty = BooleanLike | "";
+    export type NilableBooleanLike = BooleanLikeOrEmpty | null | undefined;
+    export type NumberLike<N extends number, S extends ExcludeEmptyString<string>> = N | S;
+    export type NumberLikeOrEmpty<N extends number, S extends ExcludeEmptyString<string>> = N | S | "";
+    export type NilableNumberLike<N extends number, S extends ExcludeEmptyString<string>> = N | S | "" | null | undefined;
 
     /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof GlideElement
+     * Utility type to include a null type and exclude any undefined type.
+     * @typedef {(null | (T extends undefined ? never : T))} Nullable
+     * @template T - The type of value that is to include null type and exclude any undefined type.
      */
-    canRead(): boolean;
+    export type Nullable<T> = null | (T extends undefined ? never : T);
 
     /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof GlideElement
+     * Utility type to include null and undefined types.
+     * @typedef {(undefined | null | T)} Nilable
+     * @template T - The type of value that is to include null and undefined types.
      */
-    canWrite(): boolean;
+    export type Nilable<T> = undefined | null | T;
 
     /**
-     * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof GlideElement
+     * Utility type to include null and undefined types as well as the empty string type.
+     * @typedef {(Nilable<T> | "")} NilableOrEmptyString
+     * @template T - The type of value that is to include null and undefined types as well as the empty string type.
      */
-    getDisplayValue(maxCharacters?: number): string;
+    export type NilableOrEmptyString<T> = Nilable<T> | "";
 
     /**
-     * Gets the current element descriptor.
-     * @returns {Packages.com.glide.db.ElementDescriptor}
-     * @memberof GlideElement
+     * Utility type to exclude null and undefined values.
+     * @typedef {(T extends undefined | null ? never : T)} ExcludeNil
+     * @template T - The type of value that is to exclude null and undefined types.
      */
-    getED(): Packages.com.glide.db.ElementDescriptor;
+    export type ExcludeNil<T> = T extends undefined | null ? never : T;
 
     /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof GlideElement
+     * Utility type to exclude empty primitive javascript string values.
+     * @typedef {(S extends "" ? never : S)} ExcludeEmptyString
+     * @template S - Type of value that is to exclude empty primitive javascript string values.
      */
-    getLabel(): string;
-
-    /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof GlideElement
-     */
-    getTableName(): string;
+    export type ExcludeEmptyString<S> = S extends "" ? never : S;
 }
 
-declare interface IGlideElement extends IGlideDbObject {
+declare namespace RHINO {
     /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @returns {boolean} True if the fields have been changed, false if the field has not.
-     * @memberof GlideElement
+     * Utility type for javascript primitive string values and Java string-like objects.
+     * @typedef {(string | Packages.java.lang.String | Packages.java.lang.Character)} String
      */
-    changes(): boolean;
+    export type String = string | Packages.java.lang.String | Packages.java.lang.Character;
+    /**
+     * Utility type for javascript primitive boolean values and Java Boolean objects.
+     * @typedef {(boolean | Packages.java.lang.Boolean)} Boolean
+     */
+    export type Boolean = boolean | Packages.java.lang.Boolean;
+    export type BooleanLike = JS.BooleanLike | Packages.java.lang.Boolean;
+    /**
+     * Utility type for javascript primitive numbers values and Java Number objects.
+     * @typedef {(number | Packages.java.lang.Number)} Number
+     */
+    export type Number = number | Packages.java.lang.Number;
+    export type NumberLike<N extends number, S extends ExcludeEmptyString<string>> = N | Packages.java.lang.Number | S;
+    /**
+     * Utility type for javascript arrays and Java Collection objects.
+     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     */
+    export type Collection<E> = E[] | Packages.java.util.Collection<E>;
+    /**
+     * Utility type for javascript arrays and Java List objects.
+     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     */
+    export type List<E> = E[] | Packages.java.util.List<E>;
+    /**
+     * Utility type for javascript primitive string values and Java string-like objects that are empty.
+     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     */
+    export type EmptyString = "" | (Packages.java.lang.String & { size(): 0; });
+    /**
+     * Utility type to include empty string values.
+     * @typedef {(S | "")} IncludeEmptyString
+     * @template S - Type of value that is to include empty string values.
+     */
+    export type IncludeEmptyString<S> = S | EmptyString;
+    /**
+     * Utility type to exclude empty string values.
+     * @typedef {(S extends EmptyString ? never : S)} ExcludeEmptyJavaString
+     * @template S - Type of value that is to exclude empty string values.
+     */
+    export type ExcludeEmptyString<S> = S extends EmptyString ? never : S;
+    export type StringValue<S extends string> = S | Packages.java.lang.String;
+}
 
+declare namespace GLIDE {
+    /**
+     * Utility type for javascript primitive boolean values, Java Boolean values string values that represent a boolean value.
+     * @typedef {(RHINO.Boolean | BooleanString)} Boolean
+     */
+    export type Boolean = RHINO.BooleanLike | GlideElementBoolean;
+    export type BooleanOrEmpty = Boolean | RHINO.EmptyString;
+    export type NilableBoolean = BooleanOrEmpty | null | undefined;
+    export type Number<E extends IGlideElement> = RHINO.NumberLike<number, string> | Element<number, E, string>;
+    export type NumberOrEmpty<E extends IGlideElement> = RHINO.Number | Element<number, E, string> | RHINO.EmptyString;
+    export type NilableNumber<E extends IGlideElement> = NumberOrEmpty<E> | null | undefined;
+    export type Numeric = Number<GlideElementNumeric>;
+    export type NumericOrEmpty = NumberOrEmpty<GlideElementNumeric>;
+    export type NilableNumeric = NilableNumber<GlideElementNumeric>;
+
+    export type String = RHINO.String | StringElement;
+    export type NilableString = String | null | undefined;
+    export type NumberValue<N extends number, E extends IGlideElement, S extends string> = RHINO.NumberLike<N, S> | Element<N, E, S>;
+    export type NumberValueOrEmpty<N extends number, E extends IGlideElement, S extends string> = NumberValue<N, E, S> | RHINO.EmptyString;
+    export type NilableNumberValue<N extends number, E extends IGlideElement, S extends string> = NumberValueOrEmpty<N, E, S> | null | undefined;
+    export type NumericValue<N extends number, S extends string> = NumberValue<N, NumericValueElement<N, S>, S>;
+    export type NumericValueOrEmpty<N extends number, S extends string> = NumberValueOrEmpty<N, NumericValueElement<N, S>, S>;
+    export type NilableNumericValue<N extends number, S extends string> = NilableNumberValue<N, NumericValueElement<N, S>, S>;
+    export type StringValue<S extends string, E extends StringValueElement<S, StringElement>> = RHINO.StringValue<S> | StringValueElement<S, E>;
+    export type StringValueOrEmpty<S extends string, E extends StringValueElement<S, StringElement>> = StringValue<S | "", E>;
+    export type NilableStringValue<S extends string, E extends StringValueElement<S, StringElement>> = StringValueOrEmpty<S, E> | null | undefined;
+    export type RecordReference<R extends GlideRecord, E extends RecordReferenceElement<R, IGlideTableProperties>> = RHINO.String | R | E;
+    export type NilableRecordReference<R extends GlideRecord, E extends RecordReferenceElement<R, IGlideTableProperties>> = RecordReference<R, E> | null | undefined;
+
+    export type ElementProperty = StringValue<string, GlideElement>;
+    export type ElementPropertyOrEmpty = StringValueOrEmpty<string, GlideElement>;
+    export type NilableElementProperty = NilableStringValue<string, GlideElement>;
+
+    export type StringElementProperty<E extends StringElement> = StringValue<string, E>;
+    export type StringElementPropertyOrEmpty<E extends StringElement> = StringValueOrEmpty<string, E>;
+    export type NilableStringElementProperty<E extends StringElement> = NilableStringValue<string, E>;
+
+    export type GlideObjectProperty = StringValue<string, GlideElementGlideObject>;
+    export type GlideObjectPropertyOrEmpty = StringValueOrEmpty<string, GlideElementGlideObject>;
+    export type NilableGlideObjectProperty = NilableStringValue<string, GlideElementGlideObject>;
+
+    export type SysClassNameProperty = StringValue<string, GlideElementSysClassName>;
+    export type SysClassNamePropertyOrEmpty = StringValueOrEmpty<string, GlideElementSysClassName>;
+    export type NilableSysClassNameProperty = NilableStringValue<string, GlideElementSysClassName>;
+
+    export type TranslatedFieldProperty = StringValue<string, GlideElementTranslatedField>
+    export type TranslatedFieldPropertyOrEmpty = StringValueOrEmpty<string, GlideElementTranslatedField>;
+    export type NilableTranslatedFieldProperty = NilableStringValue<string, GlideElementTranslatedField>;
+
+    export type ConditionsProperty = StringValue<string, GlideElementConditions>
+    export type ConditionsPropertyOrEmpty = StringValueOrEmpty<string, GlideElementConditions>;
+    export type NilableConditionsProperty = NilableStringValue<string, GlideElementConditions>;
+
+    export type DocumentationProperty = StringValue<string, GlideElementConditions>
+    export type DocumentationPropertyOrEmpty = StringValueOrEmpty<string, GlideElementDocumentation>;
+    export type NilableDocumentationProperty = NilableStringValue<string, GlideElementDocumentation>;
+
+    export type ScriptProperty = StringValue<string, GlideElementScript>
+    export type ScriptPropertyOrEmpty = StringValueOrEmpty<string, GlideElementScript>;
+    export type NilableScriptProperty = NilableStringValue<string, GlideElementScript>;
+
+    export type UserImageProperty = StringValue<string, GlideElementUserImage>
+    export type UserImagePropertyOrEmpty = StringValueOrEmpty<string, GlideElementUserImage>;
+    export type NilableUserImageProperty = NilableStringValue<string, GlideElementUserImage>;
+
+    export type Password2Property = StringValue<string, GlideElementPassword2>
+    export type Password2PropertyOrEmpty = StringValueOrEmpty<string, GlideElementPassword2>;
+    export type NilablePassword2Property = NilableStringValue<string, GlideElementPassword2>;
+
+    /**
+     * Utility type to include empty string values as well as well as null and undefined values.
+     * @typedef {(T | null | undefined | RHINO.EmptyString)} Nilable
+     * @template T - The type of value that is to include null and undefined values as well as empty string-like values.
+     */
+    export type Nilable<T> = T | null | undefined | RHINO.EmptyString;
+    /*
+     * Utility type for a value that is never undefined, null or an empty string-like value.
+     * @typedef {(T extends null | undefined ? never : ExcludeEmptyRhinoString<T>)} ExcludeGlideNil<T>
+     * @template T - The type of value that is to excclude null and undefined values as well as empty string-like values.
+     */
+    export type ExcludeNil<T> = T extends null | undefined ? never : RHINO.ExcludeEmptyString<T>;
+    /**
+     * Defines members that are common to both GlideRecord and GlideElement objects
+     * @export
+     * @interface IDbObject
+     */
+    export interface IDbObject {
+        /**
+         * Determines if the user's role permits the creation of new records in this field.
+         * @memberof IDbObject
+         * @returns {boolean} True if the field can be created, false otherwise..
+         * @description 
+         */
+        canCreate(): boolean;
+        /**
+         * Determines whether the user's role permits them to read the associated GlideRecord.
+         * @memberof IDbObject
+         * @returns {boolean} True if the field can be read, false otherwise..
+         * @description 
+         */
+        canRead(): boolean;
+        /**
+         * Determines whether the user's role permits them to write to the associated GlideRecord.
+         * @memberof IDbObject
+         * @returns {boolean} True if the user can write to the field, false otherwise..
+         * @description 
+         */
+        canWrite(): boolean;
+        /**
+         * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
+         * @memberof IDbObject
+         * @returns {boolean} True if the field has changed, false otherwise..
+         * @description  
+         */
+        changes(): boolean;
+        /**
+         * Returns an element descriptor.
+         * @memberof IDbObject
+         * @returns {GlideElementDescriptor} Field's element descriptor..
+         * @description 
+         */
+        getED(): GlideElementDescriptor;
+        /**
+         * Returns the object's label.
+         * @memberof IDbObject
+         * @returns {string} Object's label.
+         * @description 
+         */
+        getLabel(): string;
+        /**
+         * Returns the name of the field's table.
+         * @memberof IDbObject
+         * @returns {string} Name of the table. This may be different from the table Class that the record is in. See Tables and Classes in the product documentation..
+         * @description 
+         */
+        getTableName(): string;
+    }
+
+    /**
+     *
+     *
+     * @interface IValueElement
+     * @extends {IGlideElement}
+     * @template V
+     * @template E
+     * @template S
+     */
+    export interface IValueElement<V extends string | number | boolean, E extends IGlideElement, S extends string> extends IGlideElement {
+        /**
+         * Determines if the previous value of the current field matches the specified object.
+         * @memberof IValueElement
+         * @param {(V | E | Nilable<S>)} o - An object value to check against the previous value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @description
+         */
+        changesFrom(o: V | E | Nilable<S>): boolean;
+        /**
+         * Determines if the new value of a field, after a change, matches the specified object.
+         * @memberof IValueElement
+         * @param {V | E | Nilable<S>} o - An object value to check against the new value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @description
+         */
+        changesTo(o: V | E | Nilable<S>): boolean;
+        /**
+         * Sets the value of a field.
+         * @memberof IValueElement
+         * @param {V | E | Nilable<S>} value - Object value to set the field to.
+         * @description
+         */
+        setValue(obj: V | E | Nilable<S>): void;
+    }
+
+    export type Element<N extends string | number | boolean, E extends IGlideElement, S extends string> = IValueElement<N, E, S> & E;
+
+    export type NumericValueElement<N extends number, S extends string> = Element<N, GlideElementNumeric, S>;
+
+    export type StringElement = IValueElement<string, IGlideElement, string> & Packages.java.lang.String;
+    export type StringValueElement<S extends string, E extends StringElement> = Element<S, E, S>;
+
+    export class StringBasedElement<V extends string | number, E extends StringBasedElement<V, E, S>, S extends string> extends Packages.java.lang.String implements IValueElement<V, E, S> {
+        /**
+         * Determines if the user's role permits the creation of new records in this field.
+         * @memberof StringBasedElement
+         * @returns {boolean} True if the field can be created, false otherwise..
+         * @description 
+         */
+        canCreate(): boolean;
+        /**
+         * Determines whether the user's role permits them to read the associated GlideRecord.
+         * @memberof StringBasedElement
+         * @returns {boolean} True if the field can be read, false otherwise..
+         * @description 
+         */
+        canRead(): boolean;
+        /**
+         * Determines whether the user's role permits them to write to the associated GlideRecord.
+         * @memberof StringBasedElement
+         * @returns {boolean} True if the user can write to the field, false otherwise..
+         * @description 
+         */
+        canWrite(): boolean;
+        /**
+         * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
+         * @memberof StringBasedElement
+         * @returns {boolean} True if the field has changed, false otherwise..
+         * @description  
+         */
+        changes(): boolean;
+        /**
+         * Determines if the previous value of the current field matches the specified object.
+         * @memberof StringBasedElement
+         * @param {V | E | Nilable<S>} value - An object value to check against the previous value of the current field.
+         * @returns {boolean} True if the previous value matches the parameter, false if it does not..
+         * @description  
+         */
+        changesFrom(value: V | E | Nilable<S>): boolean;
+        /**
+         * Determines if the new value of a field, after a change, matches the specified object.
+         * @memberof StringBasedElement
+         * @param {V | E | Nilable<S>} value - An object value to check against the new value of the current field.
+         * @returns {boolean} True if the new value matches the parameter, false if it does not..
+         * @description  
+         */
+        changesTo(value: V | E | Nilable<S>): boolean;
+        /**
+         * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+         * @memberof StringBasedElement
+         * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT..
+         * @description 
+         */
+        dateNumericValue(): number;
+        /**
+         * Debugs the object and adds debug messages using setError(String).
+         * @memberof StringBasedElement
+         * @param {*} o - An object to debug.
+         */
+        debug(o: any): void;
+        /**
+         * Returns the value of the specified attribute from the dictionary.
+         * @memberof StringBasedElement
+         * @param {string} attributeName - Attribute name
+         * @returns {string} Attribute value.
+         * @description  
+         */
+        getAttribute(attributeName: string): string;
+        /**
+         * Gets the base table of the field.
+         * @memberof StringBasedElement
+         * @returns {string} Name of the base table. This may be different from the table that the field is defined on. See "Tables and Classes" in the product documentation..
+         */
+        getBaseTableName(): string;
+        /**
+         * Returns the Boolean value of the specified attribute from the dictionary.
+         * @memberof StringBasedElement
+         * @param {string} attributeName - Attribute name
+         * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist..
+         * @description  
+         */
+        getBooleanAttribute(attributeName: string): boolean;
+        /**
+         * Generates a choice list for a field. Returns the choice values from the base table only, not from the extended table.
+         * @memberof StringBasedElement
+         * @param {string} [value] - A dependent value.
+         * @returns {Packages.java.util.ArrayList<*>} The choice values for the field..
+         * @description 
+         */
+        getChoices(value?: string): Packages.java.util.ArrayList<any>;
+        /**
+         * Gets the choice label for the current choice value.
+         * @memberof StringBasedElement
+         * @returns {string} The choice label..
+         * @description 
+         */
+        getChoiceValue(): string;
+        /**
+         * Gets the number of debug messages logged by debug().
+         * @memberof StringBasedElement
+         * @returns {number} The number of debug messages..
+         */
+        getDebugCount(): number;
+        /**
+         * Checks whether or not the field is dependent on another field.
+         * @memberof StringBasedElement
+         * @returns {string} Name of the field on which the current field depends..
+         */
+        getDependent(): string;
+        /**
+         * Gets the table that the current table depends on.
+         * @memberof StringBasedElement
+         * @returns {string} The name of the table..
+         */
+        getDependentTable(): string;
+        /**
+         * Gets the formatted display value of the field.
+         * @memberof StringBasedElement
+         * @param {number} maxChar - Optional, maximum number of characters to return.
+         * @returns {string} Display value of the field..
+         * @description 
+         */
+        getDisplayValue(maxChar: number): string;
+        /**
+         * Gets the formatted display value of a field, or a specified substitute value if the display value is null or empty.
+         * @memberof StringBasedElement
+         * @param {number} maxChar - Optional, the maximum number of characters to be returned.
+         * @param {string} nullSub - The value to return if the display value is null or empty.
+         * @returns {string} The formatted display value of the field, or the specified substitute value..
+         */
+        getDisplayValueExt(maxChar: number, nullSub: string): string;
+        /**
+         * Returns an element descriptor.
+         * @memberof StringBasedElement
+         * @returns {GlideElementDescriptor} Field's element descriptor..
+         * @description 
+         */
+        getED(): GlideElementDescriptor;
+        /**
+         * Gets the value for a given element.
+         * @memberof StringBasedElement
+         * @param {string} value - An element
+         * @returns {string} The value of the element..
+         */
+        getElementValue(value: string): string;
+        /**
+         * Gets error debug messages.
+         * @memberof StringBasedElement
+         * @returns {string} A string of debug messages.
+         */
+        getError(): string;
+        /**
+         * Gets the escaped value for the current element.
+         * @memberof StringBasedElement
+         * @returns {string} The escaped value of the current element..
+         */
+        getEscapedValue(): string;
+        /**
+         * Gets the CSS style for the field.
+         * @memberof StringBasedElement
+         * @returns {string} The CSS style for the field..
+         */
+        getFieldStyle(): string;
+        /**
+         * Gets a glide object.
+         * @memberof StringBasedElement
+         * @returns {*} A Glide object..
+         */
+        getGlideObject(): any;
+        /**
+         * Gets a glide record.
+         * @memberof StringBasedElement
+         * @returns {GlideRecord} A glide record.
+         */
+        getGlideRecord(): GlideRecord;
+        /**
+         * Returns the HTML value of a field.
+         * @memberof StringBasedElement
+         * @param {number} [maxChars] - Maximum number of characters to return.
+         * @returns {string} HTML value for the field..
+         * @description 
+         */
+        getHTMLValue(maxChars?: number): string;
+        /**
+         * Returns the HTML value of a field, or a specified substitute value if the HTML value is null or empty.
+         * @memberof StringBasedElement
+         * @param {number} maxChar - The maximum number of characters to return.
+         * @param {string} nullSub - The value to return if the HTML value is null or empty.
+         * @returns {string} The HTML value or the specified substitute value..
+         */
+        getHTMLValueExt(maxChar: number, nullSub: string): string;
+        /**
+         * Returns either the most recent journal entry or all journal entries.
+         * @memberof StringBasedElement
+         * @param {number} mostRecent - If 1, returns the most recent entry. If -1, returns all journal entries.
+         * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n"..
+         * @description 
+         */
+        getJournalEntry(mostRecent: number): string;
+        /**
+         * Returns the object's label.
+         * @memberof IDbObject
+         * @returns {string} Object's label.
+         * @description 
+         */
+        getLabel(): string;
+        /**
+         * Returns the name of the field.
+         * @memberof StringBasedElement
+         * @returns {string} Field name.
+         * @description 
+         */
+        getName(): string;
+        /**
+         * Returns a GlideRecord object for a given reference element.
+         * @memberof StringBasedElement
+         * @returns {GlideRecord} A GlideRecord object.
+         * @description  
+         */
+        getRefRecord(): GlideRecord;
+        /**
+         * Get the CSS style for the value.
+         * @memberof StringBasedElement
+         * @returns {string} The CSS style for the value..
+         */
+        getStyle(): string;
+        /**
+         * Returns the name of the field's table.
+         * @memberof IDbObject
+         * @returns {string} Name of the table. This may be different from the table Class that the record is in. See Tables and Classes in the product documentation..
+         * @description 
+         */
+        getTableName(): string;
+        /**
+         * Retrieves the value and escapes the HTML.
+         * @memberof StringBasedElement
+         * @returns {string} The escaped HTML.
+         */
+        getTextAreaDisplayValue(): string;
+        /**
+         * Retrieves the XHTML value of a field.
+         * @memberof StringBasedElement
+         * @returns {string} The XHTML value.
+         */
+        getXHTMLValue(): string;
+        /**
+         * Gets the XML value of a field as a string.
+         * @memberof StringBasedElement
+         * @returns {string} The XML value.
+         */
+        getXMLValue(): string;
+        /**
+         * Determines whether a field has a particular attribute.
+         * @memberof StringBasedElement
+         * @param {string} attributeName - The attribute to check for
+         * @returns {boolean} True if the field has the attribute, false otherwise..
+         */
+        hasAttribute(attributeName: string): boolean;
+        /**
+         * Determines if the user has the right to perform a particular operation.
+         * @memberof StringBasedElement
+         * @param {string} operationName - Name of the operation to check for
+         * @returns {boolean} True if the user has permission to perform the operation, false otherwise..
+         */
+        hasRightsTo(operationName: string): boolean;
+        /**
+         * Determines if the field has a value.
+         * @memberof StringBasedElement
+         * @returns {boolean} True if the field has a value, false otherwise..
+         */
+        hasValue(): boolean;
+        /**
+         * Determines whether the field is null.
+         * @memberof StringBasedElement
+         * @returns {boolean} True if the field is null or an empty string, false otherwise..
+         * @description 
+         */
+        nil(): boolean;
+        /**
+         * Sets the duration field to a number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+         * @memberof StringBasedElement
+         * @param {number} milliseconds - Number of milliseconds spanned by the duration.
+         * @description 
+         */
+        setDateNumericValue(milliseconds: number): void;
+        /**
+         * Sets the display value of the field.
+         * @memberof StringBasedElement
+         * @param {*} displayValue - Value to be displayed.
+         * @description 
+         */
+        setDisplayValue(displayValue: any): void;
+        /**
+         * Adds an error message.
+         * @memberof StringBasedElement
+         * @description  
+         */
+        setError(): void;
+        /**
+         * Sets the initial value of a field.
+         * @memberof StringBasedElement
+         * @param {string} value - Initial value for the field.
+         */
+        setInitialValue(value: string): void;
+        /**
+         * Sets the journal entry.
+         * @memberof StringBasedElement
+         * @param {*} value - The value to set the journal entry to.
+         * @param {string} userName - The user to attribute the journal entry to. Does not set the journal entry's created by field.
+         */
+        setJournalEntry(value: any, userName: string): void;
+        /**
+         * Sets the value of a field.
+         * @memberof StringBasedElement
+         * @param {V | E | Nilable<S>} value - The value the field is to be set to.
+         * @description  
+         */
+        setValue(value: V | E | Nilable<S>): void;
+    }
+
+    export type RecordReferenceElement<R extends GlideRecord, P extends IGlideTableProperties> = P & IRecordReferenceElement<R, P> & GlideElementReference;
+
+    export interface IRecordReferenceElement<R extends GlideRecord, P extends IGlideTableProperties> extends IValueElement<string, RecordReferenceElement<R, P>, string> {
+        /**
+         * Determines if the previous value of the current field matches the specified object.
+         * @memberof GlideElement
+         * @param {NilableString | R | RecordReferenceElement<R, P>} o - An object value to check against the previous value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @description
+         */
+        changesFrom(o: NilableString | R | RecordReferenceElement<R, P>): boolean;
+        /**
+         * Determines if the new value of a field, after a change, matches the specified object.
+         * @memberof GlideElement
+         * @param {NilableString | R | RecordReferenceElement<R, P>} o - An object value to check against the new value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @description
+         */
+        changesTo(o: NilableString | R | RecordReferenceElement<R, P>): boolean;
+        /**
+         * Gets the table name for a reference element.
+         * @memberof GlideElement
+         * @returns {string} The table name of the reference.
+         */
+        getReferenceTable(): string;
+        /**
+         * Returns a GlideRecord object for a given reference element.
+         * @memberof GlideElement
+         * @returns {R} A GlideRecord object.
+         */
+        getRefRecord(): R | null | undefined;
+        /**
+         * Sets the value of a field.
+         * @memberof GlideElement
+         * @param {NilableString | R | RecordReferenceElement<R, P>} value - Object value to set the field to.
+         */
+        setValue(obj: NilableString | R | RecordReferenceElement<R, P>): void;
+    }
+}
+
+/**
+ * The GlideElement API provides a number of convenient script methods for dealing with fields and their values. GlideElement methods are available for the fields of the current GlideRecord.
+ * @class interface IGlideElement
+ */
+declare interface IGlideElement extends GLIDE.IDbObject {
     /**
      * Determines if the previous value of the current field matches the specified object.
-     * @param {*} o An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches, false if it does not.
      * @memberof GlideElement
+     * @param {*} value - An object value to check against the previous value of the current field.
+     * @returns {boolean} True if the previous value matches the parameter, false if it does not..
+     * @description  
      */
-    changesFrom(o: any): boolean;
-
+    changesFrom(value: any): boolean;
     /**
      * Determines if the new value of a field, after a change, matches the specified object.
-     * @param {*} o An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches, false if it does not.
      * @memberof GlideElement
+     * @param {*} value - An object value to check against the new value of the current field.
+     * @returns {boolean} True if the new value matches the parameter, false if it does not..
+     * @description  
      */
-    changesTo(o: any): boolean;
-
+    changesTo(value: any): boolean;
+    /**
+     * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+     * @memberof GlideElement
+     * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT..
+     * @description 
+     */
+    dateNumericValue(): number;
+    /**
+     * Debugs the object and adds debug messages using setError(String).
+     * @memberof GlideElement
+     * @param {*} o - An object to debug.
+     */
+    debug(o: any): void;
     /**
      * Returns the value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name
-     * @returns {string} Attribute value.
      * @memberof GlideElement
+     * @param {string} attributeName - Attribute name
+     * @returns {string} Attribute value.
+     * @description  
      */
     getAttribute(attributeName: string): string;
-
+    /**
+     * Gets the base table of the field.
+     * @memberof GlideElement
+     * @returns {string} Name of the base table. This may be different from the table that the field is defined on. See "Tables and Classes" in the product documentation..
+     */
+    getBaseTableName(): string;
     /**
      * Returns the Boolean value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name.
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
      * @memberof GlideElement
+     * @param {string} attributeName - Attribute name
+     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist..
+     * @description  
      */
     getBooleanAttribute(attributeName: string): boolean;
-
+    /**
+     * Generates a choice list for a field. Returns the choice values from the base table only, not from the extended table.
+     * @memberof GlideElement
+     * @param {string} [value] - A dependent value.
+     * @returns {Packages.java.util.ArrayList<*>} The choice values for the field..
+     * @description 
+     */
+    getChoices(value?: string): Packages.java.util.ArrayList<any>;
+    /**
+     * Gets the choice label for the current choice value.
+     * @memberof GlideElement
+     * @returns {string} The choice label..
+     * @description 
+     */
     getChoiceValue(): string;
-
-    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-    getDecryptedValue(): string;
-
-    getGlobalDisplayValue(): string;
-
+    /**
+     * Gets the number of debug messages logged by debug().
+     * @memberof GlideElement
+     * @returns {number} The number of debug messages..
+     */
+    getDebugCount(): number;
+    /**
+     * Checks whether or not the field is dependent on another field.
+     * @memberof GlideElement
+     * @returns {string} Name of the field on which the current field depends..
+     */
+    getDependent(): string;
+    /**
+     * Gets the table that the current table depends on.
+     * @memberof GlideElement
+     * @returns {string} The name of the table..
+     */
+    getDependentTable(): string;
+    /**
+     * Gets the formatted display value of the field.
+     * @memberof GlideElement
+     * @param {number} maxChar - Optional, maximum number of characters to return.
+     * @returns {string} Display value of the field..
+     * @description 
+     */
+    getDisplayValue(maxChar: number): string;
+    /**
+     * Gets the formatted display value of a field, or a specified substitute value if the display value is null or empty.
+     * @memberof GlideElement
+     * @param {number} maxChar - Optional, the maximum number of characters to be returned.
+     * @param {string} nullSub - The value to return if the display value is null or empty.
+     * @returns {string} The formatted display value of the field, or the specified substitute value..
+     */
+    getDisplayValueExt(maxChar: number, nullSub: string): string;
+    /**
+     * Gets the value for a given element.
+     * @memberof GlideElement
+     * @param {string} value - An element
+     * @returns {string} The value of the element..
+     */
+    getElementValue(value: string): string;
+    /**
+     * Gets error debug messages.
+     * @memberof GlideElement
+     * @returns {string} A string of debug messages.
+     */
+    getError(): string;
+    /**
+     * Gets the escaped value for the current element.
+     * @memberof GlideElement
+     * @returns {string} The escaped value of the current element..
+     */
+    getEscapedValue(): string;
+    /**
+     * Gets the CSS style for the field.
+     * @memberof GlideElement
+     * @returns {string} The CSS style for the field..
+     */
+    getFieldStyle(): string;
+    /**
+     * Gets a glide object.
+     * @memberof GlideElement
+     * @returns {*} A Glide object..
+     */
+    getGlideObject(): any;
+    /**
+     * Gets a glide record.
+     * @memberof GlideElement
+     * @returns {GlideRecord} A glide record.
+     */
+    getGlideRecord(): GlideRecord;
     /**
      * Returns the HTML value of a field.
-     * @param {number} [maxChars] Maximum number of characters to return.
-     * @returns {string} HTML value for the field.
      * @memberof GlideElement
+     * @param {number} [maxChars] - Maximum number of characters to return.
+     * @returns {string} HTML value for the field..
+     * @description 
      */
-    getHTMLValue(maxCharacters?: number): string;
-
+    getHTMLValue(maxChars?: number): string;
+    /**
+     * Returns the HTML value of a field, or a specified substitute value if the HTML value is null or empty.
+     * @memberof GlideElement
+     * @param {number} maxChar - The maximum number of characters to return.
+     * @param {string} nullSub - The value to return if the HTML value is null or empty.
+     * @returns {string} The HTML value or the specified substitute value..
+     */
+    getHTMLValueExt(maxChar: number, nullSub: string): string;
+    /**
+     * Returns either the most recent journal entry or all journal entries.
+     * @memberof GlideElement
+     * @param {number} mostRecent - If 1, returns the most recent entry. If -1, returns all journal entries.
+     * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n"..
+     * @description 
+     */
     getJournalEntry(mostRecent: number): string;
-
     /**
-     * Gets the value of the current element.
-     * @returns {string}
+     * Returns the name of the field.
      * @memberof GlideElement
-     */
-    getValue(): string;
-
-    /**
-     * Gets the name of the field.
-     * @returns {string} The name of the field.
-     * @memberof GlideElement
+     * @returns {string} Field name.
+     * @description 
      */
     getName(): string;
-
     /**
-     * Determines if a field is null.
-     * @returns {boolean} True if the field is null or an empty string, false if not.
+     * Returns a GlideRecord object for a given reference element.
      * @memberof GlideElement
+     * @returns {GlideRecord} A GlideRecord object.
+     * @description  
+     */
+    getRefRecord(): GlideRecord;
+    /**
+     * Get the CSS style for the value.
+     * @memberof GlideElement
+     * @returns {string} The CSS style for the value..
+     */
+    getStyle(): string;
+    /**
+     * Retrieves the value and escapes the HTML.
+     * @memberof GlideElement
+     * @returns {string} The escaped HTML.
+     */
+    getTextAreaDisplayValue(): string;
+    /**
+     * Retrieves the XHTML value of a field.
+     * @memberof GlideElement
+     * @returns {string} The XHTML value.
+     */
+    getXHTMLValue(): string;
+    /**
+     * Gets the XML value of a field as a string.
+     * @memberof GlideElement
+     * @returns {string} The XML value.
+     */
+    getXMLValue(): string;
+    /**
+     * Determines whether a field has a particular attribute.
+     * @memberof GlideElement
+     * @param {string} attributeName - The attribute to check for
+     * @returns {boolean} True if the field has the attribute, false otherwise..
+     */
+    hasAttribute(attributeName: string): boolean;
+    /**
+     * Determines if the user has the right to perform a particular operation.
+     * @memberof GlideElement
+     * @param {string} operationName - Name of the operation to check for
+     * @returns {boolean} True if the user has permission to perform the operation, false otherwise..
+     */
+    hasRightsTo(operationName: string): boolean;
+    /**
+     * Determines if the field has a value.
+     * @memberof GlideElement
+     * @returns {boolean} True if the field has a value, false otherwise..
+     */
+    hasValue(): boolean;
+    /**
+     * Determines whether the field is null.
+     * @memberof GlideElement
+     * @returns {boolean} True if the field is null or an empty string, false otherwise..
+     * @description 
      */
     nil(): boolean;
-
     /**
-     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
+     * Sets the duration field to a number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
      * @memberof GlideElement
+     * @param {number} milliseconds - Number of milliseconds spanned by the duration.
+     * @description 
      */
     setDateNumericValue(milliseconds: number): void;
-
-    setDisplayValue(value: any): void;
-
-    setError(errorMessage: string): void;
-
-    setPhoneNumber(phoneNumber: any, strict: boolean): void;
-
+    /**
+     * Sets the display value of the field.
+     * @memberof GlideElement
+     * @param {*} displayValue - Value to be displayed.
+     * @description 
+     */
+    setDisplayValue(displayValue: any): void;
+    /**
+     * Adds an error message.
+     * @memberof GlideElement
+     * @description  
+     */
+    setError(): void;
+    /**
+     * Sets the initial value of a field.
+     * @memberof GlideElement
+     * @param {string} value - Initial value for the field.
+     */
+    setInitialValue(value: string): void;
+    /**
+     * Sets the journal entry.
+     * @memberof GlideElement
+     * @param {*} value - The value to set the journal entry to.
+     * @param {string} userName - The user to attribute the journal entry to. Does not set the journal entry's created by field.
+     */
+    setJournalEntry(value: any, userName: string): void;
     /**
      * Sets the value of a field.
-     * @param {*} value Object value to set the field to.
      * @memberof GlideElement
+     * @param {*} value - The value the field is to be set to.
+     * @description  
      */
     setValue(value: any): void;
 }
 
-declare interface IGlideElementValue<V extends string | number | boolean, E extends IGlideElement, S extends string> extends IGlideElement {
-    changesFrom(o: V | E | Nilable<S>): boolean;
-    changesTo(o: V | E | Nilable<S>): boolean;
-    getValue(): Nilable<S>;
-    setValue(obj: V | E | Nilable<S>): void;
-}
-
-declare type GlideElementString<S extends string> = Packages.java.lang.String & IGlideElementValue<S, Packages.java.lang.String & IGlideElement, S>;
-declare type GlideElementNumber<N extends number, S extends string> = Packages.java.lang.String & IGlideElementValue<N, Packages.java.lang.String & IGlideElement, S>;
-
-declare type GlideBoolean = GlideElementBoolean | Packages.java.lang.Boolean | boolean | BooleanString;
-declare type GlideBooleanOrEmpty = GlideElementBoolean | Packages.java.lang.Boolean | boolean | StringOrEmpty<BooleanString>;
-declare type NilableGlideBoolean = GlideElementBoolean | Packages.java.lang.Boolean | boolean | Nilable<BooleanString>;
-declare type GlideStringValue<S extends string> = S | GlideElementString<S> | Packages.java.lang.String;
-declare type GlideStringValueOrEmpty<S extends string> = StringOrEmpty<S> | GlideElementString<S> | Packages.java.lang.String;
-declare type NilableGlideStringValue<S extends string> = Nilable<S> | GlideElementString<S> | Packages.java.lang.String;
-declare type GlideString = GlideStringValue<string>;
-declare type GlideStringOrEmpty = GlideStringValueOrEmpty<string>;
-declare type NilableGlideString = NilableGlideStringValue<string>;
-declare type GlideNumberValue<N extends number, S extends string> = N | GlideElementNumber<N, S> | Packages.java.lang.String | S;
-declare type GlideNumberValueOrEmpty<N extends number, S extends string> = N | GlideElementNumber<N, S> | Packages.java.lang.String | StringOrEmpty<S>;
-declare type NilableGlideNumberValue<N extends number, S extends string> = N | GlideElementNumber<N, S> | Packages.java.lang.String | Nilable<S>;
-declare type GlideNumber2 = GlideNumberValue<number, string>;
-declare type GlideNumberOrEmpty = GlideNumberValueOrEmpty<number, string>;
-declare type NilableGlideNumber = NilableGlideNumberValue<number, string>;
-declare interface IGlideElementReference<R extends GlideRecord, E extends GlideElementReference> extends IGlideElementValue<string, E, string> {
-    changesFrom(o: NilableGlideString | R | E): boolean;
-    changesTo(o: NilableGlideString | R | E): boolean;
-    getReferenceTable(): string;
-    getRefRecord(): R | null | undefined;
-    setValue(obj: NilableGlideString | R | E): void;
-}
-declare type NilableGlideStringElementValue<S extends string, E extends IGlideElementValue<S, IGlideElement, S>> = E | NilableGlideStringValue<S>;
-declare type GlideReferenceElement<P extends IGlideTableProperties, R extends GlideRecord & IGlideTableProperties> = IGlideElementReference<R, GlideElementReference & P> & GlideElementReference;
-declare type GlideRecordReference<P extends IGlideTableProperties, E extends GlideReferenceElement<P, R>, R extends GlideRecord & IGlideTableProperties> = GlideReferenceElement<P, R> | R | GlideString;
-declare type GlideRecordReferenceOrEmpty<P extends IGlideTableProperties, E extends GlideReferenceElement<P, R>, R extends GlideRecord & IGlideTableProperties> = GlideReferenceElement<P, R> | R | GlideStringOrEmpty;
-declare type NilableGlideRecordReference<P extends IGlideTableProperties, E extends GlideReferenceElement<P, R>, R extends GlideRecord & IGlideTableProperties> = GlideReferenceElement<P, R> | R | NilableGlideString;
-declare type GlideReference = GlideRecordReference<IGlideTableProperties, GlideElementReference, GlideRecord>;
-declare type GlideReferenceOrEmpty = GlideRecordReferenceOrEmpty<IGlideTableProperties, GlideElementReference, GlideRecord>;
-declare type NilableGlideReference = NilableGlideRecordReference<IGlideTableProperties, GlideElementReference, GlideRecord>;
-
-declare type GlideElementValue<S extends string> = GlideElement | S;
-declare type GlideElementValueOrEmpty<S extends string> = GlideElement | StringOrEmpty<S>;
-declare type NilableGlideElementValue<S extends string> = GlideElement | Nilable<S>;
-declare type GlideElementOrString = GlideElement | Packages.java.lang.String | string;
-declare type GlideElementGlideObjectOrString = GlideElementGlideObject | Packages.java.lang.String | string;
-declare type GlideElementOrEmpty = GlideElement | Packages.java.lang.String | StringOrEmpty<string>;
-declare type NilableGlideElement = GlideElement | Packages.java.lang.String | Nilable<string>;
-declare type NilableGlideElementGlideObject = GlideElementGlideObject | Packages.java.lang.String | Nilable<string>;
-
 declare interface IGlideTableProperties {
     /**
      * Created by
-     * @type {GlideElementOrString}
-     * @memberof GlideRecord
-     * @description Max length: 40
+     * @type {GLIDE.ElementProperty}
+     * @memberof IGlideTableProperties
      */
-    sys_created_by: GlideElementOrString;
+    sys_created_by: GLIDE.ElementProperty;
 
     /**
      * Created
-     * @type {GlideElementGlideObjectOrString}
-     * @memberof GlideRecord
+     * @type {GLIDE.GlideObjectProperty}
+     * @memberof IGlideTableProperties
      * @description Internal type is "glide_date_time"
-     *      Max length: 40
      */
-    sys_created_on: GlideElementGlideObjectOrString;
+    sys_created_on: GLIDE.GlideObjectProperty;
 
     /**
      * Sys ID
-     * @type {GlideElementOrString}
-     * @memberof GlideRecord
+     * @type {GLIDE.ElementProperty}
+     * @memberof IGlideTableProperties
      * @description Internal type is "GUID"
-     *      Max length: 32
      */
-    sys_id: GlideElementOrString;
+    sys_id: GLIDE.ElementProperty;
 
     /**
      * Updates
-     * @type {GlideNumber2}
-     * @memberof GlideRecord
+     * @type {GLIDE.Numeric}
+     * @memberof IGlideTableProperties
      */
-    sys_mod_count: GlideNumber2;
+    sys_mod_count: GLIDE.Numeric;
 
     /**
      * Updated by
-     * @type {GlideElementOrString}
-     * @memberof GlideRecord
-     * @description Max length: 40
+     * @type {GLIDE.ElementProperty}
+     * @memberof IGlideTableProperties
      */
-    sys_updated_by: GlideElementOrString;
+    sys_updated_by: GLIDE.ElementProperty;
 
     /**
      * Updated
-     * @type {GlideElementGlideObjectOrString}
-     * @memberof GlideRecord
+     * @type {GLIDE.GlideObjectProperty}
+     * @memberof IGlideTableProperties
      * @description Internal type is "glide_date_time"
-     *      Max length: 40
      */
-    sys_updated_on: GlideElementGlideObjectOrString;
+    sys_updated_on: GLIDE.GlideObjectProperty;
 }
 
 declare interface IExtendedGlideTableProperties extends IGlideTableProperties {
     /**
      * Updated
-     * @type {GlideString}
-     * @memberof GlideRecord
-     * @description Internal type is "glide_date_time"
-     *      Max length: 40
+     * @type {GLIDE.SysClassNameProperty}
+     * @memberof IExtendedGlideTableProperties
      */
-    sys_class_name: GlideString;
+    sys_class_name: GLIDE.SysClassNameProperty;
 }
 
 /**
@@ -2109,7 +2783,7 @@ declare namespace Packages {
                 // }
                 export namespace conditions {
                     /**
-                     * GlideQueryCondition object.
+                     * The GlideQueryCondition API provides additional AND or OR conditions that can be added to the current condition, allowing you to build complex queries.
                      * @class QueryCondition
                      */
                     export class QueryCondition {
@@ -2413,79 +3087,76 @@ declare namespace Packages {
                 // export class GlideWhiteListManager { }
                 // }
                 export namespace glide_elements {
-
                     /**
                      * A Glide element that references another GlideRecord.
                      * @class GlideElementReference
                      * @todo Verify whether Packages.com.glide.script.glide_elements.GlideReference exists
                      */
-                    export class GlideElementReference extends java.lang.String implements IGlideElementReference<GlideRecord, GlideElementReference>, IGlideTableProperties {
+                    export class GlideElementReference extends GLIDE.StringBasedElement<string, GlideElementReference, string> implements GLIDE.IRecordReferenceElement<GlideRecord, GlideElementReference>, IGlideTableProperties {
                         /**
                          * Created by
-                         * @type {GlideString}
+                         * @type {GLIDE.NilableElementProperty}
                          * @memberof GlideElementReference
                          * @description Max length: 40
                          */
-                        sys_created_by: GlideString;
+                        sys_created_by: GLIDE.NilableElementProperty;
 
                         /**
                          * Created
-                         * @type {GlideString}
+                         * @type {GLIDE.NilableGlideObjectProperty}
                          * @memberof GlideElementReference
                          * @description Internal type is "glide_date_time"
                          *      Max length: 40
                          */
-                        sys_created_on: GlideString;
+                        sys_created_on: GLIDE.NilableGlideObjectProperty;
 
                         /**
                          * Sys ID
-                         * @type {GlideString}
+                         * @type {GLIDE.NilableElementProperty}
                          * @memberof GlideElementReference
                          * @description Internal type is "GUID"
                          *      Max length: 32
                          */
-                        sys_id: GlideString;
+                        sys_id: GLIDE.NilableElementProperty;
 
                         /**
                          * Updates
-                         * @type {GlideNumber2}
+                         * @type {GLIDE.NilableNumeric}
                          * @memberof GlideElementReference
                          */
-                        sys_mod_count: GlideNumber2;
+                        sys_mod_count: GLIDE.NilableNumeric;
 
                         /**
                          * Updated by
-                         * @type {GlideString}
+                         * @type {GLIDE.NilableElementProperty}
                          * @memberof GlideElementReference
                          * @description Max length: 40
                          */
-                        sys_updated_by: GlideString;
+                        sys_updated_by: GLIDE.NilableElementProperty;
 
                         /**
                          * Updated
-                         * @type {GlideString}
+                         * @type {GLIDE.NilableGlideObjectProperty}
                          * @memberof GlideElementReference
                          * @description Internal type is "glide_date_time"
                          *      Max length: 40
                          */
-                        sys_updated_on: GlideString;
-
-                        [key: string]: any;
+                        sys_updated_on: GLIDE.NilableGlideObjectProperty;
 
                         protected constructor();
                         /**
                          * Determines if the previous value of the current field matches the specified object.
-                         * @param {GlideRecord | GlideElementReference | NilableGlideString} o An object value to check against the previous value of the current field.
+                         * @param {GlideRecord | GlideElementReference | GLIDE.NilableString} o An object value to check against the previous value of the current field.
                          * @returns {boolean} True if the previous value matches, false if it does not.
                          */
-                        changesFrom(o: GlideRecord | GlideElementReference | NilableGlideString): boolean;
+                        changesFrom(o: GlideRecord | GlideElementReference | GLIDE.NilableString): boolean;
 
                         /**
                          * Determines if the new value of a field, after a change, matches the specified object.
-                         * @param {GlideRecord | GlideElementReference | NilableGlideString} o An object value to check against the new value of the current field.
+                         * @param {GlideRecord | GlideElementReference | GLIDE.NilableString} o An object value to check against the new value of the current field.
                          * @returns {boolean} True if the new value matches, false if it does not.
                          */
-                        changesTo(o: GlideRecord | GlideElementReference | NilableGlideString): boolean;
+                        changesTo(o: GlideRecord | GlideElementReference | GLIDE.NilableString): boolean;
                         /**
                          * Gets the table name for a reference element.
                          * @returns {string} The table name of the reference.
@@ -2502,432 +3173,14 @@ declare namespace Packages {
 
                         /**
                          * Sets the value of a field.
-                         * @param {GlideRecord | GlideElementReference | NilableGlideString} value Object value to set the field to.
+                         * @param {GlideRecord | GlideElementReference | GLIDE.NilableString} value Object value to set the field to.
                          */
-                        setValue(value: GlideRecord | GlideElementReference | NilableGlideString): void;
-
-                        /**
-                         * Determines if the user's role permits the creation of new records in this field.
-                         * @returns {boolean} True if the field can be created, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canCreate(): boolean;
-
-                        /**
-                         * Indicates whether the user's role permits them to read the associated GlideRecord.
-                         * @returns {boolean} True if the field can be read, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canRead(): boolean;
-
-                        /**
-                         * Determines whether the user's role permits them to write to the associated GlideRecord.
-                         * @returns {boolean} True if the user can write to the field, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canWrite(): boolean;
-
-                        /**
-                         * Determines if the new value of a field, after a change, matches the specified object.
-                         * @returns {boolean} True if the fields have been changed, false if the field has not.
-                         * @memberof GlideElement
-                         */
-                        changes(): boolean;
-
-                        /**
-                         * Returns the value of the specified attribute from the dictionary.
-                         * @param {string} attributeName Attribute name
-                         * @returns {string} Attribute value.
-                         * @memberof GlideElement
-                         */
-                        getAttribute(attributeName: string): string;
-
-                        /**
-                         * Returns the Boolean value of the specified attribute from the dictionary.
-                         * @param {string} attributeName Attribute name.
-                         * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-                         * @memberof GlideElement
-                         */
-                        getBooleanAttribute(attributeName: string): boolean;
-
-                        getChoiceValue(): string;
-
-                        getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-                        getDecryptedValue(): string;
-
-                        /**
-                         * Gets the formatted display value of the field.
-                         * @param {number} [maxCharacters] Maximum characters desired
-                         * @memberof GlideElement
-                         */
-                        getDisplayValue(maxCharacters?: number): string;
-
-                        /**
-                         * Gets the current element descriptor.
-                         * @returns {Packages.com.glide.db.ElementDescriptor}
-                         * @memberof GlideElement
-                         */
-                        getED(): Packages.com.glide.db.ElementDescriptor;
-
-                        getGlobalDisplayValue(): string;
-
-                        /**
-                         * Returns the HTML value of a field.
-                         * @param {number} [maxChars] Maximum number of characters to return.
-                         * @returns {string} HTML value for the field.
-                         * @memberof GlideElement
-                         */
-                        getHTMLValue(maxCharacters?: number): string;
-
-                        getJournalEntry(mostRecent: number): string;
-
-                        /**
-                         * Gets the object label.
-                         * @returns {string} The object label.
-                         * @memberof GlideElement
-                         */
-                        getLabel(): string;
-
-                        // getModifiedBy(): string;
-
-                        /**
-                         * Gets the name of the field.
-                         * @returns {string} The name of the field.
-                         * @memberof GlideElement
-                         */
-                        getName(): string;
-
-                        /**
-                         * Gets the name of the table on which the field resides.
-                         * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-                         * @memberof GlideElement
-                         */
-                        getTableName(): string;
-
-                        /**
-                         * Gets the value of the current element.
-                         * @returns {string}
-                         * @memberof GlideElement
-                         */
-                        getValue(): string;
-
-                        /**
-                         * Determines if a field is null.
-                         * @returns {boolean} True if the field is null or an empty string, false if not.
-                         * @memberof GlideElement
-                         */
-                        nil(): boolean;
-
-                        /**
-                         * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-                         * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-                         * @memberof GlideElement
-                         */
-                        setDateNumericValue(milliseconds: number): void;
-
-                        setDisplayValue(value: any): void;
-
-                        setError(errorMessage: string): void;
-
-                        setPhoneNumber(phoneNumber: any, strict: boolean): void;
+                        setValue(value: GlideRecord | GlideElementReference | GLIDE.NilableString): void;
                     }
 
-                    export class GlideElementUserImage extends java.lang.String implements IGlideElementValue<string, GlideElementUserImage, string>  {
-                        protected constructor();
-                        /**
-                         * Determines if the previous value of the current field matches the specified object.
-                         * @param {GlideElementUserImage | NilableGlideString} o An object value to check against the previous value of the current field.
-                         * @returns {boolean} True if the previous value matches, false if it does not.
-                         */
-                        changesFrom(o: GlideElementUserImage | NilableGlideString): boolean;
+                    export class GlideElementUserImage extends GLIDE.StringBasedElement<string, GlideElementUserImage, string> { }
 
-                        /**
-                         * Determines if the new value of a field, after a change, matches the specified object.
-                         * @param {GlideElementUserImage | NilableGlideString} o An object value to check against the new value of the current field.
-                         * @returns {boolean} True if the new value matches, false if it does not.
-                         */
-                        changesTo(o: GlideElementUserImage | NilableGlideString): boolean;
-
-                        /**
-                         * Sets the value of a field.
-                         * @param {GlideElementUserImage | NilableGlideString} value Object value to set the field to.
-                         */
-                        setValue(value: GlideElementUserImage | NilableGlideString): void;
-                        /**
-                         * Determines if the user's role permits the creation of new records in this field.
-                         * @returns {boolean} True if the field can be created, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canCreate(): boolean;
-
-                        /**
-                         * Indicates whether the user's role permits them to read the associated GlideRecord.
-                         * @returns {boolean} True if the field can be read, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canRead(): boolean;
-
-                        /**
-                         * Determines whether the user's role permits them to write to the associated GlideRecord.
-                         * @returns {boolean} True if the user can write to the field, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canWrite(): boolean;
-
-                        /**
-                         * Determines if the new value of a field, after a change, matches the specified object.
-                         * @returns {boolean} True if the fields have been changed, false if the field has not.
-                         * @memberof GlideElement
-                         */
-                        changes(): boolean;
-
-                        /**
-                         * Returns the value of the specified attribute from the dictionary.
-                         * @param {string} attributeName Attribute name
-                         * @returns {string} Attribute value.
-                         * @memberof GlideElement
-                         */
-                        getAttribute(attributeName: string): string;
-
-                        /**
-                         * Returns the Boolean value of the specified attribute from the dictionary.
-                         * @param {string} attributeName Attribute name.
-                         * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-                         * @memberof GlideElement
-                         */
-                        getBooleanAttribute(attributeName: string): boolean;
-
-                        getChoiceValue(): string;
-
-                        getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-                        getDecryptedValue(): string;
-
-                        /**
-                         * Gets the formatted display value of the field.
-                         * @param {number} [maxCharacters] Maximum characters desired
-                         * @memberof GlideElement
-                         */
-                        getDisplayValue(maxCharacters?: number): string;
-
-                        /**
-                         * Gets the current element descriptor.
-                         * @returns {Packages.com.glide.db.ElementDescriptor}
-                         * @memberof GlideElement
-                         */
-                        getED(): Packages.com.glide.db.ElementDescriptor;
-
-                        getGlobalDisplayValue(): string;
-
-                        /**
-                         * Returns the HTML value of a field.
-                         * @param {number} [maxChars] Maximum number of characters to return.
-                         * @returns {string} HTML value for the field.
-                         * @memberof GlideElement
-                         */
-                        getHTMLValue(maxCharacters?: number): string;
-
-                        getJournalEntry(mostRecent: number): string;
-
-                        /**
-                         * Gets the object label.
-                         * @returns {string} The object label.
-                         * @memberof GlideElement
-                         */
-                        getLabel(): string;
-
-                        // getModifiedBy(): string;
-
-                        /**
-                         * Gets the name of the field.
-                         * @returns {string} The name of the field.
-                         * @memberof GlideElement
-                         */
-                        getName(): string;
-
-                        /**
-                         * Gets the name of the table on which the field resides.
-                         * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-                         * @memberof GlideElement
-                         */
-                        getTableName(): string;
-
-                        /**
-                         * Gets the value of the current element.
-                         * @returns {string}
-                         * @memberof GlideElement
-                         */
-                        getValue(): string;
-
-                        /**
-                         * Determines if a field is null.
-                         * @returns {boolean} True if the field is null or an empty string, false if not.
-                         * @memberof GlideElement
-                         */
-                        nil(): boolean;
-
-                        /**
-                         * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-                         * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-                         * @memberof GlideElement
-                         */
-                        setDateNumericValue(milliseconds: number): void;
-
-                        setDisplayValue(value: any): void;
-
-                        setError(errorMessage: string): void;
-
-                        setPhoneNumber(phoneNumber: any, strict: boolean): void;
-                    }
-
-                    export class GlideElementGlideObject extends java.lang.String implements IGlideElementValue<string, GlideElementGlideObject, string> {
-                        protected constructor();
-                        /**
-                         * Determines if the previous value of the current field matches the specified object.
-                         * @param {GlideElementGlideObject | NilableGlideString} o An object value to check against the previous value of the current field.
-                         * @returns {boolean} True if the previous value matches, false if it does not.
-                         */
-                        changesFrom(o: GlideElementGlideObject | NilableGlideString): boolean;
-
-                        /**
-                         * Determines if the new value of a field, after a change, matches the specified object.
-                         * @param {GlideElementGlideObject | NilableGlideString} o An object value to check against the new value of the current field.
-                         * @returns {boolean} True if the new value matches, false if it does not.
-                         */
-                        changesTo(o: GlideElementGlideObject | NilableGlideString): boolean;
-
-                        /**
-                         * Sets the value of a field.
-                         * @param {GlideElementGlideObject | NilableGlideString} value Object value to set the field to.
-                         */
-                        setValue(value: GlideElementGlideObject | NilableGlideString): void;
-                        /**
-                         * Determines if the user's role permits the creation of new records in this field.
-                         * @returns {boolean} True if the field can be created, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canCreate(): boolean;
-
-                        /**
-                         * Indicates whether the user's role permits them to read the associated GlideRecord.
-                         * @returns {boolean} True if the field can be read, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canRead(): boolean;
-
-                        /**
-                         * Determines whether the user's role permits them to write to the associated GlideRecord.
-                         * @returns {boolean} True if the user can write to the field, false otherwise.
-                         * @memberof GlideElement
-                         */
-                        canWrite(): boolean;
-
-                        /**
-                         * Determines if the new value of a field, after a change, matches the specified object.
-                         * @returns {boolean} True if the fields have been changed, false if the field has not.
-                         * @memberof GlideElement
-                         */
-                        changes(): boolean;
-
-                        /**
-                         * Returns the value of the specified attribute from the dictionary.
-                         * @param {string} attributeName Attribute name
-                         * @returns {string} Attribute value.
-                         * @memberof GlideElement
-                         */
-                        getAttribute(attributeName: string): string;
-
-                        /**
-                         * Returns the Boolean value of the specified attribute from the dictionary.
-                         * @param {string} attributeName Attribute name.
-                         * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-                         * @memberof GlideElement
-                         */
-                        getBooleanAttribute(attributeName: string): boolean;
-
-                        getChoiceValue(): string;
-
-                        getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-                        getDecryptedValue(): string;
-
-                        /**
-                         * Gets the formatted display value of the field.
-                         * @param {number} [maxCharacters] Maximum characters desired
-                         * @memberof GlideElement
-                         */
-                        getDisplayValue(maxCharacters?: number): string;
-
-                        /**
-                         * Gets the current element descriptor.
-                         * @returns {Packages.com.glide.db.ElementDescriptor}
-                         * @memberof GlideElement
-                         */
-                        getED(): Packages.com.glide.db.ElementDescriptor;
-
-                        getGlobalDisplayValue(): string;
-
-                        /**
-                         * Returns the HTML value of a field.
-                         * @param {number} [maxChars] Maximum number of characters to return.
-                         * @returns {string} HTML value for the field.
-                         * @memberof GlideElement
-                         */
-                        getHTMLValue(maxCharacters?: number): string;
-
-                        getJournalEntry(mostRecent: number): string;
-
-                        /**
-                         * Gets the object label.
-                         * @returns {string} The object label.
-                         * @memberof GlideElement
-                         */
-                        getLabel(): string;
-
-                        // getModifiedBy(): string;
-
-                        /**
-                         * Gets the name of the field.
-                         * @returns {string} The name of the field.
-                         * @memberof GlideElement
-                         */
-                        getName(): string;
-
-                        /**
-                         * Gets the name of the table on which the field resides.
-                         * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-                         * @memberof GlideElement
-                         */
-                        getTableName(): string;
-
-                        /**
-                         * Gets the value of the current element.
-                         * @returns {string}
-                         * @memberof GlideElement
-                         */
-                        getValue(): string;
-
-                        /**
-                         * Determines if a field is null.
-                         * @returns {boolean} True if the field is null or an empty string, false if not.
-                         * @memberof GlideElement
-                         */
-                        nil(): boolean;
-
-                        /**
-                         * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-                         * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-                         * @memberof GlideElement
-                         */
-                        setDateNumericValue(milliseconds: number): void;
-
-                        setDisplayValue(value: any): void;
-
-                        setError(errorMessage: string): void;
-
-                        setPhoneNumber(phoneNumber: any, strict: boolean): void;
-                    }
+                    export class GlideElementGlideObject extends GLIDE.StringBasedElement<string, GlideElementGlideObject, string> { }
 
                     //export class GlideNumber { }
                 }
@@ -2958,157 +3211,7 @@ declare namespace Packages {
                     static putGlobal(name: string, value: any): void;
                     static removeGlobal(string_1: string): void;
                 }
-                export class GlideElement extends java.lang.String implements IGlideElementValue<string, GlideElement, string> {
-                    protected constructor();
-                    /**
-                     * Determines if the user's role permits the creation of new records in this field.
-                     * @returns {boolean} True if the field can be created, false otherwise.
-                     * @memberof GlideElement
-                     */
-                    canCreate(): boolean;
-
-                    /**
-                     * Indicates whether the user's role permits them to read the associated GlideRecord.
-                     * @returns {boolean} True if the field can be read, false otherwise.
-                     * @memberof GlideElement
-                     */
-                    canRead(): boolean;
-
-                    /**
-                     * Determines whether the user's role permits them to write to the associated GlideRecord.
-                     * @returns {boolean} True if the user can write to the field, false otherwise.
-                     * @memberof GlideElement
-                     */
-                    canWrite(): boolean;
-
-                    /**
-                     * Determines if the new value of a field, after a change, matches the specified object.
-                     * @returns {boolean} True if the fields have been changed, false if the field has not.
-                     * @memberof GlideElement
-                     */
-                    changes(): boolean;
-
-                    /**
-                     * Determines if the previous value of the current field matches the specified object.
-                     * @param {(GlideElement | java.lang.String | Nilable<string>)} o An object value to check against the previous value of the current field.
-                     * @returns {boolean} True if the previous value matches, false if it does not.
-                     * @memberof GlideElement
-                     */
-                    changesFrom(o: GlideElement | java.lang.String | Nilable<string>): boolean;
-
-                    /**
-                     * Determines if the new value of a field, after a change, matches the specified object.
-                     * @param {(GlideElement | java.lang.String | Nilable<string>)} o An object value to check against the new value of the current field.
-                     * @returns {boolean} True if the new value matches, false if it does not.
-                     * @memberof GlideElement
-                     */
-                    changesTo(o: GlideElement | java.lang.String | Nilable<string>): boolean;
-
-                    /**
-                     * Returns the value of the specified attribute from the dictionary.
-                     * @param {string} attributeName Attribute name
-                     * @returns {string} Attribute value.
-                     * @memberof GlideElement
-                     */
-                    getAttribute(attributeName: string): string;
-
-                    /**
-                     * Returns the Boolean value of the specified attribute from the dictionary.
-                     * @param {string} attributeName Attribute name.
-                     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-                     * @memberof GlideElement
-                     */
-                    getBooleanAttribute(attributeName: string): boolean;
-
-                    getChoiceValue(): string;
-
-                    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-                    getDecryptedValue(): string;
-
-                    /**
-                     * Gets the formatted display value of the field.
-                     * @param {number} [maxCharacters] Maximum characters desired
-                     * @memberof GlideElement
-                     */
-                    getDisplayValue(maxCharacters?: number): string;
-
-                    /**
-                     * Gets the current element descriptor.
-                     * @returns {Packages.com.glide.db.ElementDescriptor}
-                     * @memberof GlideElement
-                     */
-                    getED(): Packages.com.glide.db.ElementDescriptor;
-
-                    getGlobalDisplayValue(): string;
-
-                    /**
-                     * Returns the HTML value of a field.
-                     * @param {number} [maxChars] Maximum number of characters to return.
-                     * @returns {string} HTML value for the field.
-                     * @memberof GlideElement
-                     */
-                    getHTMLValue(maxCharacters?: number): string;
-
-                    getJournalEntry(mostRecent: number): string;
-
-                    /**
-                     * Gets the object label.
-                     * @returns {string} The object label.
-                     * @memberof GlideElement
-                     */
-                    getLabel(): string;
-
-                    // getModifiedBy(): string;
-
-                    /**
-                     * Gets the name of the field.
-                     * @returns {string} The name of the field.
-                     * @memberof GlideElement
-                     */
-                    getName(): string;
-
-                    /**
-                     * Gets the name of the table on which the field resides.
-                     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-                     * @memberof GlideElement
-                     */
-                    getTableName(): string;
-
-                    /**
-                     * Gets the value of the current element.
-                     * @returns {string}
-                     * @memberof GlideElement
-                     */
-                    getValue(): string;
-
-                    /**
-                     * Determines if a field is null.
-                     * @returns {boolean} True if the field is null or an empty string, false if not.
-                     * @memberof GlideElement
-                     */
-                    nil(): boolean;
-
-                    /**
-                     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-                     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-                     * @memberof GlideElement
-                     */
-                    setDateNumericValue(milliseconds: number): void;
-
-                    setDisplayValue(value: any): void;
-
-                    setError(errorMessage: string): void;
-
-                    setPhoneNumber(phoneNumber: any, strict: boolean): void;
-
-                    /**
-                     * Sets the value of a field.
-                     * @param {*} value Object value to set the field to.
-                     * @memberof GlideElement
-                     */
-                    setValue(value: GlideElement | java.lang.String | Nilable<string>): void;
-                }
+                export class GlideElement extends GLIDE.StringBasedElement<string, GlideElement, string> { }
                 // export class GlideElementXMLSerializer { }
                 export class Evaluator extends Packages.com.glide.script.ScriptEvaluator {
                     // constructor();
@@ -3148,442 +3251,626 @@ declare namespace Packages {
                 // export class MIDServerInfoAccessor { }
                 // export class OverLoadedChoices { }
                 /**
-                 * GlideRecord API.
-                 * @class Packages.com.glide.script.GlideRecord
+                 * GlideRecord is used for database operations.
+                 * @class GlideRecord
+                 * @description A GlideRecord contains both records and fields.
                  */
-                export class GlideRecord implements IGlideTableProperties, IGlideDbObject {
+                export class GlideRecord implements IGlideTableProperties, GLIDE.IDbObject {
                     /**
                      * Created by
-                     * @type {GlideString}
+                     * @type {GLIDE.NilableElementProperty}
                      * @memberof GlideRecord
-                     * @description Max length: 40
                      */
-                    sys_created_by: GlideString;
+                    sys_created_by: GLIDE.NilableElementProperty;
 
                     /**
                      * Created
-                     * @type {GlideString}
+                     * @type {GLIDE.NilableGlideObjectProperty}
                      * @memberof GlideRecord
                      * @description Internal type is "glide_date_time"
-                     *      Max length: 40
                      */
-                    sys_created_on: GlideString;
+                    sys_created_on: GLIDE.NilableGlideObjectProperty;
 
                     /**
                      * Sys ID
-                     * @type {GlideString}
+                     * @type {GLIDE.NilableElementProperty}
                      * @memberof GlideRecord
-                     * @description Internal type is "GUID"
-                     *      Max length: 32
                      */
-                    sys_id: GlideString;
+                    sys_id: GLIDE.NilableElementProperty;
 
                     /**
                      * Updates
-                     * @type {GlideNumber2}
+                     * @type {GLIDE.NilableNumeric}
                      * @memberof GlideRecord
                      */
-                    sys_mod_count: GlideNumber2;
+                    sys_mod_count: GLIDE.NilableNumeric;
 
                     /**
                      * Updated by
-                     * @type {GlideString}
+                     * @type {GLIDE.NilableElementProperty}
                      * @memberof GlideRecord
-                     * @description Max length: 40
                      */
-                    sys_updated_by: GlideString;
+                    sys_updated_by: GLIDE.NilableElementProperty;
 
                     /**
                      * Updated
-                     * @type {GlideString}
+                     * @type {GLIDE.NilableGlideObjectProperty}
                      * @memberof GlideRecord
                      * @description Internal type is "glide_date_time"
-                     *      Max length: 40
                      */
-                    sys_updated_on: GlideString;
-
-                    [key: string]: any;
-                    getFields(): Packages.java.util.ArrayList<IGlideElement>;
-
-                    constructor(tableName: string);
-
+                    sys_updated_on: GLIDE.NilableGlideObjectProperty;
                     /**
                      * Adds a filter to return active records.
                      * @memberof GlideRecord
-                     * @returns {Packages.com.glide.db.conditions.QueryCondition} Filter to return active records.
+                     * @returns {GlideQueryCondition} Filter to return active records..
+                     * @description 
                      */
-                    addActiveQuery(): Packages.com.glide.db.conditions.QueryCondition;
-
+                    addActiveQuery(): GlideQueryCondition;
+                    /**
+                     * Changes the domain used for the query from the user's domain to the domain of the provided GlideRecord.
+                     * @memberof GlideRecord
+                     * @param {*} glideRecord - GlideRecord from which to obtain the domain.
+                     * @description  
+                     */
+                    addDomainQuery(glideRecord: any): void;
                     /**
                      * Adds an encoded query to other queries that may have been set.
                      * @memberof GlideRecord
-                     * @param {string} query An encoded query string.
+                     * @param {string} query - An encoded query string .
+                     * @description  
                      */
                     addEncodedQuery(query: string): void;
-
+                    /**
+                     * Applies a pre-defined GlideDBFunctionBuilder object to a record.
+                     * @memberof GlideRecord
+                     * @param {*} function - A GlideDBFunctionBuilder object that defines a SQL operation.
+                     * @description 
+                     */
+                    addFunction(functionBuilder: any): void;
+                    /**
+                     * Creates an instance of the GlideRecord class for the specified table.
+                     * @constructor
+                     * @param {string} tableName - The table to be used.
+                     */
+                    constructor(tableName: string);
+                    [key: string]: any;
+                    /**
+                     * Adds a filter to return inactive records. Inactive records have the active flag set to false.
+                     * @memberof GlideRecord
+                     * @returns {GlideQueryCondition} Records where the active flag is false..
+                     * @description 
+                     */
+                    addInactiveQuery(): GlideQueryCondition;
                     /**
                      * Adds a filter to return records based on a relationship in a related table.
                      * @memberof GlideRecord
-                     * @param {string} joinTable Table name
-                     * @param {*} [primaryField] If other than sys_id, the primary field
-                     * @param {*} [joinTableField] If other than sys_id, the field that joins the tables
-                     * @returns {Packages.com.glide.db.conditions.QueryCondition} A filter that lists records where the relationships match.
+                     * @param {string} table - Table name
+                     * @returns {GlideQueryCondition} Records where the relationships match..
+                     * @description  
                      */
-                    addJoinQuery(joinTable: string, primaryField?: any, joinTableField?: any): Packages.com.glide.db.conditions.QueryCondition;
-
+                    addJoinQuery(table: string): GlideQueryCondition;
                     /**
-                     * A filter that specifies records where the value of the field passed in the parameter is not null.
+                     * Adds a filter to return records based on a relationship in a related table.
                      * @memberof GlideRecord
-                     * @param {string} fieldName The name of the field to be checked.
-                     * @returns {Packages.com.glide.db.conditions.QueryCondition} A filter that specifies records where the value of the field passed in the parameter is not null.
+                     * @param {string} table - Table name
+                     * @param {string} primaryField - If other than sys_id, the primary field.
+                     * @returns {GlideQueryCondition} Records where the relationships match..
+                     * @description  
                      */
-                    addNotNullQuery(fieldName: string): Packages.com.glide.db.conditions.QueryCondition;
+                    addJoinQuery(table: string, primaryField: string): GlideQueryCondition;
                     /**
-                     * Adds a filter to return records where the value of the specified field is null.
+                     * Adds a filter to return records based on a relationship in a related table.
                      * @memberof GlideRecord
-                     * @param {string} fieldName The name of the field to be checked.
-                     * @returns {Packages.com.glide.db.conditions.QueryCondition} The query condition added to the GlideRecord.
+                     * @param {string} table - Table name
+                     * @param {string} primaryField - If other than sys_id, the primary field.
+                     * @param {string} joinTableField - If other than sys_id, the field that joins the tables
+                     * @returns {GlideQueryCondition} Records where the relationships match..
+                     * @description  
                      */
-                    addNullQuery(fieldName: string): Packages.com.glide.db.conditions.QueryCondition;
-
+                    addJoinQuery(table: string, primaryField: string, joinTableField: string): GlideQueryCondition;
+                    /**
+                     * Adds a filter to return records where the specified field is not null.
+                     * @memberof GlideRecord
+                     * @param {string} fieldName - The field name.
+                     * @returns {GlideQueryCondition} QueryCondition of records where the parameter field is not null..
+                     * @description 
+                     */
+                    addNotNullQuery(fieldName: string): GlideQueryCondition;
+                    /**
+                     * Adds a filter to return records where the specified field is null.
+                     * @memberof GlideRecord
+                     * @param {string} fieldName - The field name.
+                     * @returns {GlideQueryCondition} QueryCondition of records where the specified field is null..
+                     * @description 
+                     */
+                    addNullQuery(fieldName: string): GlideQueryCondition;
+                    /**
+                     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+                     * @memberof GlideRecord
+                     */
+                    addQuery(): GlideQueryCondition;
+                    /**
+                     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+                     * @memberof GlideRecord
+                     * @param {string} name - Table field name.
+                     * @param {string} operator - Query operator. The available values are dependent on the data type of the value parameter.Numbers:=!=&gt;&gt;=&lt;&lt;=Strings (must be in upper case):=!=INNOT INSTARTSWITHENDSWITHCONTAINSDOES NOT CONTAININSTANCEOF
+                     * @param {*} value - Value on which to query (not case-sensitive).
+                     * @returns {GlideQueryCondition} The query condition that was added to the GlideRecord.
+                     */
+                    addQuery(name: string, operator: string, value: any): GlideQueryCondition;
+                    /**
+                     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+                     * @memberof GlideRecord
+                     * @param {string} name - Table field name.
+                     * @param {*} value - Value on which to query (not case-sensitive).
+                     * @returns {GlideQueryCondition} The query condition that was added to the GlideRecord.
+                     */
+                    addQuery(name: string, value: any): GlideQueryCondition;
                     /**
                      * Adds a filter to return records using an encoded query string.
                      * @memberof GlideRecord
-                     * @param {string} query An encoded query string.
-                     * @returns {Packages.com.glide.db.conditions.QueryCondition} The query condition added to the GlideRecord.
+                     * @param {string} encodedQuery - Encoded query string.
+                     * @returns {GlideQueryCondition} The query condition added to the GlideRecord.
+                     * @description 
                      */
-                    addQuery(query: string): Packages.com.glide.db.conditions.QueryCondition;
-
+                    addQuery(encodedQuery: string): GlideQueryCondition;
                     /**
-                     * Adds a filter to return records using an encoded query string.
+                     * Apply a template record (from sys_template) to the current record. If the specified template is not found, no action is taken.
                      * @memberof GlideRecord
-                     * @param {string} name Table field name.
-                     * @param {*} value Value on which to query (not case-sensitive).
-                     * @returns {Packages.com.glide.db.conditions.QueryCondition} The query condition added to the GlideRecord.
+                     * @param {string} template - Name of a template from the sys_template table
                      */
-                    addQuery(name: string, value: any): Packages.com.glide.db.conditions.QueryCondition;
-
+                    applyTemplate(template: string): void;
                     /**
-                     * Adds a filter to return records using an encoded query string.
+                     * Enables or disables the update to the fields sys_updated_by, sys_updated_on, sys_mod_count, sys_created_by, and sys_created_on. This is often used for manually updating field values on a record while leaving historical information unchanged.
                      * @memberof GlideRecord
-                     * @param {string} name Table field name.
-                     * @param {string} operator Query operator (=,!=,>,>=,<,<=,IN,NOT IN,STARTSWITH,ENDSWITH,CONTAINS,DOES NOT CONTAIN,INSTANCEOF).
-                     * @param {*} value Value on which to query (not case-sensitive).
-                     * @returns {Packages.com.glide.db.conditions.QueryCondition} The query condition added to the GlideRecord.
+                     * @param {boolean} e - If false disables updates to sys_updated_by, sys_updated_on, sys_mod_count, sys_created_by, and sys_created_on.
+                     * @description 
                      */
-                    addQuery(name: string, operator: QueryOperator, value: any): Packages.com.glide.db.conditions.QueryCondition;
+                    autoSysFields(e: boolean): void;
                     /**
-                     * Determines if the Access Control Rules, which include the user's roles, permit inserting new records in this table.
+                     * Determines if the access control rules (which includes the user's role) permit inserting new records in this table.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if the user's roles permit creation of new records in this table.
+                     * @returns {boolean} Flag that indicates whether the user's roles permit creating of records in this table.Valid values:true: Creating permittedfalse: Creating is not permitted.
+                     * @description 
                      */
                     canCreate(): boolean;
-
                     /**
-                     * Determines if the Access Control Rules, which include the user's roles, permit deleting records in this table.
+                     * Determines if the access control rules (which includes the user's role) permit deletion of records in this table.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if the user's roles permit deletions of records in this table.
+                     * @returns {boolean} Flag that indicates whether the user's roles permit deleting of records in this table.Valid values:true: Deleting permittedfalse: Deleting is not permitted.
+                     * @description 
                      */
                     canDelete(): boolean;
-
                     /**
-                     * Determines if the Access Control Rules, which include the user's roles, permit reading records in this table.
+                     * Determines if the access control rules (which includes the user's role) permit reading this table.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if the user's roles permit reading records from this table.
+                     * @returns {boolean} Flag that indicates whether the user's roles permit reading of records in this table.Valid values:true: Reading permittedfalse: Reading is not permitted.
+                     * @description 
                      */
                     canRead(): boolean;
-
                     /**
-                     * Determines if the Access Control Rules, which include the user's roles, permit editing records in this table.
+                     * Determines if the access control rules (which includes the user's role) permit updates to records in this table.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if the user's roles permit writing to records from this table.
+                     * @returns {boolean} Flag that indicates whether the user's roles permit writing of records in this table.Valid values:true: Writing permittedfalse: Writing is not permitted.
+                     * @description 
                      */
                     canWrite(): boolean;
-
                     /**
-                     * Sets a range of rows to be returned by subsequent queries.
+                     * Determines whether any of the fields in the record have changed.
                      * @memberof GlideRecord
-                     * @param {number} firstRow The first row to include.
-                     * @param {number} lastRow The last row to include.
-                     * @param {boolean} forceCount If true, the getRowCount() method will return all possible records.
+                     * @returns {boolean} True if any of the fields in the record have changed, false otherwise..
+                     * @description 
                      */
-                    chooseWindow(firstRow: number, lastRow: number, forceCount: boolean): void;
-
+                    changes(): boolean;
                     /**
-                     * Deletes multiple records that satisfy the query condition.
+                     * Deletes multiple records according to the current "where" clause.
                      * @memberof GlideRecord
+                     * @description  
                      */
                     deleteMultiple(): void;
-
                     /**
-                     * Deletes the current record.
-                     * @returns {boolean} True if the record was deleted; false if no record was found to delete.
+                     * Deletes a single record.
                      * @memberof GlideRecord
+                     * @returns {boolean} Flag that indicates whether the record was successfully deleted.Valid values:true: Record was deleted.false: No record was found to delete..
+                     * @description  
                      */
                     deleteRecord(): boolean;
                     /**
-                     * Defines a GlideRecord based on the specified expression of 'name = value'.
+                     * Returns true if any record has a matching value in the specified column. If found, it also moves to the first record that matches, essentially executing next() until the record is returned.
                      * @memberof GlideRecord
-                     * @param {string} name Column name
-                     * @param {*} [value] Value to match. If value is not specified, then the expression used is 'sys_id = name'.
-                     * @returns {boolean} True if one or more matching records was found. False if no matches found.
+                     * @param {string} columnName - Specifies the field name.
+                     * @param {string} value - Specifies the value to check for in the specified field.
+                     * @returns {boolean} True if any record has a matching value in the specified field..
                      */
-                    get(name: string, value?: any): boolean;
-
+                    find(columnName: string, value: string): boolean;
                     /**
-                     * Returns the dictionary attributes for the specified field.
+                     * Returns the specified record in an instantiated GlideRecord object.
                      * @memberof GlideRecord
-                     * @param {string} fieldName Field name for which to return the dictionary attributes
-                     * @returns {string|null|undefined} Dictionary attributes
+                     * @param {GLIDE.NilableElementProperty} sys_id - sys_id to match.
+                     * @returns {boolean} Flag that indicates whether the requested record was located - true: Record was found; false: Record was not found.
+                     * @description 
                      */
-                    getAttribute(fieldName: string): string | null | undefined;
-
+                    get(sys_id: GLIDE.NilableElementProperty): boolean;
+                    /**
+                     * Returns the specified record in an instantiated GlideRecord object.
+                     * @memberof GlideRecord
+                     * @param {*} name - Name of the instantiated GlideRecord column to search for the specified value parameter.
+                     * @param {*} value - Value to match
+                     * @returns {boolean} Indicates whether the requested record was located:true: record was foundfalse: record was not found.
+                     * @description  
+                     */
+                    get(name: GLIDE.String, value: any): boolean;
+                    /**
+                     * Returns the dictionary attributes on the specified field.
+                     * @memberof GlideRecord
+                     * @param {string} fieldName - Field name for which to return the dictionary attributes
+                     * @returns {string} Dictionary attributes.
+                     * @description 
+                     */
+                    getAttribute(fieldName: string): string;
                     /**
                      * Returns the table's label.
                      * @memberof GlideRecord
-                     * @returns {string} Table's label
+                     * @returns {string} The table's label.
+                     * @description 
                      */
                     getClassDisplayValue(): string;
-
                     /**
                      * Retrieves the display value for the current record.
                      * @memberof GlideRecord
-                     * @returns {string|null|undefined} The display value for the current record.
+                     * @returns {string} Display value for the current record.
+                     * @description 
                      */
-                    getDisplayValue(): string | null | undefined;
-                    getED(): Packages.com.glide.db.ElementDescriptor;
-
+                    getDisplayValue(): string;
                     /**
-                     * Retrieves the GlideElement object for the specified field.
-                     * @memberof IGlideElement
-                     * @param {string} columnName Name of the column to get the element from.
-                     * @returns {GlideElement} The GlideElement for the specified column of the current record.
-                     */
-                    getElement(columnName: string): IGlideElement;
-
-                    /**
-                     * Retrieves the query condition of the current result set as an encoded query string.
+                     * Returns the element's descriptor.
                      * @memberof GlideRecord
-                     * @returns {string} The encoded query as a string.
+                     * @returns {GlideElementDescriptor} The element's descriptor.
+                     * @description 
+                     */
+                    getED(): GlideElementDescriptor;
+                    /**
+                     * Retrieves the GlideElement for a specified field.
+                     * @memberof GlideRecord
+                     * @param {string} fieldName - A field name
+                     * @returns {GlideElement} A GlideElement object.
+                     * @description 
+                     */
+                    getElement(fieldName: string): GlideElement;
+                    /**
+                     * Retrieves the encoded query as a string.
+                     * @memberof GlideRecord
+                     * @returns {string} The encoded query.
+                     * @description 
                      */
                     getEncodedQuery(): string;
-
                     /**
-                     * Returns the field's label.
+                     * Retrieves the field value for the display field of the current record and adds escape characters for use in Jelly scripts.
                      * @memberof GlideRecord
-                     * @returns {string} Field's label.
+                     * @returns {string} Escaped value of display field..
+                     */
+                    getEscapedDisplayValue(): string;
+                    /**
+                     * Retrieves a Java ArrayList of fields in the current record.
+                     * @memberof GlideRecord
+                     * @returns {Packages.java.util.ArrayList<IGlideElement>} Fields in the current record.
+                     */
+                    getFields(): Packages.java.util.ArrayList<IGlideElement>;
+                    /**
+                     * Retrieves the field's label.
+                     * @memberof GlideRecord
+                     * @returns {string} The field's label.
+                     * @description 
                      */
                     getLabel(): string;
-
                     /**
-                     * Retrieves the last error message. If there is no last error message, null is returned.
+                     * Retrieves the link for the current record.
                      * @memberof GlideRecord
-                     * @returns {string|null|undefined} The last error message as a string.
-                     */
-                    getLastErrorMessage(): string | null | undefined;
-
-                    /**
-                     * Retrieves a link to the current record.
-                     * @memberof GlideRecord
-                     * @param {boolean} noStack If true, the sysparm_stack parameter is not appended to the link. The parameter sysparm_stack specifies the page to visit after closing the current link.
-                     * @returns {string} A link to the current record as a string.
+                     * @param {boolean} noStack - If true, the link generated will not append &amp;sysparm_stack=[tablename]_list.do? sysparm_query=active=true to the end of the URL; if false, the link will. Leaving the parameter empty defaults to false.
+                     * @returns {string} A URL.
+                     * @description 
                      */
                     getLink(noStack: boolean): string;
                     /**
-                     * Retrieves the class name for the current record.
+                     * Retrieves the current row number.
                      * @memberof GlideRecord
-                     * @returns {string} The class name.
+                     * @param {boolean} b - 
+                     * @returns {number} The row number of the current record.
+                     */
+                    getLocation(b: boolean): number;
+                    /**
+                     * Retrieves the plural label of the GlideRecord table.
+                     * @memberof GlideRecord
+                     * @returns {string} The plural label of the GlideRecord's table..
+                     * @description  
+                     */
+                    getPlural(): string;
+                    /**
+                     * Retrieves the class (table) name for the current record.
+                     * @memberof GlideRecord
+                     * @returns {string} Class or table name.
+                     * @description 
                      */
                     getRecordClassName(): string;
-
                     /**
-                     * Retrieves the number of rows in the query result.
+                     * Retrieves a list of names and display values of tables that refer to the current record.
                      * @memberof GlideRecord
-                     * @returns {number} The number of rows.
+                     * @param {b} Boolean - 
+                     * @returns {HashMap} Hash map with names and display values of related tables..
+                     */
+                    getRelatedLists(b: boolean): Packages.java.util.HashMap<GLIDE.String, GLIDE.String>;
+                    /**
+                     * Retrieves a list of names and display values of tables that are referred to by the current record.
+                     * @memberof GlideRecord
+                     * @param {boolean} b - 
+                     * @returns {HashMap} Hash map with names and display values of related tables..
+                     */
+                    getRelatedTables(b: boolean): Packages.java.util.HashMap<GLIDE.String, GLIDE.String>;
+                    /**
+                     * Retrieves the number of rows in the GlideRecord object.
+                     * @memberof GlideRecord
+                     * @returns {number} Number of the rows..
+                     * @description  
                      */
                     getRowCount(): number;
-
                     /**
-                     * Retrieves the name of the table associated with the GlideRecord.
+                     * Retrieves the row number set by saveLocation() or setLocation().
                      * @memberof GlideRecord
-                     * @returns {string} The table name.
+                     * @returns {number} The saved row number..
+                     * @description 
+                     */
+                    getRowNumber(): number;
+                    /**
+                     * Retrieves the table name associated with this GlideRecord.
+                     * @memberof GlideRecord
+                     * @returns {string} A table name.
+                     * @description 
                      */
                     getTableName(): string;
                     /**
-                     * Gets the primary key of the record, which is usually the sys_id unless otherwise specified.
-                     * @memberof GlideRecord
-                     * @returns {string|null|undefined} The unique primary key as a String, or null if the key is null.
-                     */
-                    getUniqueValue(): string | null | undefined;
-
-                    /**
                      * Retrieves the string value of an underlying element in a field.
                      * @memberof GlideRecord
-                     * @param {string} name The name of the field to get the value from.
-                     * @returns {string|null|undefined} The value of the field.
+                     * @param {string} fieldName - Name of a field
+                     * @returns {string} The string value of the underlying element. Returns null if the field is empty, or the field does not exist..
+                     * @description 
                      */
-                    getValue(name: string): string | null | undefined;
-
+                    getValue(fieldName: string): string;
                     /**
-                     * Determines if there are any more records in the GlideRecord object.
+                     * Determines if the current record has any attachments.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if there are more records in the query result set.
+                     * @returns {boolean} True if the current record has attachments, false otherwise..
+                     */
+                    hasAttachments(): boolean;
+                    /**
+                     * Determines if there are any more records in the GlideRecord.
+                     * @memberof GlideRecord
+                     * @returns {boolean} Flag that indicates if there are more records in the query set.Valid values:true: More records are in the query set.false: No more records are in the query set..
+                     * @description 
                      */
                     hasNext(): boolean;
                     /**
-                     * Inserts a new record using the field values that have been set for the current record.
-                     * @memberof GlideRecord
-                     * @returns {string} Unique ID of the inserted record, or null if the record is not inserted.
-                     */
-                    insert(): string;
-
-                    /**
                      * Creates an empty record suitable for population before an insert.
                      * @memberof GlideRecord
+                     * @description 
                      */
                     initialize(): void;
-
                     /**
-                     * Checks to see if the current database action is to be aborted.
+                     * Inserts a new record using the field values that have been set for the current record.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if the current database action is to be aborted.
-                     * @memberof GlideRecord
+                     * @returns {string} The sys_id of the inserted record, or null if the record is not inserted..
+                     * @description 
                      */
-                    isActionAborted(): boolean;
+                    insert(): string;
                     /**
-                     * Checks if the current record is a new record that has not yet been inserted into the database.
+                     * Inserts a new record and also inserts or updates any related records with the provided information.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if the record is new and has not been inserted into the database.
+                     * @returns {string} sys_id of the inserted record or null if the record was not inserted..
+                     */
+                    insertWithReferences(): string;
+                    /**
+                     * Checks a table for the type\class of table.
+                     * @memberof GlideRecord
+                     * @param {string} className - Name of a type or class of record.
+                     * @returns {boolean} True if table is an instance of the specified class..
+                     */
+                    instanceOf(className: string): boolean;
+                    /**
+                     * Determines whether the current record has been inserted into the database. This method returns true only if the newRecord() method has been called. This method is useful for scripted ACL, and in the condition of UI actions, but should not be used in background scripts.
+                     * @memberof GlideRecord
+                     * @returns {boolean} True if the current record is new (has not been inserted into the database.).
+                     * @description 
                      */
                     isNewRecord(): boolean;
-
                     /**
                      * Determines if the table exists.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if table is valid or if record was successfully retrieved. False if table is invalid or record was not successfully retrieved.
+                     * @returns {boolean} True if the table is valid or if the record was successfully fetched, false otherwise..
+                     * @description 
                      */
                     isValid(): boolean;
-
                     /**
                      * Determines if the specified field is defined in the current table.
                      * @memberof GlideRecord
-                     * @param {string} columnName The name of the the field.
-                     * @returns {boolean} True if the field is defined for the current table.
+                     * @param {string} fieldName - Name of a field.
+                     * @returns {boolean} True if the field is valid, false otherwise..
+                     * @description 
                      */
-                    isValidField(columnName: string): boolean;
-
+                    isValidField(fieldName: string): boolean;
                     /**
-                     * Determines if current record is a valid record.
+                     * Determines if the current record is valid.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if the current record is valid. False if past the end of the record set.
+                     * @returns {boolean} True if the current record is valid or false if past the end of the record set..
+                     * @description 
                      */
                     isValidRecord(): boolean;
                     /**
-                     * Creates a new GlideRecord record, sets the default values for the fields, and assigns a unique ID to the record.
+                     * Creates a GlideRecord, set the default values for the fields and assign a unique id to the record.
                      * @memberof GlideRecord
+                     * @description 
                      */
                     newRecord(): void;
-
                     /**
-                     * Moves to the next record in the GlideRecord object.
+                     * Moves to the next record in the GlideRecord.
                      * @memberof GlideRecord
-                     * @returns {boolean} True if moving to the next record is successful. False if there are no more records in the result set.
+                     * @returns {boolean} Flag that indicates if there is a "next" record in the GlideRecord.Valid values:true: Move to the next record was successful.false: No more records in the result set..
+                     * @description  
                      */
                     next(): boolean;
-
                     /**
-                     * Moves to the next record in the GlideRecord object.
-                     * @memberof GlideRecord
-                     * @returns {boolean} True if moving to the next record is successful. False if there are no more records in the result set.
-                     */
-                    _next(): boolean;
-                    /**
-                     * Retrieves the current operation being performed, such as insert, update, or delete.
+                     * Retrieves the current operation being performed, such as insert, update, delete, etc.
                      * @memberof GlideRecord
                      * @returns {string} The current operation.
                      */
                     operation(): string;
-
                     /**
-                     * Specifies an orderBy column.
+                     * Specifies a field name to be used to order the query set. This may be called more than once to order by multiple fields.
                      * @memberof GlideRecord
-                     * @param {string} name The column name used to order the records in this GlideRecord object.
+                     * @param {string} fieldName - A field name
                      */
-                    orderBy(name: string): void;
-
+                    orderBy(fieldName: string): void;
+                    /**
+                     * Specifies a field used to order the query set in descending order.
+                     * @memberof GlideRecord
+                     * @param {string} fieldName - A field name.
+                     */
+                    orderByDesc(fieldName: string): void;
+                    /**
+                     * Runs the query against the table based on the filters specified by addQuery() and addEncodedQuery().
+                     * @memberof GlideRecord
+                     * @param {*} field - Field name
+                     * @param {*} value - Field value
+                     */
+                    query(field: any, value: any): void;
+                    /**
+                     * Runs the query against the table based on the filters specified by addQuery() and addEncodedQuery().
+                     * @memberof GlideRecord
+                     */
                     query(): void;
-                    _query(): void;
-
                     /**
-                     * Runs the query against the table based on the filters specified by addQuery, addEncodedQuery, etc.
+                     * Used in domain separated instances. Similar to query(), runs the query against the table based on the filters specified by addQuery() and addEncodedQuery(), but ignores domains.
                      * @memberof GlideRecord
-                     * @param {string} [name] The column name to query on.
-                     * @param {*} [value] The value to query for.
+                     * @param {*} field - A field name
+                     * @param {*} value - A value
                      */
-                    query(field?: string, value?: any): void;
-
+                    queryNoDomain(field: any, value: any): void;
                     /**
-                     * Runs the query against the table based on the filters specified by addQuery, addEncodedQuery, etc.
-                     * @memberof GlideRecord
-                     * @param {string} [name] The column name to query on.
-                     * @param {*} [value] The value to query for.
-                     */
-                    _query(field: string, value: any): void;
-
-                    /**
-                     * Specifies a decending orderBy column.
-                     * @param {string} name The column name used to order the records in this GlideRecord object.
+                     * Sets the current record to be the record that was saved with saveLocation(). If saveLocation() has not been called, the current record is set to be the first record of the GlideRecord.
                      * @memberof GlideRecord
                      */
-                    orderByDesc(name: string): void;
+                    restoreLocation(): void;
                     /**
-                     * Sets a flag to indicate if the next database action (insert, update, delete) is to be aborted. This is often used in business rules.
+                     * Save the current row number so that we can get back to this location using the restoreLocation() method.
                      * @memberof GlideRecord
-                     * @param b True to abort the next action. False if the action is to be allowed.
+                     */
+                    saveLocation(): void;
+                    /**
+                     * Sets a flag to indicate if the next database action (insert, update, delete) is to be aborted.
+                     * @memberof GlideRecord
+                     * @param {boolean} b - True to abort next action, or false to allow the next action.
                      */
                     setAbortAction(b: boolean): void;
-
                     /**
-                     * Sets the limit for number of records are fetched by the GlideRecord query.
+                     * Sets the specified field to the specified display value.
                      * @memberof GlideRecord
-                     * @param {number} maxNumRecords The maximum number of records to fetch.
+                     * @param {string} name - Field name
+                     * @param {*} value - Display value for the specified field.
+                     * @description 
                      */
-                    setLimit(maxNumRecords: number): void;
+                    setDisplayValue(name: string, value: any): void;
                     /**
-                     * Sets sys_id value for the current record.
-                     * @param {string} guid The GUID to be assigned to the current record.
+                     * Updates the record even if fields have not changed.
                      * @memberof GlideRecord
+                     * @param {boolean} force - True to update even if fields have not changed, otherwise false.
+                     */
+                    setForceUpdate(force: boolean): void;
+                    /**
+                     * Sets the limit for how many records are in the GlideRecord.
+                     * @memberof GlideRecord
+                     * @param {number} limit - Limit for records to fetch.
+                     * @description 
+                     */
+                    setLimit(limit: number): void;
+                    /**
+                     * Sets the current row location.
+                     * @memberof GlideRecord
+                     * @param {number} rowNumber - The row number to set as the current row.
+                     */
+                    setLocation(rowNumber: number): void;
+                    /**
+                     * Generates a new GUID and sets it as the unique id for the current record. This function applies only to new records. The GUID for an existing record cannot be changed
+                     * @memberof GlideRecord
+                     */
+                    setNewGuid(): void;
+                    /**
+                     * Generates a new GUID and sets it as the unique id for the current record, when inserting a new record.
+                     * @memberof GlideRecord
+                     * @param {string} guid - A string value for the new GUID
+                     * @description 
                      */
                     setNewGuidValue(guid: string): void;
-
                     /**
-                     * Sets the value of the field with the specified name to the specified value.
+                     * Enables or disables using the reference field's display name when querying a reference field.
                      * @memberof GlideRecord
-                     * @param {string} name Name of the field.
-                     * @param {*} value The value to assign to the field.
+                     * @param {boolean} queryReferences - If true, will generate a string of display names. If false, will generate a string of sys_ids.
+                     */
+                    setQueryReferences(queryReferences: boolean): void;
+                    /**
+                     * Disable or enable the running of any engines (approval rules / assignment rules).
+                     * @memberof GlideRecord
+                     * @param {boolean} e - If true, enables engines. If false disables engines.
+                     */
+                    setUseEngines(e: boolean): void;
+                    /**
+                     * Sets the specified field to the specified value.
+                     * @memberof GlideRecord
+                     * @param {string} name - Field name
+                     * @param {*} value - A value to be assigned.
+                     * @description  
                      */
                     setValue(name: string, value: any): void;
-
                     /**
-                     * Enables or disables the running of business rules, script engines, and audit.
+                     * Enables or disables the running of business rules that might normally be triggered by subsequent actions. If the e parameter is set to false, an insert/update will not be audited. Auditing only happens when the parameter is set to true for a GlideRecord operation.
                      * @memberof GlideRecord
-                     * @param {boolean} enable If true (default), enables business rules. If false, disables business rules.
+                     * @param {boolean} e - If true (default), enables business rules. If false, disables business rules.
+                     * @description  
                      */
-                    setWorkflow(enable: boolean): void;
-
+                    setWorkflow(e: boolean): void;
                     /**
-                     * Updates the GlideRecord with any changes that have been made. If the record does not already exist, it is inserted.
+                     * Updates the GlideRecord with any changes that have been made. If the record does not exist, it is inserted.
                      * @memberof GlideRecord
-                     * @param {string} [reason] The reason for the update. The reason is displayed in the audit record.
-                     * @returns {string|null} Unique ID of the new or updated record. Returns null if the update fails.
+                     * @param {*} [reason] - Reason for the update. The reason appears in the audit record.
+                     * @returns {string} The sys_id of the new or updated record. Returns null if the update fails..
+                     * @description 
                      */
-                    update(reason?: string): string | null;
-
+                    update(reason?: any): string;
                     /**
-                     * Updates each GlideRecord in the list with any changes that have been made.
+                     * Updates each GlideRecord in a stated query with a specified set of changes.
                      * @memberof GlideRecord
+                     * @description  
                      */
                     updateMultiple(): void;
+                    /**
+                     * Updates a record and also inserts or updates any related records with the information provided.
+                     * @memberof GlideRecord
+                     * @param {*} reason - A string designating the reasons for the updates. The reason is displayed in the audit record.
+                     * @returns {string} The sys_id for the record being updated..
+                     */
+                    updateWithReferences(reason: any): string;
+                    /**
+                     * Moves to the next record in the GlideRecord. Provides the same functionality as next(), intended to be used in cases where the GlideRecord has a column named next.
+                     * @memberof GlideRecord
+                     * @returns {boolean} True if there are more records in the query set..
+                     * @description 
+                     */
+                    _next(): boolean;
+                    /**
+                     * Identical to query(). This method is intended to be used on tables where there is a column named query, which would interfere with using the query() method.
+                     * @memberof GlideRecord
+                     * @param {*} name - A field name
+                     * @param {*} value - A value
+                     * @description  
+                     */
+                    _query(name: any, value: any): void;
                 }
                 // export class GlideRecordFactory { }
                 // export class GlideRecordKeySetLoader { }
@@ -3613,7 +3900,61 @@ declare namespace Packages {
                     setEnforceSecurity(enforce: boolean): void;
                 }
                 // export class GlideScriptGlobals { }
-                // export class GlideRecordUtil { }
+                /**
+                 * A utility class for working with GlideRecords
+                 * @class GlideRecordUtil
+                 * @description The GlideRecordUtil class is available in server-side scripts.
+                 */
+                export class GlideRecordUtil {
+                    /**
+                     * Returns a GlideRecord instance positioned to the given CI sys_id, and of the right class (table).
+                     * @memberof GlideRecordUtil
+                     * @param {string} sys_id - The sys_id of the desired CI.
+                     * @returns {GlideRecord} A GlideRecord instance positioned to the given CI sys_id, and of the right class (table)..
+                     */
+                    getCIGR(sys_id: string): GlideRecord;
+                    /**
+                     * Returns a list of all the fields in the specified GlideRecord.
+                     * @memberof GlideRecordUtil
+                     * @param {GlideRecord} gr - A GlideRecord instance positioned to a valid record.
+                     * @returns {string} An array of field names for the specified GlideRecord..
+                     */
+                    getFields(gr: GlideRecord): string;
+                    /**
+                     * Returns a GlideRecord instance for the given table, positioned to the given sys_id, and of the right class (table).
+                     * @memberof GlideRecordUtil
+                     * @param {string} baseTable - The name of the base table containing the sys_id.
+                     * @param {string} sys_id - The sys_id of the desired record.
+                     * @returns {GlideRecord} The GlideRecord for the specified sys_id..
+                     * @description 
+                     */
+                    getGR(baseTable: string, sys_id: string): GlideRecord;
+                    /**
+                     * Returns a Java ArrayList of the ancestors of the given table name.
+                     * @memberof GlideRecordUtil
+                     * @param {string} tableName - Name of the table
+                     * @returns {Packages.java.util.ArrayList<GLIDE.String>} A list of ancestors of the specified table.
+                     * @description 
+                     */
+                    getTables(tableName: string): Packages.java.util.ArrayList<GLIDE.String>;
+                    /**
+                     * Sets the fields in the specified GlideRecord with the field values contained in the specified hashmap, unless that field name is in the ignore hashmap.
+                     * @memberof GlideRecordUtil
+                     * @param {*} hashMap - An Object instance (being used as a hashmap), with properties named for fields and containing the fields' value.
+                     * @param {GlideRecord} gr - The GlideRecord instance to receive the field values.
+                     * @param {*} ignore - An optional hashmap of field names to ignore.
+                     */
+                    mergeToGR(hashMap: any, gr: GlideRecord, ignore: any): void;
+                    /**
+                     * Populates the given hashmap from the given GlideRecord instance. Each field in the GlideRecord becomes a property in the hashmap.
+                     * @memberof GlideRecordUtil
+                     * @param {*} hashMap - An object being used as a hashmap.
+                     * @param {GlideRecord} gr - A GlideRecord instance positioned to a valid record.
+                     * @param {*} ignore - An optional hashmap of file names not to populate.
+                     */
+                    populateFromGR(hashMap: any, gr: GlideRecord, ignore: any): void;
+                }
+
                 // export class GlideSystemUtilDB { }
                 // export class ScriptWriter { }
                 // export class GlideSessionSandbox { }
@@ -4294,21 +4635,67 @@ declare namespace Packages {
                 // export class RelationshipUtil { }
 
                 /**
-                 * GlideSession API.
-                 * @class Packages.com.glide.sys.GlideSession
+                 * The GlideSession API allows you to find information about the current session.
+                 * @class GlideSession
                  */
                 export class GlideSession {
-                    protected constructor();
+                    /**
+                     * Clears a session client value previously set with putClientData().
+                     * @memberof GlideSession
+                     * @param {string} paramName - Name of the client data to clear.
+                     * @description 
+                     */
+                    clearClientData(paramName: string): void;
+                    /**
+                     * Returns a session client value previously set with putClientData().
+                     * @memberof GlideSession
+                     * @param {string} paramName - Name of the client data to retrieve.
+                     * @returns {string} The client data as a string..
+                     * @description  
+                     */
                     getClientData(paramName: string): string;
-                    getClientIP(): string;
-                    getCurrentApplicationId(): string;
+                    /**
+                     * Gets the session's language code.
+                     * @memberof GlideSession
+                     * @returns {string} The session's language code..
+                     * @description 
+                     */
                     getLanguage(): string;
-                    getSessionToken(): string;
+                    /**
+                     * Gets a list of roles for the current user.
+                     * @memberof GlideSession
+                     * @returns {string} A comma separated list of roles..
+                     * @description 
+                     */
+                    getRoles(): string;
+                    /**
+                     * Gets the name of the session's time zone.
+                     * @memberof GlideSession
+                     * @returns {string} The name of the session's time zone..
+                     * @description 
+                     */
                     getTimeZoneName(): string;
-                    getUrlOnStack(): string;
-                    isImpersonating(): boolean;
+                    /**
+                     * Determines if the current session is interactive.
+                     * @memberof GlideSession
+                     * @returns {boolean} True if the session is interactive..
+                     * @description  
+                     */
                     isInteractive(): boolean;
+                    /**
+                     * Determines if the current user is currently logged in.
+                     * @memberof GlideSession
+                     * @returns {boolean} True if the current user is logged in..
+                     * @description 
+                     */
                     isLoggedIn(): boolean;
+                    /**
+                     * Sets a session client value that can be retrieved with getClientData(). This method is used in a server side script that runs when a form is created.
+                     * @memberof GlideSession
+                     * @param {string} paramName - Name of the client parameter to set.
+                     * @param {string} paramValue - Parameter value.
+                     * @description 
+                     */
                     putClientData(paramName: string, paramValue: string): void;
                 }
 
@@ -4320,111 +4707,111 @@ declare namespace Packages {
                 // export class Upgrade { }
 
                 /**
-                 * GlideUser API.
+                 * The GlideUser API provides access to information about the current user and current user roles.
                  * @class User
+                 * @description Using the GlideUser API avoids the need to use the slower GlideRecord queries to obtain user information.
                  */
                 export class User {
                     /**
                      * Returns the current user's company sys_id.
-                     * @memberof User
+                     * @memberof GlideUser
                      * @returns {string} Company sys_id.
+                     * @description 
                      */
                     getCompanyID(): string;
-
                     /**
                      * Returns the current user's display name.
-                     * @memberof User
-                     * @returns {string} User's display name
+                     * @memberof GlideUser
+                     * @returns {string} User's display name.
+                     * @description 
                      */
                     getDisplayName(): string;
-                    getDomainID(): string;
+                    /**
+                     * Returns the display value of the user's session domain.
+                     * @memberof GlideUser
+                     * @returns {string} The display value of the user's session domain..
+                     * @description 
+                     */
+                    getDomainDisplayValue(): string;
                     /**
                      * Returns the user's email address.
-                     * @memberof User
-                     * @returns {string} User's email address
+                     * @memberof GlideUser
+                     * @returns {string} User's email address.
+                     * @description 
                      */
                     getEmail(): string;
                     /**
                      * Returns the user's first name.
-                     * @memberof User
-                     * @returns {string} User's first name
+                     * @memberof GlideUser
+                     * @returns {string} User's first name.
+                     * @description 
                      */
                     getFirstName(): string;
                     /**
-                     * Gets the sys_id of the current user.
-                     * @memberof User
-                     * @returns {string} User's sys_id
+                     * Returns the sys_id of the current user.
+                     * @memberof GlideUser
+                     * @returns {string} User's sys_id.
+                     * @description 
                      */
                     getID(): string;
                     /**
                      * Returns the user's last name.
-                     * @memberof User
-                     * @returns {string} User's last name
+                     * @memberof GlideUser
+                     * @returns {string} User's last name.
+                     * @description 
                      */
                     getLastName(): string;
-
+                    /**
+                     * Returns an iterator containing the list of all groups to which the user belongs. Only active groups are returned.
+                     * @memberof GlideUser
+                     * @returns {Packages.java.util.Iterator<GLIDE.String>} A list of sys_ids for the active groups to which the user belongs..
+                     * @description 
+                     */
+                    getMyGroups(): Packages.java.util.Iterator<GLIDE.String>;
                     /**
                      * Returns the user ID, or login name, of the current user.
-                     * @memberof User
-                     * @returns {string} User ID
+                     * @memberof GlideUser
+                     * @returns {string} User ID or login name..
+                     * @description 
                      */
                     getName(): string;
                     /**
-                     * Gets the specified user preference value for the current user.
-                     * @memberof User
-                     * @param name The name of the preference.
-                     * @returns {string} The preference value.
-                     */
-                    getPreference(name: string): string;
-
-                    /**
                      * Returns a list of roles that includes explicitly granted roles, inherited roles, and roles acquired by group membership.
-                     * @memberof User
-                     * @returns {string[]} List of all roles available to the user.
+                     * @memberof GlideUser
+                     * @returns {Array<*>} List of all roles available to the user.
+                     * @description 
                      */
-                    getRoles(): string[];
+                    getRoles(): any[];
+                    /**
+                     * Returns the user object associated with the passed-in user ID (sys_id in sys_user) or user_name.
+                     * @memberof GlideUser
+                     * @param {string} id - Unique ID (sys_id) or user_name of the desired user record.
+                     * @returns {*} User object associated with the specified sys_id or user_name..
+                     */
+                    getUserByID(id: string): any;
                     /**
                      * Returns the list of roles explicitly granted to the user.
-                     * @memberof User
-                     * @returns {string[]} List of roles explicitly assigned to the user.
+                     * @memberof GlideUser
+                     * @returns {Array<*>} List of roles explicitly assigned to the user.
+                     * @description 
                      */
-                    getUserRoles(): string[];
+                    getUserRoles(): any[];
                     /**
-                     * Returns true if the current user belongs to any of the specified roles.
-                     * @memberof User
-                     * @param {string} role - The name of a role or a comma-separated string containing role names.
-                     * @returns {boolean}
+                     * Determines if the current user has the specified role.
+                     * @memberof GlideUser
+                     * @param {string} role - Role to check
+                     * @returns {boolean} True if the user has the role..
+                     * @description 
                      */
                     hasRole(role: string): boolean;
                     /**
-                     * Returns true if the current user belongs to all of the specified roles.
-                     * @memberof User
-                     * @param {string} roles - Names of all required roles.
-                     * @returns {boolean}
-                     */
-                    hasRole(roles: string[]): boolean;
-                    /**
-                     * Returns true if the current user has any roles.
-                     * @returns {boolean}
-                     * @memberof GlideUser
-                     */
-                    hasRoles(): boolean;
-
-                    /**
                      * Determines if the current user is a member of the specified group.
-                     * @memberof User
-                     * @param group Group to check
-                     * @returns {boolean} True if the user is a member of the group.
+                     * @memberof GlideUser
+                     * @param {string} group - Group to check
+                     * @returns {boolean} True if the user is a member of the group..
+                     * @description 
                      */
                     isMemberOf(group: string): boolean;
-
-                    /**
-                     * Saves a user preference value to the database.
-                     * @memberof User
-                     * @param name The preference to save.
-                     * @param value The preference value.
-                     */
-                    savePreference(name: string, value: string): void;
                 }
 
                 // export class UserAuthenticator { }
@@ -4887,557 +5274,569 @@ declare namespace Packages {
                 }
 
                 /**
-                 * Class for performing date/time operations and working with glide_date_time fields.
-                 * @description Methods in this class perform date-time operations, such as instantiating a GlideDateTime object, performing date-time calculations, formatting a date-time,
-                 * or converting between date-time formats.
+                 * The GlideDateTime class provides methods for performing operations on GlideDateTime objects, such as instantiating GlideDateTime objects or working with glide_date_time fields.
                  * @class GlideDateTime
+                 * @description Use the GlideDateTime methods to perform date-time operations, such as instantiating a GlideDateTime object, performing date-time calculations, formatting a date-time, or converting between date-time formats.
                  */
                 export class GlideDateTime {
                     /**
-                     * Instantiates a new {@link GlideDateTime} object.
-                     * @param {string|GlideDateTime} [value] {@link GlideDateTime} to initialize from or string representation of date and time value in the UTC time zone specified with the
-                     * format yyyy-MM-dd HH:mm:ss. If omitted, then it is initialized with the current date and time in Greenwich Mean Time (GMT).
+                     * Adds a GlideTime object to the current GlideDateTime object.
+                     * @memberof GlideDateTime
+                     * @param {GlideTime} time - The time to add.
+                     * @description 
                      */
-                    constructor(value?: string | GlideDateTime);
-
+                    add(time: GlideTime): void;
                     /**
-                     * Adds a {@link GlideTime} object or milliseconds to the current {@link GlideDateTime} object
-                     * @param {GlideTime|number} value The {@link GlideTime|time} or milliseconds to add.
+                     * Adds a specified number of milliseconds to the GlideDateTime object.
+                     * @memberof GlideDateTime
+                     * @param {number} milliseconds - The number of milliseconds to add
+                     * @description 
                      */
-                    add(value: GlideTime | number): void;
-
+                    add(milliseconds: number): void;
                     /**
-                     * Adds a specified number of days to the current {@link GlideDateTime} object. A negative parameter subtracts days.
-                     * @param {number} days The number of days to add. Use a negative value to subtract.
-                     * @deprecated Use {@link GlideDateTime#addDaysLocalTime|addDaysLocalTime()} and {@link GlideDateTime#addDaysUTC|addDaysUTC()} instead of this method.
+                     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days.
+                     * @memberof GlideDateTime
+                     * @param {number} days - The number of days to add. Use a negative number to subtract.
+                     * @description 
                      */
                     addDays(days: number): void;
-
                     /**
-                     * Adds a specified number of days to the current {@link GlideDateTime} object.
-                     * @param {number} days The number of days to add. Use a negative value to subtract.
-                     * @description A negative parameter subtracts days. The method determines the local date and time equivalent to the value stored by the {@link GlideDateTime} object,
-                     * then adds or subtracts days using the local date and time values.
+                     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days.
+                     * @memberof GlideDateTime
+                     * @param {number} days - The number of days to add. Use a negative value to subtract.
+                     * @description  
                      */
                     addDaysLocalTime(days: number): void;
-
                     /**
-                     * Adds a specified number of days to the current {@link GlideDateTime} object.
-                     * @param {number} days The number of days to add. Use a negative number to subtract.
-                     * @description A negative parameter subtracts days. The method determines the UTC date and time equivalent to the value stored by the {@link GlideDateTime} object,
-                     * then adds or subtracts days using the UTC date and time values.
+                     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days.
+                     * @memberof GlideDateTime
+                     * @param {number} days - The number of days to add. Use a negative value to subtract.
+                     * @description  
                      */
                     addDaysUTC(days: number): void;
-
                     /**
-                     * Adds a specified number of months to the current {@link GlideDateTime} object.
-                     * @param {number} months The number of months to add. Use a negative number to subtract.
-                     * @deprecated Use {@link GlideDateTime#addMonthsLocalTime|addMonthsLocalTime()} and {@link GlideDateTime#addMonthsUTC|addMonthsUTC()} instead of this method.
+                     * Instantiates a new GlideDateTime object with the current date and time in GMT format.
+                     * @constructor
+                     */
+                    constructor();
+                    /**
+                     * Instantiates a new GlideDateTime object set to the time of a specified GlideDateTime object in GMT format.
+                     * @constructor
+                     * @param {GlideDateTime} gDT - Object used to set the time of the new object.
+                     */
+                    constructor(gDT: GlideDateTime);
+                    /**
+                     * Instantiates a new GlideDateTime object from a date and time value in the UTC time zone specified with the format yyyy-MM-dd HH:mm:ss.
+                     * @constructor
+                     * @param {string} dateTime - A UTC date and time using the format yyyy-MM-dd HH:mm:ss.
+                     */
+                    constructor(dateTime: string);
+                    /**
+                     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months.
+                     * @memberof GlideDateTime
+                     * @param {number} months - The number of months to add. Use a negative number to subtract.
+                     * @description 
                      */
                     addMonths(months: number): void;
-
                     /**
-                     * Adds a specified number of months to the current {@link GlideDateTime} object.
-                     * @param {number} months The number of months to add. Use a negative value to subtract.
-                     * @description A negative parameter subtracts months. The method determines the local date and time equivalent to the value stored by the {@link GlideDateTime} object,
-                     * then adds or subtracts months using the local date and time values.
+                     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months.
+                     * @memberof GlideDateTime
+                     * @param {number} months - The number of months to add. Use a negative value to subtract.
+                     * @description  
                      */
                     addMonthsLocalTime(months: number): void;
-
                     /**
-                     * Adds a specified number of months to the current {@link GlideDateTime} object.
-                     * @param {number} months The number of months to add. Use a negative value to subtract.
-                     * @description A negative parameter subtracts months. The method determines the UTC date and time equivalent to the value stored by the {@link GlideDateTime} object,
-                     * then adds or subtracts months using the UTC date and time values.
+                     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months.
+                     * @memberof GlideDateTime
+                     * @param {number} months - The number of months to add. Use a negative number to subtract.
+                     * @description  
                      */
                     addMonthsUTC(months: number): void;
-
                     /**
-                     * Adds the specified number of seconds to the current {@link GlideDateTime} object.
-                     * @param {number} seconds The number of seconds to add.
+                     * Adds a specified number of seconds to the GlideDateTime object.
+                     * @memberof GlideDateTime
+                     * @param {number} seconds - The number of seconds to add
+                     * @description 
                      */
                     addSeconds(seconds: number): void;
-
                     /**
-                     * Adds a specified number of weeks to the current {@link GlideDateTime} object.
-                     * @param {number} weeks The number of weeks to add. Use a negative number to subtract.
-                     * @deprecated Use {@link GlideDateTime#addWeeksLocalTime|addWeeksLocalTime()} and {@link GlideDateTime#addWeeksUTC|addWeeksUTC()} instead of this method.
+                     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks.
+                     * @memberof GlideDateTime
+                     * @param {number} weeks - The number of weeks to add. Use a negative number to subtract.
+                     * @description 
                      */
                     addWeeks(weeks: number): void;
-
                     /**
-                     * dds a specified number of weeks to the current {@link GlideDateTime} object.
-                     * @param {number} weeks The number of weeks to add. Use a negative value to subtract.
-                     * @description The method determines the local date and time equivalent to the value stored by the {@link GlideDateTime} object, then adds or subtracts weeks using the
-                     * local date and time values.
+                     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks.
+                     * @memberof GlideDateTime
+                     * @param {number} weeks - The number of weeks to add. Use a negative number to subtract.
+                     * @description  
                      */
                     addWeeksLocalTime(weeks: number): void;
-
                     /**
-                     * Adds a specified number of weeks to the current {@link GlideDateTime} object.
-                     * @param {number} weeks The number of weeks to add. Use a negative value to subtract.
-                     * @description A negative parameter subtracts weeks. The method determines the UTC date and time equivalent to the value stored by the {@link GlideDateTime} object,
-                     * then adds or subtracts weeks using the UTC date and time values.
+                     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks.
+                     * @memberof GlideDateTime
+                     * @param {number} weeks - The number of weeks to add. Use a negative number to subtract.
+                     * @description  
                      */
                     addWeeksUTC(weeks: number): void;
-
                     /**
-                     * Adds a specified number of years to the current {@link GlideDateTime} object.
-                     * @param {number} years The number of years to add. Use a negative number to subtract.
-                     * @deprecated Use {@link GlideDateTime#addYearsLocalTime|addYearsLocalTime()} and {@link GlideDateTime#addYearsUTC|addYearsUTC()} instead of this method.
+                     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years.
+                     * @memberof GlideDateTime
+                     * @param {number} years - The number of years to add. Use a negative value to subtract.
+                     * @description 
                      */
                     addYears(years: number): void;
-
                     /**
-                     * Adds a specified number of years to the current {@link GlideDateTime} object.
-                     * @param {number} years The number of years to add. Use a negative value to subtract.
-                     * @description The method determines the local date and time equivalent to the value stored by the {@link GlideDateTime} object, then adds or subtracts years using the
-                     * local date and time values.
+                     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years.
+                     * @memberof GlideDateTime
+                     * @param {number} years - The number of years to add. To subtract use a negative value.
+                     * @description  
                      */
                     addYearsLocalTime(years: number): void;
-
                     /**
-                     * Adds a specified number of years to the current {@link GlideDateTime} object.
-                     * @param {number} years The number of years to add. Use a negative value to subtract.
-                     * @description A negative parameter subtracts years. The date and time value stored by {@link GlideDateTime} object is interpreted as being in the UTC time zone.
+                     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years.
+                     * @memberof GlideDateTime
+                     * @param {number} years - The number of years to add. Use a negative value to subtract.
+                     * @description  
                      */
                     addYearsUTC(years: number): void;
-
                     /**
-                     * Determines if the {@link GlideDateTime} object occurs after the specified {@link GlideDateTime}.
-                     * @param {GlideDateTime} gdt The time to check against.
-                     * @returns {boolean} Returns true if the {@link GlideDateTime} object's time is after the time specified by the parameter.
+                     * Compares two date and time objects to determine whether one occurs before the other or if they are equivalent.
+                     * @memberof GlideDateTime
+                     * @param {*} dateTime - Date time in a GlideDateTime object
+                     * @returns {number} 0 = Dates are equal1 = The object's date is after the date specified in the parameter-1 = The object's date is before the date specified in the parameter.
+                     * @description 
                      */
-                    after(gdt: GlideDateTime): boolean;
-
+                    compareTo(dateTime: any): number;
                     /**
-                     * Determines if the {@link GlideDateTime} object occurs before the specified {@link GlideDateTime}.
-                     * @param {GlideDateTime} gdt The time to check against.
-                     * @returns {boolean} Returns true if the {@link GlideDateTime} object's time is before the time specified by the parameter.
+                     * Compares an object with an existing value for equality.
+                     * @memberof GlideDateTime
+                     * @param {*} GDT - The object to compare. Can be a GlideDateTIme object or a valid date time string.
+                     * @returns {boolean} True if they are equal, false otherwise..
+                     * @description 
                      */
-                    before(gdt: GlideDateTime): boolean;
-
+                    equals(GDT: any): boolean;
                     /**
-                     * Compares two date and time objects to determine whether they are equivalent or one occurs before or after the other.
-                     * @param {*} o Date and time object in {@link GlideDateTime} format.
-                     * @returns {number} 0 = Dates are equal; 1 = The object's date is after the date specified in the parameter; -1 = The object's date is before the date specified in the
-                     * parameter.
-                     */
-                    compareTo(o: any): number;
-
-                    /**
-                     * Compares a datetime with an existing value for equality.
-                     * @param {GlideDateTime|string} o The datetime to compare.
-                     * @returns {boolean} Returns true if they are equal; otherwise, false.
-                     */
-                    equals(o: any): boolean;
-
-                    /**
-                     * Gets the {@link GlideDate|date} stored by the {@link GlideDateTime} object, expressed in the standard format, yyyy-MM-dd, and the system time zone, UTC by default.
-                     * @returns {GlideDate} The {@link GlideDate|date} in the system time zone.
+                     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the system time zone, UTC by default.
+                     * @memberof GlideDateTime
+                     * @returns {GlideDate} The date in the system time zone..
+                     * @description 
                      */
                     getDate(): GlideDate;
-
                     /**
-                     * Returns the current day of the month in the UTC time zone.
-                     * @returns {number} The day of the month in the UTC time zone, from 1 to 31.
-                     * @deprecated Use {@link GlideDateTime#getDayOfMonthLocalTime|getDayOfMonthLocalTime()} and {@link GlideDateTime#getDayOfMonthUTC|getDayOfMonthUTC()} instead of this method.
+                     * Gets the current day of the month in the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The day of the month in the UTC time zone, from 1 to 31..
+                     * @description 
                      */
                     getDayOfMonth(): number;
-
                     /**
-                     * Gets the day of the month stored by the {@link GlideDateTime} object, expressed in the current user's time zone.
-                     * @returns {number} The day of the month in the user's time zone, from 1 to 31.
+                     * Gets the day of the month stored by the GlideDateTime object, expressed in the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The day of the month in the user's time zone, from 1 to 31..
+                     * @description 
                      */
                     getDayOfMonthLocalTime(): number;
-
                     /**
-                     * Gets the day of the month stored by the {@link GlideDateTime} object, expressed in the UTC time zone.
-                     * @returns {number} The day of the month in the UTC time zone, from 1 to 31.
+                     * Gets the day of the month stored by the GlideDateTime object, expressed in the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The day of the month in the UTC time zone, from 1 to 31..
+                     * @description 
                      */
                     getDayOfMonthUTC(): number;
-
                     /**
-                     * Returns the day of the week stored by the {@link GlideDateTime} object, expressed in the user's time zone.
-                     * @returns {number} The day of the week value - Monday = 1, ... Sunday = 7.
-                     * @deprecated Use {@link GlideDateTime#getDayOfWeekLocalTime|getDayOfWeekLocalTime()} and {@link GlideDateTime#getDayOfWeekUTC|getDayOfWeekUTC()} instead of this method.
+                     * Retrieves the day of the week stored by the GlideDateTime object, expressed in the user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The day of the week value - Monday = 1, ... Sunday = 7..
+                     * @description 
                      */
                     getDayOfWeek(): number;
-
                     /**
-                     * Gets the day of the week stored by the {@link GlideDateTime} object, expressed in the user's time zone.
-                     * @returns {number} The day of week value, in the user's time zone, from 1 to 7. Monday equals 1, Sunday equals 7.
+                     * Gets the day of the week stored by the GlideDateTime object, expressed in the user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The day of the week value - Monday = 1, ... Sunday = 7.
+                     * @description 
                      */
                     getDayOfWeekLocalTime(): number;
-
                     /**
-                     * Gets the day of the week stored by the {@link GlideDateTime} object, expressed in the UTC time zone.
-                     * @returns {number} The day of week value from 1 to 7. Monday equals 1, Sunday equals 7.
+                     * Gets the day of the week stored by the GlideDateTime object, expressed in the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The day of the week value - Monday = 1, ... Sunday = 7.
+                     * @description 
                      */
                     getDayOfWeekUTC(): number;
-
                     /**
-                     * Returns the number of days in the month stored by the {@link GlideDateTime} object, expressed in the Java Virtual Machine time zone.
-                     * @returns {number} The number of days in the current month in the Java Virtual Machine time zone.
-                     * @deprecated Use {@link GlideDateTime#getDaysInMonthLocalTime|getDaysInMonthLocalTime()} and {@link GlideDateTime#getDaysInMonthUTC|getDaysInMonthUTC()} instead of this method.
+                     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the Java Virtual Machine time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The number of days in the current month in the Java Virtual Machine time zone..
+                     * @description 
                      */
                     getDaysInMonth(): number;
-
                     /**
-                     * Gets the number of days in the month stored by the {@link GlideDateTime} object, expressed in the current user's time zone.
-                     * @returns {number} The number of days in the current month in the user's time zone.
+                     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The number of days in the current month in the user's time zone..
+                     * @description 
                      */
                     getDaysInMonthLocalTime(): number;
-
                     /**
-                     * Gets the number of days in the month stored by the {@link GlideDateTime} object, expressed in the UTC time zone.
-                     * @returns {number} The number of days in the month stored by the {@link GlideDateTime} object, expressed in the UTC time zone.
+                     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The number of days in the month stored by the GlideDateTime object, expressed in the UTC time zone..
+                     * @description 
                      */
                     getDaysInMonthUTC(): number;
-
                     /**
-                     * Gets the date and time value in the current user's display format and time zone.
-                     * @returns {string} The date and time in the user's format and time zone.
-                     * @description Keep in mind when designing business rules or script includes that this method may return values in different formats for different users.
+                     * Gets the date and time value in the current user's display format and time zone. Referring to the GlideDateTime object directly returns the date and time value in the GMT time zone.
+                     * @memberof GlideDateTime
+                     * @returns {string} The date and time in the user's format and time zone. Keep in mind when designing business rules or script includes that this method may return values in different formats for different users..
+                     * @description 
                      */
                     getDisplayValue(): string;
-
                     /**
-                     * Gets the display value in the internal format (yyyy-MM-dd HH:mm:ss).
-                     * @returns {string} The date and time values for the {@link GlideDateTime} object in the current user's time zone and the internal date and time format of
-                     * yyyy-MM-dd HH:mm:ss.
+                     * Returns the display value in the internal format (yyyy-MM-dd HH:mm:ss). This method is useful for date/time fields, but not for date fields.
+                     * @memberof GlideDateTime
+                     * @returns {string} The date and time values for the GlideDateTime object in the current user's time zone and the internal date and time format of yyyy-MM-dd HH:mm:ss..
+                     * @description 
                      */
                     getDisplayValueInternal(): string;
-
                     /**
                      * Gets the amount of time that daylight saving time is offset.
-                     * @returns {number} Amount of time, in milliseconds, that daylight saving is offset. Returns 0 if there is no offset or if the time is not during daylight saving time.
+                     * @memberof GlideDateTime
+                     * @returns {number} Amount of time, in milliseconds, that daylight saving is offset. Returns 0 if there is no offset or if the time is not during daylight saving time..
+                     * @description 
                      */
                     getDSTOffset(): number;
-
                     /**
                      * Gets the current error message.
+                     * @memberof GlideDateTime
                      * @returns {string} The error message.
+                     * @description 
                      */
-                    getErrorMsg(): string | null | undefined;
-
+                    getErrorMsg(): string;
                     /**
                      * Returns the object's time in the local time zone and in the internal format.
-                     * @returns {string} The object's time in the local time zone and the internal format.
+                     * @memberof GlideDateTime
+                     * @returns {string} The object's time in the local time zone and the internal format..
+                     * @description 
                      */
                     getInternalFormattedLocalTime(): string;
-
                     /**
                      * Returns a date and time object set to midnight of a specified day using UTC.
-                     * @param dayOfTheWeek The day of the week for which to return the date/time object.
-                     * @returns {GlideDateTime} A {@link GlideDateTime} object set to midnight.
+                     * @memberof GlideDateTime
+                     * @param {number} dayOfTheWeek - The day of the week for which to return the date/time object.
+                     * @returns {GlideDateTime} A GlideDateTime object set to midnight..
                      */
                     getInternalMidnight(dayOfTheWeek: number): GlideDateTime;
-
                     /**
-                     * Gets the {@link GlideDate|date} stored by the {@link GlideDateTime} object, expressed in the standard format, yyyy-MM-dd, and the current user's time zone.
-                     * @returns {GlideDate} The {@link GlideDate|date} in the user's time zone.
+                     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {GlideDate} The date in the user's time zone..
+                     * @description 
                      */
                     getLocalDate(): GlideDate;
-
                     /**
-                     * Returns a {@link GlideTime} object that represents the time portion of the {@link GlideDateTime} object in the user's time zone.
-                     * @returns {GlideTime} The {@link GlideTime|time} in the user's time zone.
+                     * Gets the time in the user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {GlideTime} The time in the user's time zone..
+                     * @description 
                      */
                     getLocalTime(): GlideTime;
-
                     /**
-                     * Returns the month stored by the {@link GlideDateTime} object, expressed in Java Virtual Machine time zone.
-                     * @returns {number} The numerical value of the month, Jan=1, Dec=12.
-                     * @deprecated Use {@link GlideDateTime#getMonthLocalTime|getMonthLocalTime()} and {@link GlideDateTime#getMonthUTC|getMonthUTC()} instead of this method.
+                     * Retrieves the month stored by the GlideDateTime object, expressed in Java Virtual Machine time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The numerical value of the month, Jan=1, Dec=12..
+                     * @description 
                      */
                     getMonth(): number;
-
                     /**
-                     * Gets the month stored by the {@link GlideDateTime} object, expressed in the current user's time zone.
-                     * @returns {number} The numerical value of the month.
+                     * Gets the month stored by the GlideDateTime object, expressed in the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The numerical value of the month, Jan=1, Dec=12..
+                     * @description 
                      */
                     getMonthLocalTime(): number;
-
                     /**
-                     * Gets the month stored by the {@link GlideDateTime} object, expressed in the UTC time zone.
-                     * @returns {number} The numerical value of the month.
+                     * Gets the month stored by the GlideDateTime object, expressed in the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The numerical value of the month, Jan=1, Dec=12..
+                     * @description 
                      */
                     getMonthUTC(): number;
-
                     /**
                      * Gets the number of milliseconds since January 1, 1970, 00:00:00 GMT.
-                     * @returns {number} The number of milliseconds since January 1, 1970, 00:00:00 GMT.
+                     * @memberof GlideDateTime
+                     * @returns {number} The number of milliseconds since January 1, 1970, 00:00:00 GMT..
                      */
                     getNumericValue(): number;
-
                     /**
-                     * Returns the amount of time elapsed since the midnight of a specified day to the current time.
-                     * @param dayOfTheWeek Day of week value from 1 to 7. 1 = Monday, 7=Sunday.
-                     * @returns {GlideDateTime} The amount of time elapsed since midnight of the specified day.
-                     * @description To display the result in user-friendly terms, set the value to {@link GlideDuration}.
+                     * Retrieves the amount of time elapsed since the midnight of a specified day to the current time.
+                     * @memberof GlideDateTime
+                     * @param {number} dayOfWeek - Day of week value from 1 to 7. 1 = Monday, 7=Sunday.
+                     * @returns {GlideTime} The amount of time elapsed since midnight of the specified day. To display the result in user-friendly terms, set the value to GlideDuration..
                      */
-                    getSpanTime(dayOfTheWeek: number): GlideDateTime;
-
+                    getSpanTime(dayOfWeek: number): GlideTime;
                     /**
-                     * Returns the Unix duration stamp.
-                     * @returns {GlideTime} The Unix duration stamp in system format based on GMT time.
+                     * Gets the Unix duration stamp.
+                     * @memberof GlideDateTime
+                     * @returns {GlideTime} The Unix duration stamp in system format based on GMT time..
+                     * @description 
                      */
                     getTime(): GlideTime;
-
                     /**
                      * Gets the time zone offset in milliseconds.
-                     * @returns {number} The number of milliseconds of time zone offset.
+                     * @memberof GlideDateTime
+                     * @returns {number} The number of milliseconds of the time zone offset.
+                     * @description 
                      */
                     getTZOffset(): number;
-
                     /**
-                     * Returns the object's time in the local time zone and in the user's format.
-                     * @returns {string} The object's time in the local time zone and in the user's format.
+                     * Returns the object's time in local time zone in the user's format.
+                     * @memberof GlideDateTime
+                     * @returns {string} The object's time in local time and the user's format..
+                     * @description 
                      */
                     getUserFormattedLocalTime(): string;
-
                     /**
-                     * Returns the time zone for the current user session.
-                     * @returns {string} The {@link TimeZone} object for the current user.
+                     * Retrieves the time zone for the current user session.
+                     * @memberof GlideDateTime
+                     * @returns {TimeZone} TimeZone object for the current user..
+                     * @description 
                      */
                     getUserTimeZone(): TimeZone;
-
                     /**
-                     * Returns a {@link GlideDateTime} object with the time set to midnight using the UTC time zone.
-                     * @param dayOfTheWeek The day of the week, from 1 to 7. Monday=1, Sunday=7. Do not enter 0 in this parameter.
-                     * @returns {GlideDateTime} A new {@link GlideDateTime} object set to midnight.
+                     * Retrieves a GlideDateTime object with the time set to midnight using the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @param {number} dayOfTheWeek - The day of the week, from 1 to 7. Monday=1, Sunday=7. Do not enter 0 in this parameter.
+                     * @returns {GlideDateTime} A new GlideDateTime object, set to midnight..
+                     * @description 
                      */
                     getUTCMidnight(dayOfTheWeek: number): GlideDateTime;
-
                     /**
-                     * Gets the date and time value stored by the {@link GlideDateTime} object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default.
-                     * @returns {string} The date and time value in the internal format and system time zone.
+                     * Gets the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default.
+                     * @memberof GlideDateTime
+                     * @returns {string} The date and time in the internal format and system time zone..
+                     * @description 
                      */
                     getValue(): string;
-
                     /**
-                     * Gets the number of the week stored by the {@link GlideDateTime} object, expressed in the current user's time zone.
-                     * @returns {number} The number of the current week in local time. The highest week number in a year is either 52 or 53.
-                     * @description All weeks begin on Sunday. The first week of the year is the week that contains at least one day of the new year. The week beginning Sunday
-                     * 2015-12-27 is considered the first week of 2016 as that week contains January 1 and 2.
+                     * Gets the number of the week stored by the GlideDateTime object, expressed in the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The number of the current week. The highest week number in a year is either 52 or 53..
+                     * @description  
                      */
                     getWeekOfYearLocalTime(): number;
-
                     /**
-                     * Gets the number of the week stored by the {@link GlideDateTime} object, expressed in the UTC time zone.
-                     * @returns {number} The number of the current week in UTC time. The highest week number in a year is either 52 or 53.
-                     * @description All weeks begin on Sunday. The first week of the year is the week that contains at least one day of the new year. The week beginning Sunday 2015-12-27
-                     * is considered the first week of 2016 as that week contains January 1 and 2.
+                     * Gets the number of the week stored by the GlideDateTime object, expressed in the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The number of the current week in UTC time. The highest week number in a year is either 52 or 53..
+                     * @description  
                      */
                     getWeekOfYearUTC(): number;
-
                     /**
-                     * Returns the year stored by the {@link GlideDateTime} object, expressed in the Java Virtual Machine time zone.
-                     * @returns {number} The 4-digit year value in the Java Virtual Machine time zone.
-                     * @deprecated Use {@link GlideDateTime#getYearLocalTime|getYearLocalTime()} and {@link GlideDateTime#getYearUTC|getYearUTC()} instead of this method.
+                     * Retrieves the year stored by the GlideDateTime object, expressed in the Java Virtual Machine time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The 4-digit year value in the Java Virtual Machine time zone..
+                     * @description 
                      */
                     getYear(): number;
-
                     /**
-                     * Gets the year stored by the {@link GlideDateTime} object, expressed in the current user's time zone.
-                     * @returns {number} Four-digit year value in the user's time zone.
+                     * Gets the year stored by the GlideDateTime object, expressed in the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The 4-digit year value in the user's time zone..
+                     * @description 
                      */
                     getYearLocalTime(): number;
-
                     /**
-                     * Gets the year stored by the {@link GlideDateTime} object, expressed in the UTC time zone.
-                     * @returns {number} 4-digit year value in the UTC time zone.
+                     * Gets the year stored by the GlideDateTime object, expressed in the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @returns {number} The 4-digit year value in the UTC time zone..
+                     * @description 
                      */
                     getYearUTC(): number;
-
                     /**
                      * Determines if an object's date is set.
-                     * @returns {boolean} True if the object date is set; otherwise, returns false.
+                     * @memberof GlideDateTime
+                     * @returns {boolean} True if the object's date is set, false otherwise..
+                     * @description 
                      */
                     hasDate(): boolean;
-
                     /**
-                     * Determines if an object's time uses a daylight saving offset.
-                     * @returns {boolean} True if the time is daylight saving; otherwise, returns false.
+                     * Determines if the object's time uses a daylight saving offset
+                     * @memberof GlideDateTime
+                     * @returns {boolean} True if the time is daylight saving time, false otherwise..
+                     * @description 
                      */
                     isDST(): boolean;
-
                     /**
                      * Determines if a value is a valid date and time.
-                     * @returns {boolean} True if value is valid; otherwise, returns false.
+                     * @memberof GlideDateTime
+                     * @returns {boolean} True if value is valid, false otherwise..
+                     * @description 
                      */
                     isValid(): boolean;
-
-                    /**
-                     * Determines if the {@link GlideDateTime} object occurs on or after the specified {@link GlideDateTime}.
-                     * @param {GlideDateTime} gdt The time to check against.
-                     * @returns {boolean} Returns true if the {@link GlideDateTime} object's time is on or after the time specified by the parameter.
-                     */
-                    onOrAfter(gdt: GlideDateTime): boolean;
-
-                    /**
-                     * Determines if the {@link GlideDateTime} object occurs on or before the specified {@link GlideDateTime}.
-                     * @param {GlideDateTime} gdt The time to check against.
-                     * @returns {boolean} Returns true if the {@link GlideDateTime} object's time is on or before the time specified by the parameter.
-                     */
-                    onOrBefore(gdt: GlideDateTime): boolean;
-
                     /**
                      * Sets the day of the month to a specified value.
-                     * @param {number} day Day of the month, from 1 to 31.
-                     * @deprecated Use {@link GlideDateTime#setDayOfMonthLocalTime|setDayOfMonthLocalTime()} and {@link GlideDateTime#setDayOfMonthUTC|setDayOfMonthUTC()} instead of this method.
+                     * @memberof GlideDateTime
+                     * @param {number} day - Day of the month, from 1 to 31.
+                     * @description 
                      */
                     setDayOfMonth(day: number): void;
-
                     /**
-                     * Sets the day of the month to a specified value.
-                     * @param {number} day The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last
-                     * day of the month.
+                     * Sets the day of the month to a specified value in the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @param {number} day - The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
+                     * @description 
                      */
                     setDayOfMonthLocalTime(day: number): void;
-
                     /**
                      * Sets the day of the month to a specified value in the UTC time zone.
-                     * @param {number} day The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last
-                     * day of the month.
+                     * @memberof GlideDateTime
+                     * @param {number} day - The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
+                     * @description 
                      */
                     setDayOfMonthUTC(day: number): void;
-
                     /**
                      * Sets a date and time value using the current user's display format and time zone.
-                     * @param {string} asDisplayed The date and time in the current user's display format and time zone.
-                     * @param {string} [format] The date and time format to use to parse the value parameter.
-                     * @description If the 'format' parameter is used, this method throws a runtime exception if the date and time format used in the value parameter does not match the
-                     * format parameter. You can retrieve the error message by calling {@link GlideDateTime#getErrorMsg|getErrorMsg()} on the {@link GlideDateTime} object after the
-                     * exception is caught.
-                     * If the 'format' parameter is not used, then the 'asDisplayed' parameter must be formatted using the current user's preferred display format, such as
-                     * MM-dd-yyyy HH:mm:ss. To assign the current date and time to a variable in a workflow script, use
-                     * variable.setDisplayValue({@link GlideSystem#nowDateTime|gs.nowDateTime});.
+                     * @memberof GlideDateTime
+                     * @param {string} asDisplayed - The date and time in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as MM-dd-yyyy HH:mm:ss. To assign the current date and time to a variable in a workflow script, use &lt;variable&gt;.setDisplayValue(gs.nowDateTime);.
+                     * @description 
                      */
-                    setDisplayValue(asDisplayed: string, format?: string): void;
-
+                    setDisplayValue(asDisplayed: string): void;
+                    /**
+                     * Sets a date and time value using the current user's time zone and the specified date and time format.
+                     * @memberof GlideDateTime
+                     * @param {string} dateTime - The date and time in the current user's time zone.
+                     * @param {string} format - The format to use to parse the dateTime parameter.
+                     * @description  
+                     */
+                    setDisplayValue(dateTime: string, format: string): void;
                     /**
                      * Sets a date and time value using the internal format (yyyy-MM-dd HH:mm:ss) and the current user's time zone.
-                     * @param {string} asDisplayed The date and time in internal format.
+                     * @memberof GlideDateTime
+                     * @param {string} dateTime - The date and time in internal format
+                     * @description 
                      */
-                    setDisplayValueInternal(asDisplayed: string): void;
-
+                    setDisplayValueInternal(dateTime: string): void;
                     /**
                      * Sets a date and time value using the internal format (yyyy-MM-dd HH:mm:ss) and the current user's time zone.
-                     * @param {string} dateTime The date and time in internal format.
-                     * @description This method attempts to parse incomplete date and time values.
+                     * @memberof GlideDateTime
+                     * @param {string} dateTime - The date and time in internal format.
+                     * @description 
                      */
                     setDisplayValueInternalWithAlternates(dateTime: string): void;
-
                     /**
-                     * Sets the date and time of the current object using an existing {@link GlideDateTime} object.
-                     * @param {GlideDateTime} gdt The object to use for setting the datetime value.
-                     * @description This method is equivalent to instantiating a new object with a {@link GlideDateTime} parameter.
+                     * Sets the date and time of the current object using an existing GlideDateTime object.
+                     * @memberof GlideDateTime
+                     * @param {GlideDateTime} gDT - A GlideDateTime object
+                     * @description  
                      */
-                    setGlideDateTime(gdt: GlideDateTime): void;
-
+                    setGlideDateTime(gDT: GlideDateTime): void;
                     /**
                      * Sets the date and time.
-                     * @param {string|GlideDateTime} dateTime The date and time to use.
-                     * @description This method is equivalent to {@link GlideDateTime#setValue|setValue(Object)}.
+                     * @memberof GlideDateTime
+                     * @param {string} dateTime - The date and time to use. Accepts either a string in the GMT time zone in the internal format, or a GlideDateTime object.
+                     * @description 
                      */
                     setInitialValue(dateTime: string): void;
-
                     /**
-                     * Sets the month stored by the {@link GlideDateTime} object to a specified value using the Java Virtual Machine time zone.
-                     * @param {number} month The month to change to.
-                     * @deprecated Use {@link GlideDateTime#setMonthLocalTime|setMonthLocalTime()} and {@link GlideDateTime#setMonthUTC|setMonthUTC()} instead of this method.
+                     * Sets the month stored by the GlideDateTime object to a specified value using the Java Virtual Machine time zone.
+                     * @memberof GlideDateTime
+                     * @param {number} month - The month to change to.
+                     * @description 
                      */
                     setMonth(month: number): void;
-
                     /**
-                     * Sets the month stored by the {@link GlideDateTime} object to the specified value using the current user's time zone.
-                     * @param {number} month The month to change to.
+                     * Sets the month stored by the GlideDateTime object to a specified value using the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @param {number} month - The month to change to.
+                     * @description 
                      */
                     setMonthLocalTime(month: number): void;
-
                     /**
-                     * Sets the month stored by the {@link GlideDateTime} object to the specified value using the UTC time zone.
-                     * @param {number} month The month to change to.
+                     * Sets the month stored by the GlideDateTime object to a specified value using the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @param {number} month - The month to change to.
+                     * @description 
                      */
                     setMonthUTC(month: number): void;
-
                     /**
                      * Sets the date and time to the number of milliseconds since January 1, 1970 00:00:00 GMT.
-                     * @param {number} milliseconds Number of milliseconds.
+                     * @memberof GlideDateTime
+                     * @param {number} milliseconds - Number of milliseconds
                      */
                     setNumericValue(milliseconds: number): void;
-
                     /**
                      * Sets the time zone of the GlideDateTime object to be the specified time zone.
-                     * @param {TimeZone} timeZone A time zone object.
+                     * @memberof GlideDateTime
+                     * @param {TimeZone} timeZone - A time zone object
                      */
                     setTZ(timeZone: TimeZone): void;
-
                     /**
-                     * Sets the date and time of the {@link GlideDateTime} object.
-                     * @param {string | Packages.com.glide.script.GlideElement} o The date and time to use.
-                     * This parameter may be one of several types: 
-                     * A string in the UTC time zone and the internal format of yyyy-MM-dd HH:mm:ss: Sets the value of the object to the specified date and time.
-                     * Using the method this way is equivalent to instantiating a new {@link GlideDateTime} object using the {@link GlideDateTime|GlideDateTime(String value)} constructor.
-                     * If the date and time format used does not match the internal format, the method attempts to set the date and time using other available formats.
-                     * Resolving the date and time this way can lead to inaccurate data due to ambiguity in the day and month values. When using a non-standard date and time format,
-                     * use {@link GlideDateTime#setValueUTC|setValueUTC(String dt, String format)} instead.
-                     * -- or --
-                     * A {@link GlideDateTime} object. Sets the value of the object to the date and time stored by the {@link GlideDateTime} passed in the parameter.
-                     * Using the method this way is equivalent to instantiating a new {@link GlideDateTime} object using the {@link GlideDateTime|GlideDateTime(GlideDateTime g)} constructor.
-                     * -- or --
-                     * A JavaScript Number. Sets the value of the object using the Number value as milliseconds past January 1, 1970 00:00:00 GMT.
+                     * Sets the date and time of the GlideDateTime object.
+                     * @memberof GlideDateTime
+                     * @param {*} dateTime - The date and time to use. This parameter may be one of several types.A string in the UTC time zone and the internal format of yyyy-MM-dd HH:mm:ss: Sets the value of the object to the specified date and time. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(value) constructor. If the date and time format used does not match the internal format, the method attempts to set the date and time using other available formats. Resolving the date and time this way can lead to inaccurate data due to ambiguity in the day and month values. When using a non-standard date and time format, use setValue(dt, format) instead.A GlideDateTime object: Sets the value of the object to the date and time stored by the GlideDateTime passed in the parameter. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(g) constructor.A Java Date object: Sets the value of the object using the value stored by the Java Date object. Using the method this way is equivalent to passing the value returned by the Java Date object getTime() to the GlideDateTime setNumericValue() method. This method does not accept JavaScript Date objects.A JavaScript Number: Sets the value of the object using the Number value as milliseconds past January 1, 1970 00:00:00 GMT. Using the method this way is equivalent to the setNumericValue(milliseconds) method.A Java Integer or Long: Sets the value of the object using the Integer or Long value as milliseconds past January 1, 1970 00:00:00 GMT. Using the method this way is equivalent to the setNumericValue(milliseconds) method.
+                     * @description  
                      */
-                    setValue(o: string | Packages.com.glide.script.GlideElement): void;
-
+                    setValue(dateTime: any): void;
                     /**
                      * Sets a date and time value using the UTC time zone and the specified date and time format.
-                     * @param {string} dt The date and time to use.
-                     * @param {string} format The date and time format to use.
-                     * @description This method throws a runtime exception if the date and time format used in the dt parameter does not match the format parameter.
-                     * You can retrieve the error message by calling {@link GlideDateTime#getErrorMsg|getErrorMsg()} on the {@link GlideDateTime} object after the exception is caught.
+                     * @memberof GlideDateTime
+                     * @param {string} dateTime - The date and time to use.
+                     * @param {string} format - The format to use.
+                     * @description  
                      */
-                    setValueUTC(dt: string, format: string): void;
-
+                    setValueUTC(dateTime: string, format: string): void;
                     /**
-                     * Sets the year stored by the {@link GlideDateTime} object to a specified value using the Java Virtual Machine time zone.
-                     * @param {number} year The year to change to.
-                     * @deprecated Use {@link GlideDateTime#setYearLocalTime|setYearLocalTime()} and {@link GlideDateTime#setYearUTC|setYearUTC()} instead of this method.
+                     * Sets the year stored by the GlideDateTime object to a specified value using the Java Virtual Machine time zone.
+                     * @memberof GlideDateTime
+                     * @param {number} year - The year to change to.
+                     * @description 
                      */
                     setYear(year: number): void;
-
                     /**
-                     * Sets the year stored by the {@link GlideDateTime} object to the specified value using the current user's time zone.
-                     * @param {number} year The year to change to.
+                     * Sets the year stored by the GlideDateTime object to a specified value using the current user's time zone.
+                     * @memberof GlideDateTime
+                     * @param {number} year - The year to change to.
+                     * @description 
                      */
                     setYearLocalTime(year: number): void;
-
                     /**
-                     * Sets the year stored by the {@link GlideDateTime} object to the specified value using the UTC time zone.
-                     * @param {number} year The year to change to.
+                     * Sets the year stored by the GlideDateTime object to a specified value using the UTC time zone.
+                     * @memberof GlideDateTime
+                     * @param {number} year - The year to change to.
+                     * @description 
                      */
                     setYearUTC(year: number): void;
-
                     /**
-                     * Gets the duration difference between two {@link GlideDateTime} values.
-                     * @param {GlideDateTime} start The start value.
-                     * @param {GlideDateTime} end The end value.
-                     * @returns {GlideDuration} The {@link GlideDuration|duration} between the two values
+                     * Gets the duration difference between two GlideDateTime values.
+                     * @memberof GlideDateTime
+                     * @param {GlideDateTime} start - The start value
+                     * @param {GlideDateTime} end - The end value
+                     * @returns {GlideDuration} The time between the two values.
+                     * @description 
                      */
-                    static subtract(start: GlideDateTime, end: GlideDateTime): GlideDuration;
-
+                    subtract(start: GlideDateTime, end: GlideDateTime): GlideDuration;
                     /**
-                     * Subtracts a specified amount of time from the current {@link GlideDateTime} object.
-                     * @param {GlideTime|number} value The {@link GlideTime|time} value or milliseconds to subtract.
+                     * Subtracts a specified amount of time.
+                     * @memberof GlideDateTime
+                     * @param {GlideTime} time - The time to subtract
+                     * @description 
                      */
-                    subtract(value: GlideTime | number): void;
-
+                    subtract(time: GlideTime): void;
                     /**
-                     * Gets the date and time value stored by the {@link GlideDateTime} object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default.
-                     * @returns {string} The date and time stored by the {@link GlideDateTime} object in the system time zone and format.
-                     * @description This method is equivalent to {@link GlideDateTime#getValue|getValue()}.
+                     * Subtracts a specified number of milliseconds from the GlideDateTime object.
+                     * @memberof GlideDateTime
+                     * @param {number} milliseconds - The number of milliseconds to subtract
+                     * @description 
+                     */
+                    subtract(milliseconds: number): void;
+                    /**
+                     * Returns the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default.
+                     * @memberof GlideDateTime
+                     * @returns {string} The date and time stored by the GlideDateTime object in the system time zone and format..
+                     * @description  
                      */
                     toString(): string;
                 }
@@ -6343,1040 +6742,352 @@ declare class GlideDuration extends Packages.com.glide.glideobject.GlideDuration
 // declare class GlideECBDownloader extends Packages.com.glide.currency.ECBDownloader { }
 // declare class GlideECCQueueTransformer extends Packages.com.glide.db.impex.ECCQueueTransformer { }
 declare class GlideElement extends Packages.com.glide.script.GlideElement { private constructor(); }
-declare class GlideElementBoolean extends Packages.java.lang.Boolean implements IGlideElementValue<boolean, GlideElementBoolean, BooleanString>  {
-    protected constructor();
-    /**
-     * Determines if the previous value of the current field matches the specified object.
-     * @param {GlideElementBoolean | NilableGlideString} o An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches, false if it does not.
-     */
-    changesFrom(o: NilableGlideBoolean): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @param {NilableGlideBoolean} o An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches, false if it does not.
-     */
-    changesTo(o: NilableGlideBoolean): boolean;
-
-    /**
-     * Sets the value of a field.
-     * @param {NilableGlideBoolean} value Object value to set the field to.
-     */
-    setValue(value: NilableGlideBoolean): void;
+declare class GlideElementBoolean extends Packages.java.lang.Boolean implements GLIDE.IValueElement<boolean, GlideElementBoolean, JS.BooleanString> {
     /**
      * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof GlideElement
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the field can be created, false otherwise..
+     * @description 
      */
     canCreate(): boolean;
-
     /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof GlideElement
+     * Determines whether the user's role permits them to read the associated GlideRecord.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the field can be read, false otherwise..
+     * @description 
      */
     canRead(): boolean;
-
     /**
      * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof GlideElement
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the user can write to the field, false otherwise..
+     * @description 
      */
     canWrite(): boolean;
-
     /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @returns {boolean} True if the fields have been changed, false if the field has not.
-     * @memberof GlideElement
+     * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the field has changed, false otherwise..
+     * @description  
      */
     changes(): boolean;
-
-    /**
-     * Returns the value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name
-     * @returns {string} Attribute value.
-     * @memberof GlideElement
-     */
-    getAttribute(attributeName: string): string;
-
-    /**
-     * Returns the Boolean value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name.
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-     * @memberof GlideElement
-     */
-    getBooleanAttribute(attributeName: string): boolean;
-
-    getChoiceValue(): string;
-
-    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-    getDecryptedValue(): string;
-
-    /**
-     * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof GlideElement
-     */
-    getDisplayValue(maxCharacters?: number): string;
-
-    /**
-     * Gets the current element descriptor.
-     * @returns {GlideElementDescriptor}
-     * @memberof GlideElement
-     */
-    getED(): GlideElementDescriptor;
-
-    getGlobalDisplayValue(): string;
-
-    /**
-     * Returns the HTML value of a field.
-     * @param {number} [maxChars] Maximum number of characters to return.
-     * @returns {string} HTML value for the field.
-     * @memberof GlideElement
-     */
-    getHTMLValue(maxCharacters?: number): string;
-
-    getJournalEntry(mostRecent: number): string;
-
-    /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof GlideElement
-     */
-    getLabel(): string;
-
-    // getModifiedBy(): string;
-
-    /**
-     * Gets the name of the field.
-     * @returns {string} The name of the field.
-     * @memberof GlideElement
-     */
-    getName(): string;
-
-    /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof GlideElement
-     */
-    getTableName(): string;
-
-    /**
-     * Gets the value of the current element.
-     * @returns {NilableBooleanString}
-     * @memberof GlideElement
-     */
-    getValue(): NilableBooleanString;
-
-    /**
-     * Determines if a field is null.
-     * @returns {boolean} True if the field is null or an empty string, false if not.
-     * @memberof GlideElement
-     */
-    nil(): boolean;
-
-    /**
-     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-     * @memberof GlideElement
-     */
-    setDateNumericValue(milliseconds: number): void;
-
-    setDisplayValue(value: any): void;
-
-    setError(errorMessage: string): void;
-
-    setPhoneNumber(phoneNumber: any, strict: boolean): void;
-}
-declare class GlideElementConditions extends Packages.java.lang.String implements IGlideElementValue<string, GlideElementConditions, string> {
-    protected constructor();
     /**
      * Determines if the previous value of the current field matches the specified object.
-     * @param {GlideElementConditions | NilableGlideString} o An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches, false if it does not.
+     * @memberof GlideElementBoolean
+     * @param {GLIDE.NilableBoolean} value - An object value to check against the previous value of the current field.
+     * @returns {boolean} True if the previous value matches the parameter, false if it does not..
+     * @description  
      */
-    changesFrom(o: GlideElementConditions | NilableGlideString): boolean;
-
+    changesFrom(value: GLIDE.NilableBoolean): boolean;
     /**
      * Determines if the new value of a field, after a change, matches the specified object.
-     * @param {GlideElementConditions | NilableGlideString} o An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches, false if it does not.
+     * @memberof GlideElementBoolean
+     * @param {GLIDE.NilableBoolean} value - An object value to check against the new value of the current field.
+     * @returns {boolean} True if the new value matches the parameter, false if it does not..
+     * @description  
      */
-    changesTo(o: GlideElementConditions | NilableGlideString): boolean;
-
+    changesTo(value: GLIDE.NilableBoolean): boolean;
     /**
-     * Sets the value of a field.
-     * @param {GlideElementConditions | NilableGlideString} value Object value to set the field to.
+     * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+     * @memberof GlideElementBoolean
+     * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT..
+     * @description 
      */
-    setValue(value: GlideElementConditions | NilableGlideString): void;
+    dateNumericValue(): number;
     /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof GlideElement
+     * Debugs the object and adds debug messages using setError(String).
+     * @memberof GlideElementBoolean
+     * @param {*} o - An object to debug.
      */
-    canCreate(): boolean;
-
-    /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof GlideElement
-     */
-    canRead(): boolean;
-
-    /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof GlideElement
-     */
-    canWrite(): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @returns {boolean} True if the fields have been changed, false if the field has not.
-     * @memberof GlideElement
-     */
-    changes(): boolean;
-
+    debug(o: any): void;
     /**
      * Returns the value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name
+     * @memberof GlideElementBoolean
+     * @param {string} attributeName - Attribute name
      * @returns {string} Attribute value.
-     * @memberof GlideElement
+     * @description  
      */
     getAttribute(attributeName: string): string;
-
+    /**
+     * Gets the base table of the field.
+     * @memberof GlideElementBoolean
+     * @returns {string} Name of the base table. This may be different from the table that the field is defined on. See "Tables and Classes" in the product documentation..
+     */
+    getBaseTableName(): string;
     /**
      * Returns the Boolean value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name.
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-     * @memberof GlideElement
+     * @memberof GlideElementBoolean
+     * @param {string} attributeName - Attribute name
+     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist..
+     * @description  
      */
     getBooleanAttribute(attributeName: string): boolean;
-
+    /**
+     * Generates a choice list for a field. Returns the choice values from the base table only, not from the extended table.
+     * @memberof GlideElementBoolean
+     * @param {string} [value] - A dependent value.
+     * @returns {Packages.java.util.ArrayList<*>} The choice values for the field..
+     * @description 
+     */
+    getChoices(value?: string): Packages.java.util.ArrayList<any>;
+    /**
+     * Gets the choice label for the current choice value.
+     * @memberof GlideElementBoolean
+     * @returns {string} The choice label..
+     * @description 
+     */
     getChoiceValue(): string;
-
-    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-    getDecryptedValue(): string;
-
+    /**
+     * Gets the number of debug messages logged by debug().
+     * @memberof GlideElementBoolean
+     * @returns {number} The number of debug messages..
+     */
+    getDebugCount(): number;
+    /**
+     * Checks whether or not the field is dependent on another field.
+     * @memberof GlideElementBoolean
+     * @returns {string} Name of the field on which the current field depends..
+     */
+    getDependent(): string;
+    /**
+     * Gets the table that the current table depends on.
+     * @memberof GlideElementBoolean
+     * @returns {string} The name of the table..
+     */
+    getDependentTable(): string;
     /**
      * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof GlideElement
+     * @memberof GlideElementBoolean
+     * @param {number} maxChar - Optional, maximum number of characters to return.
+     * @returns {string} Display value of the field..
+     * @description 
      */
-    getDisplayValue(maxCharacters?: number): string;
-
+    getDisplayValue(maxChar: number): string;
     /**
-     * Gets the current element descriptor.
-     * @returns {GlideElementDescriptor}
-     * @memberof GlideElement
+     * Gets the formatted display value of a field, or a specified substitute value if the display value is null or empty.
+     * @memberof GlideElementBoolean
+     * @param {number} maxChar - Optional, the maximum number of characters to be returned.
+     * @param {string} nullSub - The value to return if the display value is null or empty.
+     * @returns {string} The formatted display value of the field, or the specified substitute value..
+     */
+    getDisplayValueExt(maxChar: number, nullSub: string): string;
+    /**
+     * Returns an element descriptor.
+     * @memberof IDbObject
+     * @returns {GlideElementDescriptor} Field's element descriptor..
+     * @description 
      */
     getED(): GlideElementDescriptor;
-
-    getGlobalDisplayValue(): string;
-
+    /**
+     * Gets the value for a given element.
+     * @memberof GlideElementBoolean
+     * @param {string} value - An element
+     * @returns {string} The value of the element..
+     */
+    getElementValue(value: string): string;
+    /**
+     * Gets error debug messages.
+     * @memberof GlideElementBoolean
+     * @returns {string} A string of debug messages.
+     */
+    getError(): string;
+    /**
+     * Gets the escaped value for the current element.
+     * @memberof GlideElementBoolean
+     * @returns {string} The escaped value of the current element..
+     */
+    getEscapedValue(): string;
+    /**
+     * Gets the CSS style for the field.
+     * @memberof GlideElementBoolean
+     * @returns {string} The CSS style for the field..
+     */
+    getFieldStyle(): string;
+    /**
+     * Gets a glide object.
+     * @memberof GlideElementBoolean
+     * @returns {*} A Glide object..
+     */
+    getGlideObject(): any;
+    /**
+     * Gets a glide record.
+     * @memberof GlideElementBoolean
+     * @returns {GlideRecord} A glide record.
+     */
+    getGlideRecord(): GlideRecord;
     /**
      * Returns the HTML value of a field.
-     * @param {number} [maxChars] Maximum number of characters to return.
-     * @returns {string} HTML value for the field.
-     * @memberof GlideElement
+     * @memberof GlideElementBoolean
+     * @param {number} [maxChars] - Maximum number of characters to return.
+     * @returns {string} HTML value for the field..
+     * @description 
      */
-    getHTMLValue(maxCharacters?: number): string;
-
-    getJournalEntry(mostRecent: number): string;
-
+    getHTMLValue(maxChars?: number): string;
     /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof GlideElement
+     * Returns the HTML value of a field, or a specified substitute value if the HTML value is null or empty.
+     * @memberof GlideElementBoolean
+     * @param {number} maxChar - The maximum number of characters to return.
+     * @param {string} nullSub - The value to return if the HTML value is null or empty.
+     * @returns {string} The HTML value or the specified substitute value..
+     */
+    getHTMLValueExt(maxChar: number, nullSub: string): string;
+    /**
+     * Returns either the most recent journal entry or all journal entries.
+     * @memberof GlideElementBoolean
+     * @param {number} mostRecent - If 1, returns the most recent entry. If -1, returns all journal entries.
+     * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n"..
+     * @description 
+     */
+    getJournalEntry(mostRecent: number): string;
+    /**
+     * Returns the object's label.
+     * @memberof IDbObject
+     * @returns {string} Object's label.
+     * @description 
      */
     getLabel(): string;
-
-    // getModifiedBy(): string;
-
     /**
-     * Gets the name of the field.
-     * @returns {string} The name of the field.
-     * @memberof GlideElement
+     * Returns the name of the field.
+     * @memberof GlideElementBoolean
+     * @returns {string} Field name.
+     * @description 
      */
     getName(): string;
-
     /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof GlideElement
+     * Returns a GlideRecord object for a given reference element.
+     * @memberof GlideElementBoolean
+     * @returns {GlideRecord} A GlideRecord object.
+     * @description  
+     */
+    getRefRecord(): GlideRecord;
+    /**
+     * Get the CSS style for the value.
+     * @memberof GlideElementBoolean
+     * @returns {string} The CSS style for the value..
+     */
+    getStyle(): string;
+    /**
+     * Returns the name of the field's table.
+     * @memberof IDbObject
+     * @returns {string} Name of the table. This may be different from the table Class that the record is in. See Tables and Classes in the product documentation..
+     * @description 
      */
     getTableName(): string;
-
     /**
-     * Gets the value of the current element.
-     * @returns {string}
-     * @memberof GlideElement
+     * Retrieves the value and escapes the HTML.
+     * @memberof GlideElementBoolean
+     * @returns {string} The escaped HTML.
      */
-    getValue(): string;
-
+    getTextAreaDisplayValue(): string;
     /**
-     * Determines if a field is null.
-     * @returns {boolean} True if the field is null or an empty string, false if not.
-     * @memberof GlideElement
+     * Retrieves the XHTML value of a field.
+     * @memberof GlideElementBoolean
+     * @returns {string} The XHTML value.
+     */
+    getXHTMLValue(): string;
+    /**
+     * Gets the XML value of a field as a string.
+     * @memberof GlideElementBoolean
+     * @returns {string} The XML value.
+     */
+    getXMLValue(): string;
+    /**
+     * Determines whether a field has a particular attribute.
+     * @memberof GlideElementBoolean
+     * @param {string} attributeName - The attribute to check for
+     * @returns {boolean} True if the field has the attribute, false otherwise..
+     */
+    hasAttribute(attributeName: string): boolean;
+    /**
+     * Determines if the user has the right to perform a particular operation.
+     * @memberof GlideElementBoolean
+     * @param {string} operationName - Name of the operation to check for
+     * @returns {boolean} True if the user has permission to perform the operation, false otherwise..
+     */
+    hasRightsTo(operationName: string): boolean;
+    /**
+     * Determines if the field has a value.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the field has a value, false otherwise..
+     */
+    hasValue(): boolean;
+    /**
+     * Determines whether the field is null.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the field is null or an empty string, false otherwise..
+     * @description 
      */
     nil(): boolean;
-
     /**
-     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-     * @memberof GlideElement
+     * Sets the duration field to a number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+     * @memberof GlideElementBoolean
+     * @param {number} milliseconds - Number of milliseconds spanned by the duration.
+     * @description 
      */
     setDateNumericValue(milliseconds: number): void;
-
-    setDisplayValue(value: any): void;
-
-    setError(errorMessage: string): void;
-
-    setPhoneNumber(phoneNumber: any, strict: boolean): void;
+    /**
+     * Sets the display value of the field.
+     * @memberof GlideElementBoolean
+     * @param {*} displayValue - Value to be displayed.
+     * @description 
+     */
+    setDisplayValue(displayValue: any): void;
+    /**
+     * Adds an error message.
+     * @memberof GlideElementBoolean
+     * @description  
+     */
+    setError(): void;
+    /**
+     * Sets the initial value of a field.
+     * @memberof GlideElementBoolean
+     * @param {string} value - Initial value for the field.
+     */
+    setInitialValue(value: string): void;
+    /**
+     * Sets the journal entry.
+     * @memberof GlideElementBoolean
+     * @param {*} value - The value to set the journal entry to.
+     * @param {string} userName - The user to attribute the journal entry to. Does not set the journal entry's created by field.
+     */
+    setJournalEntry(value: any, userName: string): void;
+    /**
+     * Sets the value of a field.
+     * @memberof GlideElementBoolean
+     * @param {GLIDE.NilableBoolean} value - The value the field is to be set to.
+     * @description  
+     */
+    setValue(value: GLIDE.NilableBoolean): void;
 }
+declare class GlideElementCompressed extends GLIDE.StringBasedElement<string, GlideElementCompressed, string> { }
+declare class GlideElementConditions extends GLIDE.StringBasedElement<string, GlideElementConditions, string> { }
+declare class GlideElementCurrency extends GLIDE.StringBasedElement<string, GlideElementCurrency, string> { }
+declare class GlideElementDataObject extends GLIDE.StringBasedElement<string, GlideElementDataObject, string> { }
 declare class GlideElementDescriptor extends Packages.com.glide.db.ElementDescriptor { private constructor(); }
-declare class GlideElementDocumentation extends Packages.java.lang.String implements IGlideElementValue<string, GlideElementDocumentation, string> {
-    protected constructor();
-    /**
-     * Determines if the previous value of the current field matches the specified object.
-     * @param {GlideElementDocumentation | NilableGlideString} o An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches, false if it does not.
-     */
-    changesFrom(o: GlideElementDocumentation | NilableGlideString): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @param {GlideElementDocumentation | NilableGlideString} o An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches, false if it does not.
-     */
-    changesTo(o: GlideElementDocumentation | NilableGlideString): boolean;
-
-    /**
-     * Sets the value of a field.
-     * @param {GlideElementDocumentation | NilableGlideString} value Object value to set the field to.
-     */
-    setValue(value: GlideElementDocumentation | NilableGlideString): void;
-    /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof GlideElement
-     */
-    canCreate(): boolean;
-
-    /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof GlideElement
-     */
-    canRead(): boolean;
-
-    /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof GlideElement
-     */
-    canWrite(): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @returns {boolean} True if the fields have been changed, false if the field has not.
-     * @memberof GlideElement
-     */
-    changes(): boolean;
-
-    /**
-     * Returns the value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name
-     * @returns {string} Attribute value.
-     * @memberof GlideElement
-     */
-    getAttribute(attributeName: string): string;
-
-    /**
-     * Returns the Boolean value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name.
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-     * @memberof GlideElement
-     */
-    getBooleanAttribute(attributeName: string): boolean;
-
-    getChoiceValue(): string;
-
-    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-    getDecryptedValue(): string;
-
-    /**
-     * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof GlideElement
-     */
-    getDisplayValue(maxCharacters?: number): string;
-
-    /**
-     * Gets the current element descriptor.
-     * @returns {GlideElementDescriptor}
-     * @memberof GlideElement
-     */
-    getED(): GlideElementDescriptor;
-
-    getGlobalDisplayValue(): string;
-
-    /**
-     * Returns the HTML value of a field.
-     * @param {number} [maxChars] Maximum number of characters to return.
-     * @returns {string} HTML value for the field.
-     * @memberof GlideElement
-     */
-    getHTMLValue(maxCharacters?: number): string;
-
-    getJournalEntry(mostRecent: number): string;
-
-    /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof GlideElement
-     */
-    getLabel(): string;
-
-    // getModifiedBy(): string;
-
-    /**
-     * Gets the name of the field.
-     * @returns {string} The name of the field.
-     * @memberof GlideElement
-     */
-    getName(): string;
-
-    /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof GlideElement
-     */
-    getTableName(): string;
-
-    /**
-     * Gets the value of the current element.
-     * @returns {string}
-     * @memberof GlideElement
-     */
-    getValue(): string;
-
-    /**
-     * Determines if a field is null.
-     * @returns {boolean} True if the field is null or an empty string, false if not.
-     * @memberof GlideElement
-     */
-    nil(): boolean;
-
-    /**
-     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-     * @memberof GlideElement
-     */
-    setDateNumericValue(milliseconds: number): void;
-
-    setDisplayValue(value: any): void;
-
-    setError(errorMessage: string): void;
-
-    setPhoneNumber(phoneNumber: any, strict: boolean): void;
-}
-declare class GlideElementGlideObject extends Packages.com.glide.script.glide_elements.GlideElementGlideObject { private constructor(); }
+declare class GlideElementDocumentation extends GLIDE.StringBasedElement<string, GlideElementDocumentation, string> { }
+declare class GlideElementDocumentId extends GLIDE.StringBasedElement<string, GlideElementDocumentId, string> { }
+declare class GlideElementDomainId extends GLIDE.StringBasedElement<string, GlideElementDomainId, string> { }
+declare class GlideElementGlideObject extends GLIDE.StringBasedElement<string, GlideElementGlideObject, string> { }
+declare class GlideElementGlideVar extends GLIDE.StringBasedElement<string, GlideElementGlideVar, string> { }
+declare class GlideElementIcon extends GLIDE.StringBasedElement<string, GlideElementIcon, string> { }
 // declare class GlideElementIterator extends Packages.com.glide.util.ElementIterator { }
-declare class GlideElementNumeric extends Packages.java.lang.String implements IGlideElementValue<string, GlideElementNumeric, string> {
-    protected constructor();
-    /**
-     * Determines if the previous value of the current field matches the specified object.
-     * @param {GlideElementNumeric | NilableGlideString} o An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches, false if it does not.
-     */
-    changesFrom(o: GlideElementNumeric | NilableGlideString): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @param {GlideElementNumeric | NilableGlideString} o An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches, false if it does not.
-     */
-    changesTo(o: GlideElementNumeric | NilableGlideString): boolean;
-
-    /**
-     * Sets the value of a field.
-     * @param {GlideElementNumeric | NilableGlideString} value Object value to set the field to.
-     */
-    setValue(value: GlideElementNumeric | NilableGlideString): void;
-    /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof GlideElement
-     */
-    canCreate(): boolean;
-
-    /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof GlideElement
-     */
-    canRead(): boolean;
-
-    /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof GlideElement
-     */
-    canWrite(): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @returns {boolean} True if the fields have been changed, false if the field has not.
-     * @memberof GlideElement
-     */
-    changes(): boolean;
-
-    /**
-     * Returns the value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name
-     * @returns {string} Attribute value.
-     * @memberof GlideElement
-     */
-    getAttribute(attributeName: string): string;
-
-    /**
-     * Returns the Boolean value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name.
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-     * @memberof GlideElement
-     */
-    getBooleanAttribute(attributeName: string): boolean;
-
-    getChoiceValue(): string;
-
-    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-    getDecryptedValue(): string;
-
-    /**
-     * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof GlideElement
-     */
-    getDisplayValue(maxCharacters?: number): string;
-
-    /**
-     * Gets the current element descriptor.
-     * @returns {GlideElementDescriptor}
-     * @memberof GlideElement
-     */
-    getED(): GlideElementDescriptor;
-
-    getGlobalDisplayValue(): string;
-
-    /**
-     * Returns the HTML value of a field.
-     * @param {number} [maxChars] Maximum number of characters to return.
-     * @returns {string} HTML value for the field.
-     * @memberof GlideElement
-     */
-    getHTMLValue(maxCharacters?: number): string;
-
-    getJournalEntry(mostRecent: number): string;
-
-    /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof GlideElement
-     */
-    getLabel(): string;
-
-    // getModifiedBy(): string;
-
-    /**
-     * Gets the name of the field.
-     * @returns {string} The name of the field.
-     * @memberof GlideElement
-     */
-    getName(): string;
-
-    /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof GlideElement
-     */
-    getTableName(): string;
-
-    /**
-     * Gets the value of the current element.
-     * @returns {string}
-     * @memberof GlideElement
-     */
-    getValue(): string;
-
-    /**
-     * Determines if a field is null.
-     * @returns {boolean} True if the field is null or an empty string, false if not.
-     * @memberof GlideElement
-     */
-    nil(): boolean;
-
-    /**
-     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-     * @memberof GlideElement
-     */
-    setDateNumericValue(milliseconds: number): void;
-
-    setDisplayValue(value: any): void;
-
-    setError(errorMessage: string): void;
-
-    setPhoneNumber(phoneNumber: any, strict: boolean): void;
-}
+declare class GlideElementNameValue extends GLIDE.StringBasedElement<string, GlideElementNameValue, string> { }
+declare class GlideElementNumeric extends GLIDE.StringBasedElement<number, GlideElementNumeric, string> implements GLIDE.NumericValueElement<number, string> { }
+declare class GlideElementPassword extends GLIDE.StringBasedElement<string, GlideElementPassword, string> { }
+declare class GlideElementPassword2 extends GLIDE.StringBasedElement<string, GlideElementPassword2, string> { }
+declare class GlideElementPrice extends GLIDE.StringBasedElement<string, GlideElementPrice, string> { }
 declare class GlideElementReference extends Packages.com.glide.script.glide_elements.GlideElementReference { private constructor(); }
-declare class GlideElementScript extends Packages.java.lang.String implements IGlideElementValue<string, GlideElementScript, string> {
-    protected constructor();
-    /**
-     * Determines if the previous value of the current field matches the specified object.
-     * @param {GlideElementScript | NilableGlideString} o An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches, false if it does not.
-     */
-    changesFrom(o: GlideElementScript | NilableGlideString): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @param {GlideElementScript | NilableGlideString} o An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches, false if it does not.
-     */
-    changesTo(o: GlideElementScript | NilableGlideString): boolean;
-
-    /**
-     * Sets the value of a field.
-     * @param {GlideElementScript | NilableGlideString} value Object value to set the field to.
-     */
-    setValue(value: GlideElementScript | NilableGlideString): void;
-    /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof GlideElement
-     */
-    canCreate(): boolean;
-
-    /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof GlideElement
-     */
-    canRead(): boolean;
-
-    /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof GlideElement
-     */
-    canWrite(): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @returns {boolean} True if the fields have been changed, false if the field has not.
-     * @memberof GlideElement
-     */
-    changes(): boolean;
-
-    /**
-     * Returns the value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name
-     * @returns {string} Attribute value.
-     * @memberof GlideElement
-     */
-    getAttribute(attributeName: string): string;
-
-    /**
-     * Returns the Boolean value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name.
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-     * @memberof GlideElement
-     */
-    getBooleanAttribute(attributeName: string): boolean;
-
-    getChoiceValue(): string;
-
-    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-    getDecryptedValue(): string;
-
-    /**
-     * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof GlideElement
-     */
-    getDisplayValue(maxCharacters?: number): string;
-
-    /**
-     * Gets the current element descriptor.
-     * @returns {GlideElementDescriptor}
-     * @memberof GlideElement
-     */
-    getED(): GlideElementDescriptor;
-
-    getGlobalDisplayValue(): string;
-
-    /**
-     * Returns the HTML value of a field.
-     * @param {number} [maxChars] Maximum number of characters to return.
-     * @returns {string} HTML value for the field.
-     * @memberof GlideElement
-     */
-    getHTMLValue(maxCharacters?: number): string;
-
-    getJournalEntry(mostRecent: number): string;
-
-    /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof GlideElement
-     */
-    getLabel(): string;
-
-    // getModifiedBy(): string;
-
-    /**
-     * Gets the name of the field.
-     * @returns {string} The name of the field.
-     * @memberof GlideElement
-     */
-    getName(): string;
-
-    /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof GlideElement
-     */
-    getTableName(): string;
-
-    /**
-     * Gets the value of the current element.
-     * @returns {string}
-     * @memberof GlideElement
-     */
-    getValue(): string;
-
-    /**
-     * Determines if a field is null.
-     * @returns {boolean} True if the field is null or an empty string, false if not.
-     * @memberof GlideElement
-     */
-    nil(): boolean;
-
-    /**
-     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-     * @memberof GlideElement
-     */
-    setDateNumericValue(milliseconds: number): void;
-
-    setDisplayValue(value: any): void;
-
-    setError(errorMessage: string): void;
-
-    setPhoneNumber(phoneNumber: any, strict: boolean): void;
-}
-declare class GlideElementSysClassName extends Packages.java.lang.String implements IGlideElementValue<string, GlideElementSysClassName, string> {
-    protected constructor();
-    /**
-     * Determines if the previous value of the current field matches the specified object.
-     * @param {GlideElementSysClassName | NilableGlideString} o An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches, false if it does not.
-     */
-    changesFrom(o: GlideElementSysClassName | NilableGlideString): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @param {GlideElementSysClassName | NilableGlideString} o An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches, false if it does not.
-     */
-    changesTo(o: GlideElementSysClassName | NilableGlideString): boolean;
-
-    /**
-     * Sets the value of a field.
-     * @param {GlideElementSysClassName | NilableGlideString} value Object value to set the field to.
-     */
-    setValue(value: GlideElementSysClassName | NilableGlideString): void;
-    /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof GlideElement
-     */
-    canCreate(): boolean;
-
-    /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof GlideElement
-     */
-    canRead(): boolean;
-
-    /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof GlideElement
-     */
-    canWrite(): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @returns {boolean} True if the fields have been changed, false if the field has not.
-     * @memberof GlideElement
-     */
-    changes(): boolean;
-
-    /**
-     * Returns the value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name
-     * @returns {string} Attribute value.
-     * @memberof GlideElement
-     */
-    getAttribute(attributeName: string): string;
-
-    /**
-     * Returns the Boolean value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name.
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-     * @memberof GlideElement
-     */
-    getBooleanAttribute(attributeName: string): boolean;
-
-    getChoiceValue(): string;
-
-    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-    getDecryptedValue(): string;
-
-    /**
-     * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof GlideElement
-     */
-    getDisplayValue(maxCharacters?: number): string;
-
-    /**
-     * Gets the current element descriptor.
-     * @returns {GlideElementDescriptor}
-     * @memberof GlideElement
-     */
-    getED(): GlideElementDescriptor;
-
-    getGlobalDisplayValue(): string;
-
-    /**
-     * Returns the HTML value of a field.
-     * @param {number} [maxChars] Maximum number of characters to return.
-     * @returns {string} HTML value for the field.
-     * @memberof GlideElement
-     */
-    getHTMLValue(maxCharacters?: number): string;
-
-    getJournalEntry(mostRecent: number): string;
-
-    /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof GlideElement
-     */
-    getLabel(): string;
-
-    // getModifiedBy(): string;
-
-    /**
-     * Gets the name of the field.
-     * @returns {string} The name of the field.
-     * @memberof GlideElement
-     */
-    getName(): string;
-
-    /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof GlideElement
-     */
-    getTableName(): string;
-
-    /**
-     * Gets the value of the current element.
-     * @returns {string}
-     * @memberof GlideElement
-     */
-    getValue(): string;
-
-    /**
-     * Determines if a field is null.
-     * @returns {boolean} True if the field is null or an empty string, false if not.
-     * @memberof GlideElement
-     */
-    nil(): boolean;
-
-    /**
-     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-     * @memberof GlideElement
-     */
-    setDateNumericValue(milliseconds: number): void;
-
-    setDisplayValue(value: any): void;
-
-    setError(errorMessage: string): void;
-
-    setPhoneNumber(phoneNumber: any, strict: boolean): void;
-}
-declare class GlideElementTranslatedField extends Packages.java.lang.String implements IGlideElementValue<string, GlideElementTranslatedField, string> {
-    protected constructor();
-    /**
-     * Determines if the previous value of the current field matches the specified object.
-     * @param {GlideElementTranslatedField | NilableGlideString} o An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches, false if it does not.
-     */
-    changesFrom(o: GlideElementTranslatedField | NilableGlideString): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @param {GlideElementTranslatedField | NilableGlideString} o An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches, false if it does not.
-     */
-    changesTo(o: GlideElementTranslatedField | NilableGlideString): boolean;
-
-    /**
-     * Sets the value of a field.
-     * @param {GlideElementTranslatedField | NilableGlideString} value Object value to set the field to.
-     */
-    setValue(value: GlideElementTranslatedField | NilableGlideString): void;
-    /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @returns {boolean} True if the field can be created, false otherwise.
-     * @memberof GlideElement
-     */
-    canCreate(): boolean;
-
-    /**
-     * Indicates whether the user's role permits them to read the associated GlideRecord.
-     * @returns {boolean} True if the field can be read, false otherwise.
-     * @memberof GlideElement
-     */
-    canRead(): boolean;
-
-    /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @returns {boolean} True if the user can write to the field, false otherwise.
-     * @memberof GlideElement
-     */
-    canWrite(): boolean;
-
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @returns {boolean} True if the fields have been changed, false if the field has not.
-     * @memberof GlideElement
-     */
-    changes(): boolean;
-
-    /**
-     * Returns the value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name
-     * @returns {string} Attribute value.
-     * @memberof GlideElement
-     */
-    getAttribute(attributeName: string): string;
-
-    /**
-     * Returns the Boolean value of the specified attribute from the dictionary.
-     * @param {string} attributeName Attribute name.
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
-     * @memberof GlideElement
-     */
-    getBooleanAttribute(attributeName: string): boolean;
-
-    getChoiceValue(): string;
-
-    getChoices(dependent?: string): Packages.java.util.ArrayList<Packages.java.lang.String>;
-
-    getDecryptedValue(): string;
-
-    /**
-     * Gets the formatted display value of the field.
-     * @param {number} [maxCharacters] Maximum characters desired
-     * @memberof GlideElement
-     */
-    getDisplayValue(maxCharacters?: number): string;
-
-    /**
-     * Gets the current element descriptor.
-     * @returns {GlideElementDescriptor}
-     * @memberof GlideElement
-     */
-    getED(): GlideElementDescriptor;
-
-    getGlobalDisplayValue(): string;
-
-    /**
-     * Returns the HTML value of a field.
-     * @param {number} [maxChars] Maximum number of characters to return.
-     * @returns {string} HTML value for the field.
-     * @memberof GlideElement
-     */
-    getHTMLValue(maxCharacters?: number): string;
-
-    getJournalEntry(mostRecent: number): string;
-
-    /**
-     * Gets the object label.
-     * @returns {string} The object label.
-     * @memberof GlideElement
-     */
-    getLabel(): string;
-
-    // getModifiedBy(): string;
-
-    /**
-     * Gets the name of the field.
-     * @returns {string} The name of the field.
-     * @memberof GlideElement
-     */
-    getName(): string;
-
-    /**
-     * Gets the name of the table on which the field resides.
-     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
-     * @memberof GlideElement
-     */
-    getTableName(): string;
-
-    /**
-     * Gets the value of the current element.
-     * @returns {string}
-     * @memberof GlideElement
-     */
-    getValue(): string;
-
-    /**
-     * Determines if a field is null.
-     * @returns {boolean} True if the field is null or an empty string, false if not.
-     * @memberof GlideElement
-     */
-    nil(): boolean;
-
-    /**
-     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
-     * @param {number} milliseconds Number of milliseconds since 1/1/1970.
-     * @memberof GlideElement
-     */
-    setDateNumericValue(milliseconds: number): void;
-
-    setDisplayValue(value: any): void;
-
-    setError(errorMessage: string): void;
-
-    setPhoneNumber(phoneNumber: any, strict: boolean): void;
-}
+declare class GlideElementScript extends GLIDE.StringBasedElement<string, GlideElementScript, string> { }
+declare class GlideElementShortTableName extends GLIDE.StringBasedElement<string, GlideElementShortTableName, string> { }
+declare class GlideElementSysClassName extends GLIDE.StringBasedElement<string, GlideElementSysClassName, string> { }
+declare class GlideElementTranslatedField extends GLIDE.StringBasedElement<string, GlideElementTranslatedField, string> { }
+declare class GlideElementTranslatedHTML extends GLIDE.StringBasedElement<string, GlideElementTranslatedHTML, string> { }
+declare class GlideElementTranslatedText extends GLIDE.StringBasedElement<string, GlideElementTranslatedText, string> { }
+declare class GlideElementURL extends GLIDE.StringBasedElement<string, GlideElementURL, string> { }
 declare class GlideElementUserImage extends Packages.com.glide.script.glide_elements.GlideElementUserImage { private constructor(); }
+declare class GlideElementVariables extends GLIDE.StringBasedElement<string, GlideElementVariables, string> { }
+declare class GlideElementWorkflow extends GLIDE.StringBasedElement<string, GlideElementWorkflow, string> { }
+declare class GlideElementWorkflowConditions extends GLIDE.StringBasedElement<string, GlideElementWorkflowConditions, string> { }
 // declare class GlideElementXMLSerializer extends Packages.com.glide.script.GlideElementXMLSerializer { }
 declare class GlideEmail extends Packages.com.glide.notification.Email { }
 // declare class GlideEmailAction extends Packages.com.glide.notification.outbound.EmailAction { }
@@ -7596,7 +7307,7 @@ declare class GlideScriptEvaluator extends Packages.com.glide.script.ScriptEvalu
 // declare class GlideScriptGlobals extends Packages.com.glide.script.GlideScriptGlobals { }
 // declare class GlideScriptListener extends Packages.com.glide.listener.ScriptListener { }
 // declare class GlideScriptProcessor extends Packages.com.glide.processors.ScriptProcessor { }
-// declare class GlideScriptRecordUtil extends Packages.com.glide.script.GlideRecordUtil { }
+declare class GlideScriptRecordUtil extends Packages.com.glide.script.GlideRecordUtil { }
 // declare class GlideScriptSystemUtilDB extends Packages.com.glide.script.GlideSystemUtilDB { }
 // declare class GlideScriptViewManager extends Packages.com.glide.ui.ViewManager { }
 // declare class GlideScriptWriter extends Packages.com.glide.script.ScriptWriter { }
@@ -7902,6 +7613,282 @@ declare class GlideXMLDocument extends Packages.com.glide.util.XMLDocument { }
 // declare class TestExtension extends Packages.com.glide.junit.misc.TestExtension { }
 // declare class UINotification extends Packages.com.glide.ui.UINotification { }
 
+/**
+ * JSUtil is a class of shortcuts for common JavaScript routines.
+ * @class JSUtil
+ * @description Script includes and business rules that are marked as Application = "global" and Accessible from = "All applications" can be used in scoped scripts.JSUtil is not available in scoped scripts.The JSUtil API is available in server-side scripts.
+ */
+declare var JSUtil: {
+    /**
+     * Checks if item is null or is undefined.
+     * @memberof JSUtil
+     * @param {*} item - The object to check
+     * @returns {boolean} True if the specified object is null or undefined..
+     */
+    doesNotHave(item: any): boolean;
+    /**
+     * Escape ampersands commonly used to define URL attributes.
+     * @memberof JSUtil
+     * @param {string} text - The text
+     * @returns {string} The text with ampersands properly escaped..
+     */
+    escapeAttr(text: string): string;
+    /**
+     * Escapes invalid XML characters such as "&lt; &gt; &amp;".
+     * @memberof JSUtil
+     * @param {string} text - The text
+     * @returns {string} The text with escape characters added..
+     */
+    escapeText(text: string): string;
+    /**
+     * Returns the value in a boolean GlideRecord field.
+     * @memberof JSUtil
+     * @param {GlideRecord} gr - A GlideRecord
+     * @param {string} field - The field from which to retrieve the boolean value.
+     * @returns {boolean} Returns the value in a boolean GlideRecord field, returns true if value of field is true, "true", 1, or "1"..
+     */
+    getBooleanValue(gr: GlideRecord, field: string): boolean;
+    /**
+     * Checks if item is not null and is not undefined.
+     * @memberof JSUtil
+     * @param {*} item - The Object to check
+     * @returns {boolean} True if the specified object is not null and is not undefined..
+     */
+    has(item: any): boolean;
+    /**
+     * Checks to see if the specified object is a member of the specified class.
+     * @memberof JSUtil
+     * @param {*} item - The object to check
+     * @param {string} className - The class to check
+     * @returns {boolean} True if the specified object is a member of the specified class..
+     * @description 
+     */
+    instance_of(item: any, className: string): boolean;
+    /**
+     * Checks if the specified object is a Java class.
+     * @memberof JSUtil
+     * @param {*} value - The object to check
+     * @returns {boolean} True if the specified object is an instance of a Java class..
+     */
+    isJavaObject(value: any): boolean;
+    /**
+     * Logs all the properties in the given object: name, type, and value.
+     * @memberof JSUtil
+     * @param {*} obj - The object for which to enumerate properties
+     * @param {string} name - Optional name for the logged object
+     * @description 
+     */
+    logObject(obj: any, name: string): void;
+    /**
+     * Checks if item is null, undefined, or evaluates to the empty string.
+     * @memberof JSUtil
+     * @param {*} item - The object to check
+     * @returns {boolean} True if the item is null, undefined, or evaluates to the empty string..
+     */
+    nil(item: any): boolean;
+    /**
+     * Checks if item is null, undefined, or evaluates to the empty string.
+     * @memberof JSUtil
+     * @param {*} item - The object to check
+     * @returns {boolean} True if the item exists and is not empty..
+     */
+    notNil(item: any): boolean;
+    /**
+     * Converts the specified object to a Boolean.
+     * @memberof JSUtil
+     * @param {*} item - The object to convert
+     * @returns {boolean} If the specified object is a boolean, it is passed through. Non-zero numbers return true. Null or undefined return false. Strings return true only if exactly equal to 'true'..
+     */
+    toBoolean(item: any): boolean;
+    /**
+     * Determines the type of the specified object.
+     * @memberof JSUtil
+     * @param {*} value - The object to check
+     * @returns {string} The type of the specified object.'null' if the given value is null or undefined'string' if the given value is a primitive string or a String wrapper instance'number' if the given value is a primitive number or a Number wrapper instance'boolean' if the given value is a primitive boolean or a Boolean wrapper instance'function' if the given value is a function'object' otherwise.
+     */
+    type_of(value: any): string;
+    /**
+     * Restore ampersands from escaped text.
+     * @memberof JSUtil
+     * @param {string} text - The text
+     * @returns {string} The text with escape characters removed..
+     */
+    unescapeAttr(text: string): string;
+    /**
+     * Removes escape characters.
+     * @memberof JSUtil
+     * @param {string} text - The text to process.
+     * @returns {string} The the text without escape characters..
+     */
+    unescapeText(text: string): string;
+}
+
+/**
+ * GlideAggregate enables you to easily create database aggregation queries.
+ * @class GlideAggregate
+ * @description The GlideAggregate class is an extension of GlideRecord and provides database aggregation (COUNT, SUM, MIN, MAX, AVG) queries. This functionality can be helpful when creating customized reports or in calculations for calculated fields. The GlideAggregate class works only on number fields.When you use GlideAggregate on currency or price fields, you are working with the reference currency value. Be sure to convert the aggregate values to the user's session currency for display. Because the conversion rate between the currency or price value (displayed value) and its reference currency value (aggregation value) might change, the result may not be what the user expects.
+ */
+declare class GlideAggregate extends GlideRecord {
+    /**
+     * Adds an aggregate.
+     * @memberof GlideAggregate
+     * @param {string} agg - Name of the aggregate to add, for example, COUNT, MIN, or MAX
+     * @param {string} name - (Optional) Name of the column to aggregate. Null is the default.
+     * @description 
+     */
+    addAggregate(agg: string, name: string): void;
+    /**
+     * Adds a "having" element to the aggregate e.g. select category, count(*) from incident group by category HAVING count(*) &gt; 5.
+     * @memberof GlideAggregate
+     * @param {string} name - The aggregate to filter on for example, COUNT.
+     * @param {string} operator - The operator symbol for example &lt;, &gt;, =, !=.
+     * @param {string} value - The value to query on, for example '5'.
+     */
+    addHaving(name: string, operator: string, value: string): void;
+    /**
+     * Adds a trend for a field.
+     * @memberof GlideAggregate
+     * @param {string} fieldName - The name of the field for which trending should occur.
+     * @param {string} timeInterval - The time interval for the trend. The following choices are available: year, quarter, date, week, month, dayofweek, hour, value.
+     * @description 
+     */
+    addTrend(fieldName: string, timeInterval: string): void;
+    /**
+     * Gets the value of an aggregate from the current record.
+     * @memberof GlideAggregate
+     * @param {string} agg - The type of the aggregate, for example, SUM or Count.
+     * @param {string} name - Name of the field to get the aggregate from.
+     * @returns {string} The value of the aggregate..
+     * @description 
+     */
+    getAggregate(agg: string, name: string): string;
+    /**
+     * Retrieves the query necessary to return the current aggregate.
+     * @memberof GlideAggregate
+     * @returns {string} The query..
+     */
+    getQuery(): string;
+    /**
+     * Returns the number of records by summing an aggregate.
+     * @memberof GlideAggregate
+     * @param {string} agg - The aggregate
+     * @param {string} name - The name of the field to aggregate
+     * @returns {number} The total.
+     */
+    getTotal(agg: string, name: string): number;
+    /**
+     * Provides the name of a field to use in grouping the aggregates.
+     * @memberof GlideAggregate
+     * @param {string} name - Name of the field.
+     * @description  
+     */
+    groupBy(name: string): void;
+    /**
+     * Orders the aggregates based on the specified aggregate and field.
+     * @memberof GlideAggregate
+     * @param {string} agg - Type of aggregation, for example SUM, COUNT, MIN, MAX.
+     * @param {string} fieldName - Name of the field to aggregate.
+     * @description 
+     */
+    orderByAggregate(agg: string, fieldName: string): void;
+    /**
+     * Sets whether the results are to be grouped.
+     * @memberof GlideAggregate
+     * @param {boolean} b - Set to true if grouping is true, otherwise set to false.
+     * @description 
+     */
+    setGroup(b: boolean): void;
+}
+
+/**
+ * ArrayUtil API is a script include with useful functions for working with JavaScript arrays.
+ * @class ArrayUtil
+ * @description These methods are available to any server-side script.
+ */
+declare class ArrayUtil {
+    /**
+     * Merge two arrays.
+     * @memberof ArrayUtil
+     * @param {Array<*>} parent - An array to merge
+     * @param {Array<*>} child - An array to merge
+     * @returns {Array<*>} An array of elements from both input arrays. Duplicates are not removed..
+     */
+    concat(parent: any[], child: any[]): any[];
+    /**
+     * Searches the array for the element. Returns true if the element exists in the array, otherwise returns false.
+     * @memberof ArrayUtil
+     * @param {Array<*>} array - The array to search
+     * @param {*} element - The element to search for
+     * @returns {boolean} True if the element is in the array, false otherwise..
+     */
+    contains(array: any[], element: any): boolean;
+    /**
+     * Convert an object to an array.
+     * @memberof ArrayUtil
+     * @param {*} a - The object to be converted.
+     * @returns {Array<*>} An array created from the object..
+     */
+    convertArray(a: any): any[];
+    /**
+     * Finds the differences between two or more arrays.
+     * @memberof ArrayUtil
+     * @param {Array<*>} a - An array
+     * @param {Array<*>} b - An array
+     * @returns {Array<*>} Returns an array of items from array a that were not found in either array b or c, or other input arrays. Duplicates are removed from the result..
+     * @description 
+     */
+    diff(a: any[], b: any[]): any[];
+    /**
+     * Returns an array from the object.
+     * @memberof ArrayUtil
+     * @param {*} object - The object from which to create an array.
+     * @returns {Array<*>} An array created from the object..
+     */
+    ensureArray(object: any): any[];
+    /**
+     * Searches the array for the element. Returns the element index if found, -1 otherwise.
+     * @memberof ArrayUtil
+     * @param {Array<*>} array - The array to search
+     * @param {*} element - The element to search for
+     * @returns {number} The index where the element was found, -1 otherwise..
+     */
+    indexOf(array: any[], element: any): number;
+    /**
+     * Searches the array for the element starting with the startIndex element. Returns the element index.
+     * @memberof ArrayUtil
+     * @param {Array<*>} array - The array to search
+     * @param {*} element - The element to search for
+     * @param {number} startIndex - The index to begin the search
+     * @returns {number} The position of the element in the array, or -1 if the element is not in the array..
+     */
+    indexOf(array: any[], element: any, startIndex: number): number;
+    /**
+     * Finds the elements present in all arrays.
+     * @memberof ArrayUtil
+     * @param {Array<*>} a - An array
+     * @param {Array<*>} b - An array
+     * @returns {Array<*>} An array of elements from array a that were found in all of the other input arrays. Duplicates are removed..
+     * @description 
+     */
+    intersect(a: any[], b: any[]): any[];
+    /**
+     * Merge two or more arrays.
+     * @memberof ArrayUtil
+     * @param {Array<*>} a - An array
+     * @param {Array<*>} b - An array
+     * @returns {Array<*>} An array of items from all the input arrays. Duplicates are removed..
+     * @description 
+     */
+    union(a: any[], b: any[]): any[];
+    /**
+     * Removes duplicate items from an array.
+     * @memberof ArrayUtil
+     * @param {Array<*>} a - The array to check for duplicate elements.
+     * @returns {Array<*>} An array of unique items from the input array..
+     */
+    unique(a: any[]): any[];
+}
+
 declare interface ICustomClassPrototype0<TPrototype extends ICustomClassPrototype0<TPrototype, Type>, Type extends string> { initialize(this: TPrototype): void; type: Type; }
 declare interface ICustomClassPrototype1<TPrototype extends ICustomClassPrototype1<TPrototype, Type, TArg>, Type extends string, TArg> { initialize(this: TPrototype, arg: TArg): void; type: Type; }
 declare interface ICustomClassPrototype2<TPrototype extends ICustomClassPrototype2<TPrototype, Type, TArg0, TArg1>, Type extends string, TArg0, TArg1> { initialize(this: TPrototype, arg0: TArg0, arg1: TArg1): void; type: Type; }
@@ -7924,3 +7911,731 @@ declare var Class: {
         CustomClassConstructor4<ICustomClassPrototype4<any, string, any, any, any, any>, ICustomClassPrototype4<any, string, any, any, any, any>, any, any, any, any> |
         CustomClassConstructorN<ICustomClassPrototypeN<any, string>, ICustomClassPrototypeN<any, string>>>(): TConstructor;
 };
+
+/**
+ * Application File
+ * @interface sys_metadataFields
+ * @extends {IExtendedGlideTableProperties}
+ */
+declare interface sys_metadataFields extends IExtendedGlideTableProperties {
+    /**
+     * Display name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    sys_name: GLIDE.NilableElementProperty;
+    /**
+     * Package
+     * @type {GLIDE.NilableRecordReference<sys_packageGlideRecord, sys_packageReferenceElement>}
+     */
+    sys_package: GLIDE.NilableRecordReference<sys_packageGlideRecord, sys_packageReferenceElement>;
+    /**
+     * Protection policy
+     * @type {GLIDE.NilableElementProperty}
+     */
+    sys_policy: GLIDE.NilableElementProperty;
+    /**
+     * Application
+     * @type {GLIDE.NilableRecordReference<sys_scopeGlideRecord, sys_scopeReferenceElement>}
+     */
+    sys_scope: GLIDE.NilableRecordReference<sys_scopeGlideRecord, sys_scopeReferenceElement>;
+    /**
+     * Update name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    sys_update_name: GLIDE.NilableElementProperty;
+}
+declare type sys_metadataGlideRecord = GlideRecord & sys_metadataFields;
+declare type sys_metadataReferenceElement = GLIDE.RecordReferenceElement<sys_metadataGlideRecord, sys_metadataFields>;
+/**
+ * Table
+ * @interface sys_db_objectFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_db_objectFields extends sys_metadataFields {
+    /**
+     * Accessible from
+     * @type {GLIDE.NilableElementProperty}
+     */
+    access: GLIDE.NilableElementProperty;
+    /**
+     * Allow UI actions
+     * @type {GLIDE.NilableBoolean}
+     */
+    actions_access: GLIDE.NilableBoolean;
+    /**
+     * Allow new fields
+     * @type {GLIDE.NilableBoolean}
+     */
+    alter_access: GLIDE.NilableBoolean;
+    /**
+     * Caller Access
+     * @type {GLIDE.NilableElementProperty}
+     */
+    caller_access: GLIDE.NilableElementProperty;
+    /**
+     * Allow client scripts
+     * @type {GLIDE.NilableBoolean}
+     */
+    client_scripts_access: GLIDE.NilableBoolean;
+    /**
+     * Allow configuration
+     * @type {GLIDE.NilableBoolean}
+     */
+    configuration_access: GLIDE.NilableBoolean;
+    /**
+     * Can create
+     * @type {GLIDE.NilableBoolean}
+     */
+    create_access: GLIDE.NilableBoolean;
+    /**
+     * Create access controls
+     * @type {GLIDE.NilableBoolean}
+     */
+    create_access_controls: GLIDE.NilableBoolean;
+    /**
+     * Can delete
+     * @type {GLIDE.NilableBoolean}
+     */
+    delete_access: GLIDE.NilableBoolean;
+    /**
+     * Extension model
+     * @type {GLIDE.NilableElementProperty}
+     */
+    extension_model: GLIDE.NilableElementProperty;
+    /**
+     * Extensible
+     * @type {GLIDE.NilableBoolean}
+     */
+    is_extendable: GLIDE.NilableBoolean;
+    /**
+     * Label
+     * @type {GLIDE.NilableDocumentationProperty}
+     */
+    label: GLIDE.NilableDocumentationProperty;
+    /**
+     * Live feed
+     * @type {GLIDE.NilableBoolean}
+     */
+    live_feed_enabled: GLIDE.NilableBoolean;
+    /**
+     * Name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    name: GLIDE.NilableElementProperty;
+    /**
+     * Auto number
+     * @type {GLIDE.NilableRecordReference<sys_numberGlideRecord, sys_numberReferenceElement>}
+     */
+    number_ref: GLIDE.NilableRecordReference<sys_numberGlideRecord, sys_numberReferenceElement>;
+    /**
+     * Provider class
+     * @type {GLIDE.NilableElementProperty}
+     */
+    provider_class: GLIDE.NilableElementProperty;
+    /**
+     * Can read
+     * @type {GLIDE.NilableBoolean}
+     */
+    read_access: GLIDE.NilableBoolean;
+    /**
+     * Extends table
+     * @type {GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>}
+     */
+    super_class: GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>;
+    /**
+     * Sys class code
+     * @type {IGlideElement}
+     * @description Internal type is undefined
+     */
+    sys_class_code: IGlideElement;
+    /**
+     * Sys class path
+     * @type {GLIDE.NilableElementProperty}
+     */
+    sys_class_path: GLIDE.NilableElementProperty;
+    /**
+     * Can update
+     * @type {GLIDE.NilableBoolean}
+     */
+    update_access: GLIDE.NilableBoolean;
+    /**
+     * User role
+     * @type {GLIDE.NilableRecordReference<sys_user_roleGlideRecord, sys_user_roleReferenceElement>}
+     */
+    user_role: GLIDE.NilableRecordReference<sys_user_roleGlideRecord, sys_user_roleReferenceElement>;
+    /**
+     * Allow access to this table via web services
+     * @type {GLIDE.NilableBoolean}
+     */
+    ws_access: GLIDE.NilableBoolean;
+}
+declare type sys_db_objectGlideRecord = sys_metadataGlideRecord & sys_db_objectFields;
+declare type sys_db_objectReferenceElement = GLIDE.RecordReferenceElement<sys_db_objectGlideRecord, sys_db_objectFields>;
+/**
+ * Dictionary Entry
+ * @interface sys_dictionaryFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_dictionaryFields extends sys_metadataFields {
+    /**
+     * Active
+     * @type {GLIDE.NilableBoolean}
+     */
+    active: GLIDE.NilableBoolean;
+    /**
+     * Array
+     * @type {GLIDE.NilableBoolean}
+     */
+    array: GLIDE.NilableBoolean;
+    /**
+     * Array denormalized
+     * @type {GLIDE.NilableBoolean}
+     */
+    array_denormalized: GLIDE.NilableBoolean;
+    /**
+     * Attributes
+     * @type {GLIDE.NilableElementProperty}
+     */
+    attributes: GLIDE.NilableElementProperty;
+    /**
+     * Audit
+     * @type {GLIDE.NilableBoolean}
+     */
+    audit: GLIDE.NilableBoolean;
+    /**
+     * Calculation
+     * @type {GLIDE.NilableScriptProperty}
+     */
+    calculation: GLIDE.NilableScriptProperty;
+    /**
+     * Choice
+     * @type {GLIDE.NilableNumeric}
+     */
+    choice: GLIDE.NilableNumeric;
+    /**
+     * Choice field
+     * @type {GLIDE.NilableElementProperty}
+     */
+    choice_field: GLIDE.NilableElementProperty;
+    /**
+     * Choice table
+     * @type {GLIDE.NilableElementProperty}
+     */
+    choice_table: GLIDE.NilableElementProperty;
+    /**
+     * Column label
+     * @type {GLIDE.NilableDocumentationProperty}
+     */
+    column_label: GLIDE.NilableDocumentationProperty;
+    /**
+     * Comments
+     * @type {GLIDE.NilableElementProperty}
+     */
+    comments: GLIDE.NilableElementProperty;
+    /**
+     * Create roles
+     * @type {GLIDE.NilableElementProperty}
+     */
+    create_roles: GLIDE.NilableElementProperty;
+    /**
+     * Defaultsort
+     * @type {GLIDE.NilableNumeric}
+     */
+    defaultsort: GLIDE.NilableNumeric;
+    /**
+     * Default value
+     * @type {GLIDE.NilableElementProperty}
+     */
+    default_value: GLIDE.NilableElementProperty;
+    /**
+     * Delete roles
+     * @type {GLIDE.NilableElementProperty}
+     */
+    delete_roles: GLIDE.NilableElementProperty;
+    /**
+     * Dependent
+     * @type {GLIDE.NilableElementProperty}
+     */
+    dependent: GLIDE.NilableElementProperty;
+    /**
+     * Dependent on field
+     * @type {GLIDE.NilableElementProperty}
+     */
+    dependent_on_field: GLIDE.NilableElementProperty;
+    /**
+     * Display
+     * @type {GLIDE.NilableBoolean}
+     */
+    display: GLIDE.NilableBoolean;
+    /**
+     * Dynamic creation
+     * @type {GLIDE.NilableBoolean}
+     */
+    dynamic_creation: GLIDE.NilableBoolean;
+    /**
+     * Dynamic creation script
+     * @type {GLIDE.NilableElementProperty}
+     */
+    dynamic_creation_script: GLIDE.NilableElementProperty;
+    /**
+     * Dynamic default value
+     * @type {GLIDE.NilableRecordReference<sys_filter_option_dynamicGlideRecord, sys_filter_option_dynamicReferenceElement>}
+     */
+    dynamic_default_value: GLIDE.NilableRecordReference<GlideRecord, GlideElementReference>;
+    /**
+     * Dynamic ref qual
+     * @type {GLIDE.NilableRecordReference<sys_filter_option_dynamicGlideRecord, sys_filter_option_dynamicReferenceElement>}
+     */
+    dynamic_ref_qual: GLIDE.NilableRecordReference<GlideRecord, GlideElementReference>;
+    /**
+     * Column name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    element: GLIDE.NilableElementProperty;
+    /**
+     * Element reference
+     * @type {GLIDE.NilableBoolean}
+     */
+    element_reference: GLIDE.NilableBoolean;
+    /**
+     * Foreign database
+     * @type {GLIDE.NilableElementProperty}
+     */
+    foreign_database: GLIDE.NilableElementProperty;
+    /**
+     * Function definition
+     * @type {GLIDE.NilableElementProperty}
+     */
+    function_definition: GLIDE.NilableElementProperty;
+    /**
+     * Function field
+     * @type {GLIDE.NilableBoolean}
+     */
+    function_field: GLIDE.NilableBoolean;
+    /**
+     * Type
+     * @type {GLIDE.NilableRecordReference<sys_glide_objectGlideRecord, sys_glide_objectReferenceElement>}
+     */
+    internal_type: GLIDE.NilableRecordReference<sys_glide_objectGlideRecord, sys_glide_objectReferenceElement>;
+    /**
+     * Mandatory
+     * @type {GLIDE.NilableBoolean}
+     */
+    mandatory: GLIDE.NilableBoolean;
+    /**
+     * Max length
+     * @type {GLIDE.NilableNumeric}
+     */
+    max_length: GLIDE.NilableNumeric;
+    /**
+     * Table
+     * @type {GLIDE.NilableElementProperty}
+     */
+    name: GLIDE.NilableElementProperty;
+    /**
+     * Next element
+     * @type {GLIDE.NilableElementProperty}
+     */
+    next_element: GLIDE.NilableElementProperty;
+    /**
+     * Primary
+     * @type {GLIDE.NilableBoolean}
+     */
+    primary: GLIDE.NilableBoolean;
+    /**
+     * Read only
+     * @type {GLIDE.NilableBoolean}
+     */
+    read_only: GLIDE.NilableBoolean;
+    /**
+     * Read roles
+     * @type {GLIDE.NilableElementProperty}
+     */
+    read_roles: GLIDE.NilableElementProperty;
+    /**
+     * Reference
+     * @type {GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>}
+     */
+    reference: GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>;
+    /**
+     * Reference cascade rule
+     * @type {GLIDE.NilableElementProperty}
+     */
+    reference_cascade_rule: GLIDE.NilableElementProperty;
+    /**
+     * Reference floats
+     * @type {GLIDE.NilableBoolean}
+     */
+    reference_floats: GLIDE.NilableBoolean;
+    /**
+     * Reference key
+     * @type {GLIDE.NilableElementProperty}
+     */
+    reference_key: GLIDE.NilableElementProperty;
+    /**
+     * Reference qual
+     * @type {GLIDE.NilableElementProperty}
+     */
+    reference_qual: GLIDE.NilableElementProperty;
+    /**
+     * Reference qual condition
+     * @type {GLIDE.NilableConditionsProperty}
+     */
+    reference_qual_condition: GLIDE.NilableConditionsProperty;
+    /**
+     * Reference type
+     * @type {GLIDE.NilableElementProperty}
+     */
+    reference_type: GLIDE.NilableElementProperty;
+    /**
+     * Sizeclass
+     * @type {GLIDE.NilableNumeric}
+     */
+    sizeclass: GLIDE.NilableNumeric;
+    /**
+     * Spell check
+     * @type {GLIDE.NilableBoolean}
+     */
+    spell_check: GLIDE.NilableBoolean;
+    /**
+     * Staged
+     * @type {GLIDE.NilableBoolean}
+     */
+    staged: GLIDE.NilableBoolean;
+    /**
+     * Table reference
+     * @type {GLIDE.NilableBoolean}
+     */
+    table_reference: GLIDE.NilableBoolean;
+    /**
+     * Text index
+     * @type {GLIDE.NilableBoolean}
+     */
+    text_index: GLIDE.NilableBoolean;
+    /**
+     * Unique
+     * @type {GLIDE.NilableBoolean}
+     */
+    unique: GLIDE.NilableBoolean;
+    /**
+     * Use dependent field
+     * @type {GLIDE.NilableBoolean}
+     */
+    use_dependent_field: GLIDE.NilableBoolean;
+    /**
+     * Use dynamic default
+     * @type {GLIDE.NilableBoolean}
+     */
+    use_dynamic_default: GLIDE.NilableBoolean;
+    /**
+     * Use reference qualifier
+     * @type {GLIDE.NilableElementProperty}
+     */
+    use_reference_qualifier: GLIDE.NilableElementProperty;
+    /**
+     * Calculated
+     * @type {GLIDE.NilableBoolean}
+     */
+    virtual: GLIDE.NilableBoolean;
+    /**
+     * Widget
+     * @type {GLIDE.NilableElementProperty}
+     */
+    widget: GLIDE.NilableElementProperty;
+    /**
+     * Write roles
+     * @type {GLIDE.NilableElementProperty}
+     */
+    write_roles: GLIDE.NilableElementProperty;
+    /**
+     * XML view
+     * @type {GLIDE.NilableBoolean}
+     */
+    xml_view: GLIDE.NilableBoolean;
+}
+declare type sys_dictionaryGlideRecord = sys_metadataGlideRecord & sys_dictionaryFields;
+declare type sys_dictionaryReferenceElement = GLIDE.RecordReferenceElement<sys_dictionaryGlideRecord, sys_dictionaryFields>;
+/**
+ * Field class
+ * @interface sys_glide_objectFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_glide_objectFields extends sys_metadataFields {
+    /**
+     * Attributes
+     * @type {GLIDE.NilableElementProperty}
+     */
+    attributes: GLIDE.NilableElementProperty;
+    /**
+     * Class name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    class_name: GLIDE.NilableElementProperty;
+    /**
+     * Label
+     * @type {GLIDE.NilableTranslatedFieldProperty}
+     */
+    label: GLIDE.NilableTranslatedFieldProperty;
+    /**
+     * Name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    name: GLIDE.NilableElementProperty;
+    /**
+     * Length
+     * @type {GLIDE.NilableElementProperty}
+     */
+    scalar_length: GLIDE.NilableElementProperty;
+    /**
+     * Extends
+     * @type {GLIDE.NilableElementProperty}
+     */
+    scalar_type: GLIDE.NilableElementProperty;
+    /**
+     * Use original value
+     * @type {GLIDE.NilableBoolean}
+     */
+    use_original_value: GLIDE.NilableBoolean;
+    /**
+     * Visible
+     * @type {GLIDE.NilableBoolean}
+     */
+    visible: GLIDE.NilableBoolean;
+}
+declare type sys_glide_objectGlideRecord = sys_metadataGlideRecord & sys_glide_objectFields;
+declare type sys_glide_objectReferenceElement = GLIDE.RecordReferenceElement<sys_glide_objectGlideRecord, sys_glide_objectFields>;
+/**
+ * Number
+ * @interface sys_numberFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_numberFields extends sys_metadataFields {
+    /**
+     * Table
+     * @type {GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>}
+     */
+    category: GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>;
+    /**
+     * Number of digits
+     * @type {GLIDE.NilableNumeric}
+     */
+    maximum_digits: GLIDE.NilableNumeric;
+    /**
+     * Number
+     * @type {GLIDE.NilableNumeric}
+     */
+    number: GLIDE.NilableNumeric;
+    /**
+     * Prefix
+     * @type {GLIDE.NilableElementProperty}
+     */
+    prefix: GLIDE.NilableElementProperty;
+}
+declare type sys_numberGlideRecord = sys_metadataGlideRecord & sys_numberFields;
+declare type sys_numberReferenceElement = GLIDE.RecordReferenceElement<sys_numberGlideRecord, sys_numberFields>;
+/**
+ * Package
+ * @interface sys_packageFields
+ * @extends {IExtendedGlideTableProperties}
+ */
+declare interface sys_packageFields extends IExtendedGlideTableProperties {
+    /**
+     * Active
+     * @type {GLIDE.NilableBoolean}
+     */
+    active: GLIDE.NilableBoolean;
+    /**
+     * Subscription requirement
+     * @type {GLIDE.NilableElementProperty}
+     */
+    enforce_license: GLIDE.NilableElementProperty;
+    /**
+     * Licensable
+     * @type {GLIDE.NilableBoolean}
+     */
+    licensable: GLIDE.NilableBoolean;
+    /**
+     * Subscription Category
+     * @type {GLIDE.NilableElementProperty}
+     */
+    license_category: GLIDE.NilableElementProperty;
+    /**
+     * Subscription Model
+     * @type {GLIDE.NilableElementProperty}
+     */
+    license_model: GLIDE.NilableElementProperty;
+    /**
+     * Name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    name: GLIDE.NilableElementProperty;
+    /**
+     * ID
+     * @type {GLIDE.NilableElementProperty}
+     */
+    source: GLIDE.NilableElementProperty;
+    /**
+     * Trackable
+     * @type {GLIDE.NilableBoolean}
+     */
+    trackable: GLIDE.NilableBoolean;
+    /**
+     * Version
+     * @type {GLIDE.NilableElementProperty}
+     */
+    version: GLIDE.NilableElementProperty;
+}
+declare type sys_packageGlideRecord = GlideRecord & sys_packageFields;
+declare type sys_packageReferenceElement = GLIDE.RecordReferenceElement<sys_packageGlideRecord, sys_packageFields>;
+/**
+ * Application
+ * @interface sys_scopeFields
+ * @extends {sys_packageFields}
+ */
+declare interface sys_scopeFields extends sys_packageFields {
+    /**
+     * JavaScript Mode
+     * @type {GLIDE.NilableElementProperty}
+     */
+    js_level: GLIDE.NilableElementProperty;
+    /**
+     * Logo
+     * @type {GLIDE.NilableUserImageProperty}
+     */
+    logo: GLIDE.NilableUserImageProperty;
+    /**
+     * Private
+     * @type {GLIDE.NilableBoolean}
+     */
+    private: GLIDE.NilableBoolean;
+    /**
+     * Restrict Table Choices
+     * @type {GLIDE.NilableBoolean}
+     */
+    restrict_table_access: GLIDE.NilableBoolean;
+    /**
+     * Runtime Access Tracking
+     * @type {GLIDE.NilableElementProperty}
+     */
+    runtime_access_tracking: GLIDE.NilableElementProperty;
+    /**
+     * Scope
+     * @type {GLIDE.NilableElementProperty}
+     */
+    scope: GLIDE.NilableElementProperty;
+    /**
+     * Application administration
+     * @type {GLIDE.NilableBoolean}
+     */
+    scoped_administration: GLIDE.NilableBoolean;
+    /**
+     * Short description
+     * @type {GLIDE.NilableElementProperty}
+     */
+    short_description: GLIDE.NilableElementProperty;
+    /**
+     * Template
+     * @type {GLIDE.NilableElementProperty}
+     */
+    template: GLIDE.NilableElementProperty;
+    /**
+     * Vendor
+     * @type {GLIDE.NilableElementProperty}
+     */
+    vendor: GLIDE.NilableElementProperty;
+    /**
+     * Vendor prefix
+     * @type {GLIDE.NilableElementProperty}
+     */
+    vendor_prefix: GLIDE.NilableElementProperty;
+}
+declare type sys_scopeGlideRecord = sys_packageGlideRecord & sys_scopeFields;
+declare type sys_scopeReferenceElement = GLIDE.RecordReferenceElement<sys_scopeGlideRecord, sys_scopeFields>;
+/**
+ * Role
+ * @interface sys_user_roleFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_user_roleFields extends sys_metadataFields {
+    /**
+     * Assignable by
+     * @type {GLIDE.NilableRecordReference<sys_user_roleGlideRecord, sys_user_roleReferenceElement>}
+     */
+    assignable_by: GLIDE.NilableRecordReference<sys_user_roleGlideRecord, sys_user_roleReferenceElement>;
+    /**
+     * Can delegate
+     * @type {GLIDE.NilableBoolean}
+     */
+    can_delegate: GLIDE.NilableBoolean;
+    /**
+     * Description
+     * @type {GLIDE.NilableElementProperty}
+     */
+    description: GLIDE.NilableElementProperty;
+    /**
+     * Elevated privilege
+     * @type {GLIDE.NilableBoolean}
+     */
+    elevated_privilege: GLIDE.NilableBoolean;
+    /**
+     * Encryption context
+     * @type {GLIDE.NilableRecordReference<sys_encryption_contextGlideRecord, sys_encryption_contextReferenceElement>}
+     */
+    encryption_context: GLIDE.NilableRecordReference<sys_encryption_contextGlideRecord, sys_encryption_contextReferenceElement>;
+    /**
+     * Grantable
+     * @type {GLIDE.NilableBoolean}
+     */
+    grantable: GLIDE.NilableBoolean;
+    /**
+     * Includes roles
+     * @type {GLIDE.NilableElementProperty}
+     */
+    includes_roles: GLIDE.NilableElementProperty;
+    /**
+     * Name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    name: GLIDE.NilableElementProperty;
+    /**
+     * Requires Subscription
+     * @type {GLIDE.NilableElementProperty}
+     */
+    requires_subscription: GLIDE.NilableElementProperty;
+    /**
+     * Application Administrator
+     * @type {GLIDE.NilableBoolean}
+     */
+    scoped_admin: GLIDE.NilableBoolean;
+    /**
+     * Suffix
+     * @type {GLIDE.NilableElementProperty}
+     */
+    suffix: GLIDE.NilableElementProperty;
+}
+declare type sys_user_roleGlideRecord = sys_metadataGlideRecord & sys_user_roleFields;
+declare type sys_user_roleReferenceElement = GLIDE.RecordReferenceElement<sys_user_roleGlideRecord, sys_user_roleFields>;
+/**
+ * Encryption Context
+ * @interface sys_encryption_contextFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_encryption_contextFields extends sys_metadataFields {
+    /**
+     * Encryption key
+     * @type {GLIDE.NilablePassword2Property}
+     */
+    encryption_key: GLIDE.NilablePassword2Property;
+    /**
+     * Name
+     * @type {GLIDE.NilableElementProperty}
+     */
+    name: GLIDE.NilableElementProperty;
+    /**
+     * Type
+     * @type {GLIDE.NilableElementProperty}
+     */
+    type: GLIDE.NilableElementProperty;
+}
+declare type sys_encryption_contextGlideRecord = sys_metadataGlideRecord & sys_encryption_contextFields;
+declare type sys_encryption_contextReferenceElement = GLIDE.RecordReferenceElement<sys_encryption_contextGlideRecord, sys_encryption_contextFields>;

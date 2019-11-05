@@ -660,16 +660,28 @@ Function Test-GlobalTypes {
     return $Success;
 }
 
+
 if ($null -eq $Script:GlobalTypes) {
     Write-Warning -Message "Failed to load $GlobalTypeMappingsPath. Cannot test table definitions.";
 } else {
-    if (Test-GlobalTypes) {
+    #if (Test-GlobalTypes) {
         if ($null -eq $Script:TableDefinitions) {
             Write-Warning -Message "Failed to load $TableTypesPath.";
         } else {
-            Test-TableDefinitions;
+            [System.Windows.Clipboard]::SetText((((@($Script:TableDefinitions.Keys) | ForEach-Object {
+                $Fields = $Script:TableDefinitions[$_];
+                if ($_ -ne '()' -and $_ -ne '()') { if ($Fields.ContainsKey('fields')) { $Fields = $Fields['fields'] } else { $Fields.Clear() } }
+                if ($Fields.Count -gt 0) {
+                    $Fields.Keys | ForEach-Object {
+                        $f = $Fields[$_];
+                        $jsClassName = $f['jsClassName'];
+                        "$($f['internal_type']): `"$jsClassName`""
+                    }
+                }
+            } | Select-Object -Unique) | Sort-Object) -join ', '))
+            #Test-TableDefinitions;
         }
-    } else {
-        Write-Warning -Message "$GlobalTypeMappingsPath did not validate. Cannot test table definitions.";
-    }
+    #} else {
+    #    Write-Warning -Message "$GlobalTypeMappingsPath did not validate. Cannot test table definitions.";
+    #}
 }
