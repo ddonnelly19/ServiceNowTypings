@@ -95,6 +95,273 @@ declare namespace RHINO {
     export type StringValue<S extends string> = S | Packages.java.lang.String;
 }
 
+declare namespace $element {
+    export interface IValueSpecific<V, E extends IGlideElement, S extends string> extends IGlideElement {
+        changesFrom(o: V | E | $property.Nilable<S>): boolean;
+        changesTo(o: V | E | $property.Nilable<S>): boolean;
+        setValue(obj: V | E | $property.Nilable<S>): void;
+    }
+    export class StringBased<V extends string | number, E extends StringBased<V, E, S>, S extends string> extends Packages.java.lang.String implements IValueSpecific<V, E, S> {
+        /**
+         * Determines if the user's role permits the creation of new records in this field.
+         * @memberof IDbObject
+         * @returns {boolean} True if the field can be created, false otherwise.
+         */
+        canCreate(): boolean;
+        /**
+         * Indicates whether the user's role permits them to read the associated GlideRecord.
+         * @memberof IDbObject
+         * @returns {boolean} True if the field can be read, false otherwise.
+         */
+        canRead(): boolean;
+        /**
+         * Determines whether the user's role permits them to write to the associated GlideRecord.
+         * @memberof IDbObject
+         * @returns {boolean} True if the user can write to the field, false otherwise.
+         */
+        canWrite(): boolean;
+        /**
+         * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
+         * @memberof GlideElement
+         * @returns {boolean} True if the fields have been changed, false if the field has not.
+         * @description 
+         */
+        changes(): boolean;
+        /**
+         * Determines if the previous value of the current field matches the specified object.
+         * @memberof GlideElement
+         * @param {V | E | $property.Nilable<S>} o - An object value to check against the previous value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @description 
+         */
+        changesFrom(o: V | E | $property.Nilable<S>): boolean;
+        /**
+         * Determines if the new value of a field, after a change, matches the specified object.
+         * @memberof GlideElement
+         * @param {V | E | $property.Nilable<S>} o - An object value to check against the new value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @description 
+         */
+        changesTo(o: V | E | $property.Nilable<S>): boolean;
+        /**
+         * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+         * @memberof GlideElement
+         * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT.
+         */
+        dateNumericValue(): number;
+        /**
+         * Returns the value of the specified attribute from the dictionary.
+         * @memberof IDbObject
+         * @param {string} attributeName - Attribute name
+         * @returns {string} Attribute value.
+         * @description 
+         */
+        getAttribute(attributeName: string): string;
+        /**
+         * Returns the Boolean value of the specified attribute from the dictionary.
+         * @memberof GlideElement
+         * @param {string} attributeName - Attribute name
+         * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
+         * @description 
+         */
+        getBooleanAttribute(attributeName: string): boolean;
+        /**
+         * Generates a choice list for a field.
+         * @memberof GlideElement
+         * @param {string} [dependent] - A dependent value
+         * @returns {Array<*>} An array list of choices.
+         */
+        getChoices(dependent?: string): any[];
+        /**
+         * Returns the choice label for the current choice.
+         * @memberof GlideElement
+         * @returns {string} The selected choice's label.
+         * @description 
+         */
+        getChoiceValue(): string;
+        /**
+         * Returns the clear text value for Password (2 way encrypted) fields in scoped applications.
+         * @memberof GlideElement
+         * @returns {string} The clear text password.
+         */
+        getDecryptedValue(): string;
+        /**
+         * Gets the formatted display value of the field.
+         * @memberof GlideElement
+         * @param {number} [maxCharacters] - Maximum characters desired
+         * @returns {string} The display value of the field.
+         */
+        getDisplayValue(maxCharacters?: number): string;
+        /**
+         * Returns the element's descriptor.
+         * @memberof IDbObject
+         * @returns {GlideElementDescriptor} Element's descriptor.
+         */
+        getED(): GlideElementDescriptor;
+        /**
+         * Returns the phone number in international format.
+         * @memberof GlideElement
+         * @returns {string} The phone number in international format.
+         */
+        getGlobalDisplayValue(): string;
+        /**
+         * Returns the HTML value of a field.
+         * @memberof GlideElement
+         * @param {number} [maxChars] - Maximum number of characters to return.
+         * @returns {string} HTML value for the field.
+         */
+        getHTMLValue(maxChars?: number): string;
+        /**
+         * Returns either the most recent journal entry or all journal entries.
+         * @memberof GlideElement
+         * @param {number} mostRecent - If 1, returns the most recent entry. If -1, returns all journal entries.
+         * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n".
+         */
+        getJournalEntry(mostRecent: number): string;
+        /**
+         * Returns the object label.
+         * @memberof IDbObject
+         * @returns {string} Object label.
+         */
+        getLabel(): string;
+        /**
+         * Returns the name of the field.
+         * @memberof GlideElement
+         * @returns {string} Field name.
+         */
+        getName(): string;
+        /**
+         * Returns the name of the table on which the field resides.
+         * @memberof IDbObject
+         * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
+         */
+        getTableName(): string;
+        /**
+         * Determines if a field is null.
+         * @memberof GlideElement
+         * @returns {boolean} True if the field is null or an empty string, false if not.
+         */
+        nil(): boolean;
+        /**
+         * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
+         * @memberof GlideElement
+         * @param {number} milliseconds - Number of milliseconds since 1/1/1970
+         * @description 
+         */
+        setDateNumericValue(milliseconds: number): void;
+        /**
+         * Sets the display value of the field.
+         * @memberof GlideElement
+         * @param {*} value - The value to set for the field.
+         */
+        setDisplayValue(value: any): void;
+        /**
+         * Adds an error message. Available in Fuji patch 3.
+         * @memberof GlideElement
+         * @param {string} errorMessage - The error message.
+         */
+        setError(errorMessage: string): void;
+        /**
+         * Sets the field to the specified phone number.
+         * @memberof GlideElement
+         * @param {*} phoneNumber - The phone number to set. This can be in either the international or local format.
+         * @param {boolean} strict - When true, specifies that the number specified must match the correct format. When false, the system attempts to correct an improperly formatted phone number.
+         * @returns {boolean} True if the value was set.
+         * @description 
+         */
+        setPhoneNumber(phoneNumber: any, strict: boolean): boolean;
+        /**
+         * Sets the value of a field.
+         * @memberof GlideElement
+         * @param {V | E | $property.Nilable<S>} value - Object value to set the field to.
+         * @description 
+         */
+        setValue(value: V | E | $property.Nilable<S>): void;
+    }
+    export type Element<S extends string> = IValueSpecific<S, GlideElement, S> & GlideElement;
+    export type Numeric<N extends number, S extends string> = IValueSpecific<N, GlideElementNumeric, S> & GlideElementNumeric;
+    export type GlideObject<S extends string> = IValueSpecific<S, GlideElementGlideObject, S> & GlideElementGlideObject;
+    export type SysClassName<S extends string> = IValueSpecific<S, GlideElementSysClassName, S> & GlideElementSysClassName;
+    export type TranslatedField<S extends string> = IValueSpecific<S, GlideElementTranslatedField, S> & GlideElementTranslatedField;
+    export type Conditions<S extends string> = IValueSpecific<S, GlideElementConditions, S> & GlideElementConditions;
+    export type Documentation<S extends string> = IValueSpecific<S, GlideElementDocumentation, S> & GlideElementDocumentation;
+    export type Script<S extends string> = IValueSpecific<S, GlideElementScript, S> & GlideElementScript;
+    export type UserImage<S extends string> = IValueSpecific<S, GlideElementUserImage, S> & GlideElementUserImage;
+    export type Password2<S extends string> = IValueSpecific<S, GlideElementPassword2, S> & GlideElementPassword2;
+    export interface IReference<P extends IGlideTableProperties, R extends P & GlideRecord> extends IValueSpecific<R, Reference<P, R>, string> {
+        changesFrom(o: R | Reference<P, R> | $property.Nilable<string>): boolean;
+        changesTo(o: R | Reference<P, R> | $property.Nilable<string>): boolean;
+        getReferenceTable(): string;
+        getRefRecord(): R | null | undefined;
+        setValue(obj: R | Reference<P, R> | $property.Nilable<string>): void;
+    }
+    export type Reference<P extends IGlideTableProperties, R extends P & GlideRecord> = IReference<P, R> & GlideElementReference;
+}
+
+declare namespace $property {
+    /**
+     * Utility type to include empty string values as well as well as null and undefined values.
+     * @typedef {(T | null | undefined | RHINO.EmptyString)} Nilable
+     * @template T - The type of value that is to include null and undefined values as well as empty string-like values.
+     */
+    export type Nilable<T> = T | null | undefined | RHINO.EmptyString;
+    /*
+     * Utility type for a value that is never undefined, null or an empty string-like value.
+     * @typedef {(T extends null | undefined ? never : ExcludeEmptyRhinoString<T>)} ExcludeGlideNil<T>
+     * @template T - The type of value that is to excclude null and undefined values as well as empty string-like values.
+     */
+    export type ExcludeNil<T> = T extends null | undefined ? never : RHINO.ExcludeEmptyString<T>;
+    export type Boolean = GlideElementBoolean | Packages.java.lang.Boolean | boolean | JS.BooleanString;
+    export type Element = GlideElement | RHINO.String;
+    export type Numeric = GlideElementNumeric | RHINO.String;
+    export type GlideObject = GlideElementGlideObject | RHINO.String;
+    export type SysClassName = GlideElementSysClassName | RHINO.String;
+    export type TranslatedField = GlideElementTranslatedField | RHINO.String;
+    export type Conditions = GlideElementConditions | RHINO.String;
+    export type Documentation = GlideElementDocumentation | RHINO.String;
+    export type Script = GlideElementScript | RHINO.String;
+    export type UserImage = GlideElementUserImage | RHINO.String;
+    export type Password2 = GlideElementPassword2 | RHINO.String;
+    export type Reference = GlideElementReference | RHINO.String;
+    export type NilableBoolean = Nilable<Boolean>;
+    export type NilableElement = Nilable<Element>;
+    export type NilableNumeric = Nilable<Numeric>;
+    export type NilableGlideObject = Nilable<GlideObject>;
+    export type NilableSysClassName = Nilable<SysClassName>;
+    export type NilableTranslatedField = Nilable<TranslatedField>;
+    export type NilableConditions = Nilable<Conditions>;
+    export type NilableDocumentation = Nilable<Documentation>;
+    export type NilableScript = Nilable<Script>;
+    export type NilableUserImage = Nilable<UserImage>;
+    export type NilablePassword2 = Nilable<Password2>;
+    export type NilableReference = Nilable<Reference>;
+    export namespace $generic {
+        export type Element<S extends string> = $element.Element<S> | S;
+        export type Numeric<N extends number, S extends string> = $element.Numeric<N, S> | number | S;
+        export type GlideObject<S extends string> = $element.Element<S> | S;
+        export type SysClassName<S extends string> = $element.Element<S> | S;
+        export type TranslatedField<S extends string> = $element.Element<S> | S;
+        export type Conditions<S extends string> = $element.Element<S> | S;
+        export type Documentation<S extends string> = $element.Element<S> | S;
+        export type Script<S extends string> = $element.Element<S> | S;
+        export type UserImage<S extends string> = $element.Element<S> | S;
+        export type Password2<S extends string> = $element.Element<S> | S;
+        export type Reference<P extends IGlideTableProperties, R extends P & GlideRecord> = $element.Reference<P, R> | R | RHINO.String;
+
+        export type NilableElement<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilableNumeric<N extends number, S extends string> = $element.Numeric<N, S> | number | Nilable<S>;
+        export type NilableGlideObject<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilableSysClassName<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilableTranslatedField<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilableConditions<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilableDocumentation<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilableScript<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilableUserImage<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilablePassword2<S extends string> = $element.Element<S> | Nilable<S>;
+        export type NilableReference<P extends IGlideTableProperties, R extends P & GlideRecord> = $element.Reference<P, R> | R | Nilable<RHINO.String>;
+    }
+}
+
 declare namespace GLIDE {
     /**
      * Utility type for javascript primitive boolean values, Java Boolean values string values that represent a boolean value.
@@ -591,57 +858,57 @@ declare interface IGlideElement extends GLIDE.IDbObject {
 declare interface IGlideTableProperties {
     /**
      * Created by
-     * @type {GLIDE.ElementProperty}
+     * @type {$property.Element}
      * @memberof IGlideTableProperties
      */
-    sys_created_by: GLIDE.ElementProperty;
+    sys_created_by: $property.Element;
 
     /**
      * Created
-     * @type {GLIDE.GlideObjectProperty}
+     * @type {$property.GlideObject}
      * @memberof IGlideTableProperties
      * @description Internal type is "glide_date_time"
      */
-    sys_created_on: GLIDE.GlideObjectProperty;
+    sys_created_on: $property.GlideObject;
 
     /**
      * Sys ID
-     * @type {GLIDE.ElementProperty}
+     * @type {$property.Element}
      * @memberof IGlideTableProperties
      * @description Internal type is "GUID"
      */
-    sys_id: GLIDE.ElementProperty;
+    sys_id: $property.Element;
 
     /**
      * Updates
-     * @type {GLIDE.Numeric}
+     * @type {$property.Numeric}
      * @memberof IGlideTableProperties
      */
-    sys_mod_count: GLIDE.Numeric;
+    sys_mod_count: $property.Numeric;
 
     /**
      * Updated by
-     * @type {GLIDE.ElementProperty}
+     * @type {$property.Element}
      * @memberof IGlideTableProperties
      */
-    sys_updated_by: GLIDE.ElementProperty;
+    sys_updated_by: $property.Element;
 
     /**
      * Updated
-     * @type {GLIDE.GlideObjectProperty}
+     * @type {$property.GlideObject}
      * @memberof IGlideTableProperties
      * @description Internal type is "glide_date_time"
      */
-    sys_updated_on: GLIDE.GlideObjectProperty;
+    sys_updated_on: $property.GlideObject;
 }
 
 declare interface IExtendedGlideTableProperties extends IGlideTableProperties {
     /**
      * Updated
-     * @type {GLIDE.SysClassNameProperty}
+     * @type {$property.SysClassName}
      * @memberof IExtendedGlideTableProperties
      */
-    sys_class_name: GLIDE.SysClassNameProperty;
+    sys_class_name: $property.SysClassName;
 }
 
 /**
@@ -3085,9 +3352,9 @@ declare class GlideTime {
  * The Scoped GlideElement API provides a number of convenient script methods for dealing with fields and their values. Scoped GlideElement methods are available for the fields of the current GlideRecord.
  * @class GlideElement
  */
-declare class GlideElement extends GLIDE.StringBasedElement<string, GlideElement, string> { }
+declare class GlideElement extends  $element.StringBased<string, GlideElement, string> { }
 
-declare class GlideElementBoolean extends Packages.java.lang.Boolean implements GLIDE.IValueElement<boolean, GlideElementBoolean, JS.BooleanString> {
+declare class GlideElementBoolean extends Packages.java.lang.Boolean implements $element.IValueSpecific<boolean, GlideElementBoolean, JS.BooleanString> {
     /**
      * Determines if the user's role permits the creation of new records in this field.
      * @memberof GlideElementBoolean
@@ -3116,19 +3383,19 @@ declare class GlideElementBoolean extends Packages.java.lang.Boolean implements 
     /**
      * Determines if the previous value of the current field matches the specified object.
      * @memberof GlideElementBoolean
-     * @param {GLIDE.NilableBoolean} o - An object value to check against the previous value of the current field.
+     * @param {$property.NilableBoolean} o - An object value to check against the previous value of the current field.
      * @returns {boolean} True if the previous value matches, false if it does not.
      * @description 
      */
-    changesFrom(o: GLIDE.NilableBoolean): boolean;
+    changesFrom(o: $property.NilableBoolean): boolean;
     /**
      * Determines if the new value of a field, after a change, matches the specified object.
      * @memberof GlideElementBoolean
-     * @param {GLIDE.NilableBoolean} o - An object value to check against the new value of the current field.
+     * @param {$property.NilableBoolean} o - An object value to check against the new value of the current field.
      * @returns {boolean} True if the previous value matches, false if it does not.
      * @description 
      */
-    changesTo(o: GLIDE.NilableBoolean): boolean;
+    changesTo(o: $property.NilableBoolean): boolean;
     /**
      * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
      * @memberof GlideElementBoolean
@@ -3259,80 +3526,80 @@ declare class GlideElementBoolean extends Packages.java.lang.Boolean implements 
     /**
      * Sets the value of a field.
      * @memberof GlideElementBoolean
-     * @param {GLIDE.NilableBoolean} value - Object value to set the field to.
+     * @param {$property.NilableBoolean} value - Object value to set the field to.
      * @description 
      */
-    setValue(value: GLIDE.NilableBoolean): void;
+    setValue(value: $property.NilableBoolean): void;
 }
 
-declare class GlideElementCompressed extends GLIDE.StringBasedElement<string, GlideElementCompressed, string> { }
-declare class GlideElementConditions extends GLIDE.StringBasedElement<string, GlideElementConditions, string> { }
-declare class GlideElementCurrency extends GLIDE.StringBasedElement<string, GlideElementCurrency, string> { }
-declare class GlideElementDataObject extends GLIDE.StringBasedElement<string, GlideElementDataObject, string> { }
-declare class GlideElementDocumentation extends GLIDE.StringBasedElement<string, GlideElementDocumentation, string> { }
-declare class GlideElementDocumentId extends GLIDE.StringBasedElement<string, GlideElementDocumentId, string> { }
-declare class GlideElementDomainId extends GLIDE.StringBasedElement<string, GlideElementDomainId, string> { }
-declare class GlideElementGlideObject extends GLIDE.StringBasedElement<string, GlideElementGlideObject, string> { }
-declare class GlideElementGlideVar extends GLIDE.StringBasedElement<string, GlideElementGlideVar, string> { }
-declare class GlideElementIcon extends GLIDE.StringBasedElement<string, GlideElementIcon, string> { }
-declare class GlideElementNameValue extends GLIDE.StringBasedElement<string, GlideElementNameValue, string> { }
+declare class GlideElementCompressed extends  $element.StringBased<string, GlideElementCompressed, string> { }
+declare class GlideElementConditions extends  $element.StringBased<string, GlideElementConditions, string> { }
+declare class GlideElementCurrency extends  $element.StringBased<string, GlideElementCurrency, string> { }
+declare class GlideElementDataObject extends  $element.StringBased<string, GlideElementDataObject, string> { }
+declare class GlideElementDocumentation extends  $element.StringBased<string, GlideElementDocumentation, string> { }
+declare class GlideElementDocumentId extends  $element.StringBased<string, GlideElementDocumentId, string> { }
+declare class GlideElementDomainId extends  $element.StringBased<string, GlideElementDomainId, string> { }
+declare class GlideElementGlideObject extends  $element.StringBased<string, GlideElementGlideObject, string> { }
+declare class GlideElementGlideVar extends  $element.StringBased<string, GlideElementGlideVar, string> { }
+declare class GlideElementIcon extends  $element.StringBased<string, GlideElementIcon, string> { }
+declare class GlideElementNameValue extends  $element.StringBased<string, GlideElementNameValue, string> { }
 
-declare class GlideElementNumeric extends GLIDE.StringBasedElement<number, GlideElementNumeric, string> implements GLIDE.NumericValueElement<number, string> { }
+declare class GlideElementNumeric extends $element.StringBased<number, GlideElementNumeric, string> implements $element.IValueSpecific<number, GlideElementNumeric, string> { }
 
-declare class GlideElementPassword extends GLIDE.StringBasedElement<string, GlideElementPassword, string> { }
-declare class GlideElementPassword2 extends GLIDE.StringBasedElement<string, GlideElementPassword2, string> { }
-declare class GlideElementPrice extends GLIDE.StringBasedElement<string, GlideElementPrice, string> { }
+declare class GlideElementPassword extends  $element.StringBased<string, GlideElementPassword, string> { }
+declare class GlideElementPassword2 extends  $element.StringBased<string, GlideElementPassword2, string> { }
+declare class GlideElementPrice extends  $element.StringBased<string, GlideElementPrice, string> { }
 
 /**
  * A Glide element that references another GlideRecord.
  * @class GlideElementReference
  * @todo Verify whether Packages.com.glide.script.glide_elements.GlideReference exists
  */
-declare class GlideElementReference extends GLIDE.StringBasedElement<string, GlideElementReference, string> implements GLIDE.IRecordReferenceElement<GlideRecord, GlideElementReference>, IGlideTableProperties {
+declare class GlideElementReference extends $element.StringBased<string, GlideElementReference, string> implements $element.IReference<IGlideTableProperties, GlideRecord>, IGlideTableProperties {
     /**
      * Created by
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.Element}
      * @memberof GlideElementReference
      */
-    sys_created_by: GLIDE.NilableElementProperty;
+    sys_created_by: $property.Element;
 
     /**
      * Created
-     * @type {GLIDE.NilableGlideObjectProperty}
+     * @type {$property.GlideObject}
      * @memberof GlideElementReference
      * @description Internal type is "glide_date_time"
      */
-    sys_created_on: GLIDE.NilableGlideObjectProperty;
+    sys_created_on: $property.GlideObject;
 
     /**
      * Sys ID
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.Element}
      * @memberof GlideElementReference
      * @description Internal type is "GUID"
      */
-    sys_id: GLIDE.NilableElementProperty;
+    sys_id: $property.Element;
 
     /**
      * Updates
-     * @type {GLIDE.NilableNumeric}
+     * @type {$property.Numeric}
      * @memberof GlideElementReference
      */
-    sys_mod_count: GLIDE.NilableNumeric;
+    sys_mod_count: $property.Numeric;
 
     /**
      * Updated by
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.Element}
      * @memberof GlideElementReference
      */
-    sys_updated_by: GLIDE.NilableElementProperty;
+    sys_updated_by: $property.Element;
 
     /**
      * Updated
-     * @type {GLIDE.NilableGlideObjectProperty}
+     * @type {$property.GlideObject}
      * @memberof GlideElementReference
      * @description Internal type is "glide_date_time"
      */
-    sys_updated_on: GLIDE.NilableGlideObjectProperty;
+    sys_updated_on: $property.GlideObject;
     /**
      * Gets the table name for a reference element.
      * @memberof GlideElementReference
@@ -3371,17 +3638,17 @@ declare class GlideElementReference extends GLIDE.StringBasedElement<string, Gli
     setValue(value: GlideRecord | GlideElementReference | GLIDE.NilableString): void;
 }
 
-declare class GlideElementScript extends GLIDE.StringBasedElement<string, GlideElementScript, string> { }
-declare class GlideElementShortTableName extends GLIDE.StringBasedElement<string, GlideElementShortTableName, string> { }
-declare class GlideElementSysClassName extends GLIDE.StringBasedElement<string, GlideElementSysClassName, string> { }
-declare class GlideElementTranslatedField extends GLIDE.StringBasedElement<string, GlideElementTranslatedField, string> { }
-declare class GlideElementTranslatedHTML extends GLIDE.StringBasedElement<string, GlideElementTranslatedHTML, string> { }
-declare class GlideElementTranslatedText extends GLIDE.StringBasedElement<string, GlideElementTranslatedText, string> { }
-declare class GlideElementURL extends GLIDE.StringBasedElement<string, GlideElementURL, string> { }
-declare class GlideElementUserImage extends GLIDE.StringBasedElement<string, GlideElementUserImage, string> { }
-declare class GlideElementVariables extends GLIDE.StringBasedElement<string, GlideElementVariables, string> { }
-declare class GlideElementWorkflow extends GLIDE.StringBasedElement<string, GlideElementWorkflow, string> { }
-declare class GlideElementWorkflowConditions extends GLIDE.StringBasedElement<string, GlideElementWorkflowConditions, string> { }
+declare class GlideElementScript extends $element.StringBased<string, GlideElementScript, string> { }
+declare class GlideElementShortTableName extends  $element.StringBased<string, GlideElementShortTableName, string> { }
+declare class GlideElementSysClassName extends  $element.StringBased<string, GlideElementSysClassName, string> { }
+declare class GlideElementTranslatedField extends  $element.StringBased<string, GlideElementTranslatedField, string> { }
+declare class GlideElementTranslatedHTML extends  $element.StringBased<string, GlideElementTranslatedHTML, string> { }
+declare class GlideElementTranslatedText extends  $element.StringBased<string, GlideElementTranslatedText, string> { }
+declare class GlideElementURL extends  $element.StringBased<string, GlideElementURL, string> { }
+declare class GlideElementUserImage extends  $element.StringBased<string, GlideElementUserImage, string> { }
+declare class GlideElementVariables extends  $element.StringBased<string, GlideElementVariables, string> { }
+declare class GlideElementWorkflow extends  $element.StringBased<string, GlideElementWorkflow, string> { }
+declare class GlideElementWorkflowConditions extends  $element.StringBased<string, GlideElementWorkflowConditions, string> { }
 /**
  * Scoped GlideRecord is used for database operations.
  * @class GlideRecord
@@ -3390,48 +3657,48 @@ declare class GlideElementWorkflowConditions extends GLIDE.StringBasedElement<st
 declare class GlideRecord implements IGlideTableProperties, GLIDE.IDbObject {
     /**
      * Created by
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.Element}
      * @memberof GlideRecord
      */
-    sys_created_by: GLIDE.NilableElementProperty;
+    sys_created_by: $property.Element;
 
     /**
      * Created
-     * @type {GLIDE.NilableGlideObjectProperty}
+     * @type {$property.GlideObject}
      * @memberof GlideRecord
      * @description Internal type is "glide_date_time"
      */
-    sys_created_on: GLIDE.NilableGlideObjectProperty;
+    sys_created_on: $property.GlideObject;
 
     /**
      * Sys ID
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.Element}
      * @memberof GlideRecord
      * @description Internal type is "GUID"
      */
-    sys_id: GLIDE.NilableElementProperty;
+    sys_id: $property.Element;
 
     /**
      * Updates
-     * @type {GLIDE.NilableNumeric}
+     * @type {$property.Numeric}
      * @memberof GlideRecord
      */
-    sys_mod_count: GLIDE.NilableNumeric;
+    sys_mod_count: $property.Numeric;
 
     /**
      * Updated by
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.Element}
      * @memberof GlideRecord
      */
-    sys_updated_by: GLIDE.NilableElementProperty;
+    sys_updated_by: $property.Element;
 
     /**
      * Updated
-     * @type {GLIDE.NilableGlideObjectProperty}
+     * @type {$property.GlideObject}
      * @memberof GlideRecord
      * @description Internal type is "glide_date_time"
      */
-    sys_updated_on: GLIDE.NilableGlideObjectProperty;
+    sys_updated_on: $property.GlideObject;
     /**
      * Adds a filter to return active records.
      * @memberof GlideRecord
@@ -3560,11 +3827,11 @@ declare class GlideRecord implements IGlideTableProperties, GLIDE.IDbObject {
     /**
      * Returns the specified record in an instantiated GlideRecord object.
      * @memberof GlideRecord
-     * @param {GLIDE.NilableElementProperty} sys_id - sys_id to match.
+     * @param {$property.Element} sys_id - sys_id to match.
      * @returns {boolean} Flag that indicates whether the requested record was located - true: Record was found; false: Record was not found.
      * @description 
      */
-    get(sys_id: GLIDE.NilableElementProperty): boolean;
+    get(sys_id: $property.Element): boolean;
     /**
      * Returns the specified record in an instantiated GlideRecord object.
      * @memberof GlideRecord
@@ -4159,32 +4426,32 @@ declare class Workflow {
 declare interface sys_metadataFields extends IExtendedGlideTableProperties {
     /**
      * Display name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    sys_name: GLIDE.NilableElementProperty;
+    sys_name: $property.NilableElement;
     /**
      * Package
-     * @type {GLIDE.NilableRecordReference<sys_packageGlideRecord, sys_packageReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_packageFields, sys_packageGlideRecord>}
      */
-    sys_package: GLIDE.NilableRecordReference<sys_packageGlideRecord, sys_packageReferenceElement>;
+    sys_package: $property.$generic.NilableReference<sys_packageFields, sys_packageGlideRecord>;
     /**
      * Protection policy
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    sys_policy: GLIDE.NilableElementProperty;
+    sys_policy: $property.NilableElement;
     /**
      * Application
-     * @type {GLIDE.NilableRecordReference<sys_scopeGlideRecord, sys_scopeReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_scopeFields, sys_scopeGlideRecord>}
      */
-    sys_scope: GLIDE.NilableRecordReference<sys_scopeGlideRecord, sys_scopeReferenceElement>;
+    sys_scope: $property.$generic.NilableReference<sys_scopeFields, sys_scopeGlideRecord>;
     /**
      * Update name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    sys_update_name: GLIDE.NilableElementProperty;
+    sys_update_name: $property.NilableElement;
 }
 declare type sys_metadataGlideRecord = GlideRecord & sys_metadataFields;
-declare type sys_metadataReferenceElement = GLIDE.RecordReferenceElement<sys_metadataGlideRecord, sys_metadataFields>;
+declare type sys_metadataReferenceElement = $element.Reference<sys_metadataFields, sys_metadataGlideRecord>;
 /**
  * Table
  * @interface sys_db_objectFields
@@ -4193,94 +4460,94 @@ declare type sys_metadataReferenceElement = GLIDE.RecordReferenceElement<sys_met
 declare interface sys_db_objectFields extends sys_metadataFields {
     /**
      * Accessible from
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    access: GLIDE.NilableElementProperty;
+    access: $property.NilableElement;
     /**
      * Allow UI actions
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    actions_access: GLIDE.NilableBoolean;
+    actions_access: $property.NilableBoolean;
     /**
      * Allow new fields
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    alter_access: GLIDE.NilableBoolean;
+    alter_access: $property.NilableBoolean;
     /**
      * Caller Access
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    caller_access: GLIDE.NilableElementProperty;
+    caller_access: $property.NilableElement;
     /**
      * Allow client scripts
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    client_scripts_access: GLIDE.NilableBoolean;
+    client_scripts_access: $property.NilableBoolean;
     /**
      * Allow configuration
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    configuration_access: GLIDE.NilableBoolean;
+    configuration_access: $property.NilableBoolean;
     /**
      * Can create
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    create_access: GLIDE.NilableBoolean;
+    create_access: $property.NilableBoolean;
     /**
      * Create access controls
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    create_access_controls: GLIDE.NilableBoolean;
+    create_access_controls: $property.NilableBoolean;
     /**
      * Can delete
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    delete_access: GLIDE.NilableBoolean;
+    delete_access: $property.NilableBoolean;
     /**
      * Extension model
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    extension_model: GLIDE.NilableElementProperty;
+    extension_model: $property.NilableElement;
     /**
      * Extensible
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    is_extendable: GLIDE.NilableBoolean;
+    is_extendable: $property.NilableBoolean;
     /**
      * Label
-     * @type {GLIDE.NilableDocumentationProperty}
+     * @type {$property.NilableDocumentation}
      */
-    label: GLIDE.NilableDocumentationProperty;
+    label: $property.NilableDocumentation;
     /**
      * Live feed
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    live_feed_enabled: GLIDE.NilableBoolean;
+    live_feed_enabled: $property.NilableBoolean;
     /**
      * Name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    name: GLIDE.NilableElementProperty;
+    name: $property.NilableElement;
     /**
      * Auto number
-     * @type {GLIDE.NilableRecordReference<sys_numberGlideRecord, sys_numberReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_numberFields, sys_numberGlideRecord>}
      */
-    number_ref: GLIDE.NilableRecordReference<sys_numberGlideRecord, sys_numberReferenceElement>;
+    number_ref: $property.$generic.NilableReference<sys_numberFields, sys_numberGlideRecord>;
     /**
      * Provider class
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    provider_class: GLIDE.NilableElementProperty;
+    provider_class: $property.NilableElement;
     /**
      * Can read
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    read_access: GLIDE.NilableBoolean;
+    read_access: $property.NilableBoolean;
     /**
      * Extends table
-     * @type {GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_db_objectFields, sys_db_objectGlideRecord>}
      */
-    super_class: GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>;
+    super_class: $property.$generic.NilableReference<sys_db_objectFields, sys_db_objectGlideRecord>;
     /**
      * Sys class code
      * @type {IGlideElement}
@@ -4289,27 +4556,27 @@ declare interface sys_db_objectFields extends sys_metadataFields {
     sys_class_code: IGlideElement;
     /**
      * Sys class path
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    sys_class_path: GLIDE.NilableElementProperty;
+    sys_class_path: $property.NilableElement;
     /**
      * Can update
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    update_access: GLIDE.NilableBoolean;
+    update_access: $property.NilableBoolean;
     /**
      * User role
-     * @type {GLIDE.NilableRecordReference<sys_user_roleGlideRecord, sys_user_roleReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_user_roleFields, sys_user_roleGlideRecord>}
      */
-    user_role: GLIDE.NilableRecordReference<sys_user_roleGlideRecord, sys_user_roleReferenceElement>;
+    user_role: $property.$generic.NilableReference<sys_user_roleFields, sys_user_roleGlideRecord>;
     /**
      * Allow access to this table via web services
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    ws_access: GLIDE.NilableBoolean;
+    ws_access: $property.NilableBoolean;
 }
 declare type sys_db_objectGlideRecord = sys_metadataGlideRecord & sys_db_objectFields;
-declare type sys_db_objectReferenceElement = GLIDE.RecordReferenceElement<sys_db_objectGlideRecord, sys_db_objectFields>;
+declare type sys_db_objectReferenceElement = $element.Reference<sys_db_objectFields, sys_db_objectGlideRecord>;
 /**
  * Dictionary Entry
  * @interface sys_dictionaryFields
@@ -4318,29 +4585,29 @@ declare type sys_db_objectReferenceElement = GLIDE.RecordReferenceElement<sys_db
 declare interface sys_dictionaryFields extends sys_metadataFields {
     /**
      * Active
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    active: GLIDE.NilableBoolean;
+    active: $property.NilableBoolean;
     /**
      * Array
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    array: GLIDE.NilableBoolean;
+    array: $property.NilableBoolean;
     /**
      * Array denormalized
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    array_denormalized: GLIDE.NilableBoolean;
+    array_denormalized: $property.NilableBoolean;
     /**
      * Attributes
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    attributes: GLIDE.NilableElementProperty;
+    attributes: $property.NilableElement;
     /**
      * Audit
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    audit: GLIDE.NilableBoolean;
+    audit: $property.NilableBoolean;
     /**
      * Calculation
      * @type {GLIDE.NilableScriptProperty}
@@ -4348,34 +4615,34 @@ declare interface sys_dictionaryFields extends sys_metadataFields {
     calculation: GLIDE.NilableScriptProperty;
     /**
      * Choice
-     * @type {GLIDE.NilableNumeric}
+     * @type {$property.Numeric}
      */
-    choice: GLIDE.NilableNumeric;
+    choice: $property.Numeric;
     /**
      * Choice field
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    choice_field: GLIDE.NilableElementProperty;
+    choice_field: $property.NilableElement;
     /**
      * Choice table
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    choice_table: GLIDE.NilableElementProperty;
+    choice_table: $property.NilableElement;
     /**
      * Column label
-     * @type {GLIDE.NilableDocumentationProperty}
+     * @type {$property.NilableDocumentation}
      */
-    column_label: GLIDE.NilableDocumentationProperty;
+    column_label: $property.NilableDocumentation;
     /**
      * Comments
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    comments: GLIDE.NilableElementProperty;
+    comments: $property.NilableElement;
     /**
      * Create roles
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    create_roles: GLIDE.NilableElementProperty;
+    create_roles: $property.NilableElement;
     /**
      * Defaultsort
      * @type {GLIDE.NilableNumeric}
@@ -4383,84 +4650,84 @@ declare interface sys_dictionaryFields extends sys_metadataFields {
     defaultsort: GLIDE.NilableNumeric;
     /**
      * Default value
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    default_value: GLIDE.NilableElementProperty;
+    default_value: $property.NilableElement;
     /**
      * Delete roles
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    delete_roles: GLIDE.NilableElementProperty;
+    delete_roles: $property.NilableElement;
     /**
      * Dependent
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    dependent: GLIDE.NilableElementProperty;
+    dependent: $property.NilableElement;
     /**
      * Dependent on field
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    dependent_on_field: GLIDE.NilableElementProperty;
+    dependent_on_field: $property.NilableElement;
     /**
      * Display
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    display: GLIDE.NilableBoolean;
+    display: $property.NilableBoolean;
     /**
      * Dynamic creation
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    dynamic_creation: GLIDE.NilableBoolean;
+    dynamic_creation: $property.NilableBoolean;
     /**
      * Dynamic creation script
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    dynamic_creation_script: GLIDE.NilableElementProperty;
+    dynamic_creation_script: $property.NilableElement;
     /**
      * Dynamic default value
-     * @type {GLIDE.NilableRecordReference<sys_filter_option_dynamicGlideRecord, sys_filter_option_dynamicReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_filter_option_dynamicGlideRecord, sys_filter_option_dynamicReferenceElement>}
      */
-    dynamic_default_value: GLIDE.NilableRecordReference<GlideRecord, GlideElementReference>;
+    dynamic_default_value: $property.$generic.NilableReference<IGlideTableProperties, GlideRecord>;
     /**
      * Dynamic ref qual
-     * @type {GLIDE.NilableRecordReference<sys_filter_option_dynamicGlideRecord, sys_filter_option_dynamicReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_filter_option_dynamicGlideRecord, sys_filter_option_dynamicReferenceElement>}
      */
-    dynamic_ref_qual: GLIDE.NilableRecordReference<GlideRecord, GlideElementReference>;
+    dynamic_ref_qual: $property.$generic.NilableReference<IGlideTableProperties, GlideRecord>;
     /**
      * Column name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    element: GLIDE.NilableElementProperty;
+    element: $property.NilableElement;
     /**
      * Element reference
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    element_reference: GLIDE.NilableBoolean;
+    element_reference: $property.NilableBoolean;
     /**
      * Foreign database
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    foreign_database: GLIDE.NilableElementProperty;
+    foreign_database: $property.NilableElement;
     /**
      * Function definition
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    function_definition: GLIDE.NilableElementProperty;
+    function_definition: $property.NilableElement;
     /**
      * Function field
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    function_field: GLIDE.NilableBoolean;
+    function_field: $property.NilableBoolean;
     /**
      * Type
-     * @type {GLIDE.NilableRecordReference<sys_glide_objectGlideRecord, sys_glide_objectReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_glide_objectFields, sys_glide_objectGlideRecord>}
      */
-    internal_type: GLIDE.NilableRecordReference<sys_glide_objectGlideRecord, sys_glide_objectReferenceElement>;
+    internal_type: $property.$generic.NilableReference<sys_glide_objectFields, sys_glide_objectGlideRecord>;
     /**
      * Mandatory
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    mandatory: GLIDE.NilableBoolean;
+    mandatory: $property.NilableBoolean;
     /**
      * Max length
      * @type {GLIDE.NilableNumeric}
@@ -4468,54 +4735,54 @@ declare interface sys_dictionaryFields extends sys_metadataFields {
     max_length: GLIDE.NilableNumeric;
     /**
      * Table
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    name: GLIDE.NilableElementProperty;
+    name: $property.NilableElement;
     /**
      * Next element
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    next_element: GLIDE.NilableElementProperty;
+    next_element: $property.NilableElement;
     /**
      * Primary
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    primary: GLIDE.NilableBoolean;
+    primary: $property.NilableBoolean;
     /**
      * Read only
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    read_only: GLIDE.NilableBoolean;
+    read_only: $property.NilableBoolean;
     /**
      * Read roles
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    read_roles: GLIDE.NilableElementProperty;
+    read_roles: $property.NilableElement;
     /**
      * Reference
-     * @type {GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_db_objectFields, sys_db_objectGlideRecord>}
      */
-    reference: GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>;
+    reference: $property.$generic.NilableReference<sys_db_objectFields, sys_db_objectGlideRecord>;
     /**
      * Reference cascade rule
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    reference_cascade_rule: GLIDE.NilableElementProperty;
+    reference_cascade_rule: $property.NilableElement;
     /**
      * Reference floats
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    reference_floats: GLIDE.NilableBoolean;
+    reference_floats: $property.NilableBoolean;
     /**
      * Reference key
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    reference_key: GLIDE.NilableElementProperty;
+    reference_key: $property.NilableElement;
     /**
      * Reference qual
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    reference_qual: GLIDE.NilableElementProperty;
+    reference_qual: $property.NilableElement;
     /**
      * Reference qual condition
      * @type {GLIDE.NilableConditionsProperty}
@@ -4523,9 +4790,9 @@ declare interface sys_dictionaryFields extends sys_metadataFields {
     reference_qual_condition: GLIDE.NilableConditionsProperty;
     /**
      * Reference type
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    reference_type: GLIDE.NilableElementProperty;
+    reference_type: $property.NilableElement;
     /**
      * Sizeclass
      * @type {GLIDE.NilableNumeric}
@@ -4533,67 +4800,67 @@ declare interface sys_dictionaryFields extends sys_metadataFields {
     sizeclass: GLIDE.NilableNumeric;
     /**
      * Spell check
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    spell_check: GLIDE.NilableBoolean;
+    spell_check: $property.NilableBoolean;
     /**
      * Staged
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    staged: GLIDE.NilableBoolean;
+    staged: $property.NilableBoolean;
     /**
      * Table reference
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    table_reference: GLIDE.NilableBoolean;
+    table_reference: $property.NilableBoolean;
     /**
      * Text index
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    text_index: GLIDE.NilableBoolean;
+    text_index: $property.NilableBoolean;
     /**
      * Unique
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    unique: GLIDE.NilableBoolean;
+    unique: $property.NilableBoolean;
     /**
      * Use dependent field
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    use_dependent_field: GLIDE.NilableBoolean;
+    use_dependent_field: $property.NilableBoolean;
     /**
      * Use dynamic default
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    use_dynamic_default: GLIDE.NilableBoolean;
+    use_dynamic_default: $property.NilableBoolean;
     /**
      * Use reference qualifier
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    use_reference_qualifier: GLIDE.NilableElementProperty;
+    use_reference_qualifier: $property.NilableElement;
     /**
      * Calculated
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    virtual: GLIDE.NilableBoolean;
+    virtual: $property.NilableBoolean;
     /**
      * Widget
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    widget: GLIDE.NilableElementProperty;
+    widget: $property.NilableElement;
     /**
      * Write roles
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    write_roles: GLIDE.NilableElementProperty;
+    write_roles: $property.NilableElement;
     /**
      * XML view
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    xml_view: GLIDE.NilableBoolean;
+    xml_view: $property.NilableBoolean;
 }
 declare type sys_dictionaryGlideRecord = sys_metadataGlideRecord & sys_dictionaryFields;
-declare type sys_dictionaryReferenceElement = GLIDE.RecordReferenceElement<sys_dictionaryGlideRecord, sys_dictionaryFields>;
+declare type sys_dictionaryReferenceElement = $element.Reference<sys_dictionaryFields, sys_dictionaryGlideRecord>;
 /**
  * Field class
  * @interface sys_glide_objectFields
@@ -4602,14 +4869,14 @@ declare type sys_dictionaryReferenceElement = GLIDE.RecordReferenceElement<sys_d
 declare interface sys_glide_objectFields extends sys_metadataFields {
     /**
      * Attributes
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    attributes: GLIDE.NilableElementProperty;
+    attributes: $property.NilableElement;
     /**
      * Class name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    class_name: GLIDE.NilableElementProperty;
+    class_name: $property.NilableElement;
     /**
      * Label
      * @type {GLIDE.NilableTranslatedFieldProperty}
@@ -4617,32 +4884,32 @@ declare interface sys_glide_objectFields extends sys_metadataFields {
     label: GLIDE.NilableTranslatedFieldProperty;
     /**
      * Name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    name: GLIDE.NilableElementProperty;
+    name: $property.NilableElement;
     /**
      * Length
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    scalar_length: GLIDE.NilableElementProperty;
+    scalar_length: $property.NilableElement;
     /**
      * Extends
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    scalar_type: GLIDE.NilableElementProperty;
+    scalar_type: $property.NilableElement;
     /**
      * Use original value
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    use_original_value: GLIDE.NilableBoolean;
+    use_original_value: $property.NilableBoolean;
     /**
      * Visible
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    visible: GLIDE.NilableBoolean;
+    visible: $property.NilableBoolean;
 }
 declare type sys_glide_objectGlideRecord = sys_metadataGlideRecord & sys_glide_objectFields;
-declare type sys_glide_objectReferenceElement = GLIDE.RecordReferenceElement<sys_glide_objectGlideRecord, sys_glide_objectFields>;
+declare type sys_glide_objectReferenceElement = $element.Reference<sys_glide_objectFields, sys_glide_objectGlideRecord>;
 /**
  * Number
  * @interface sys_numberFields
@@ -4651,9 +4918,9 @@ declare type sys_glide_objectReferenceElement = GLIDE.RecordReferenceElement<sys
 declare interface sys_numberFields extends sys_metadataFields {
     /**
      * Table
-     * @type {GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_db_objectFields, sys_db_objectGlideRecord>}
      */
-    category: GLIDE.NilableRecordReference<sys_db_objectGlideRecord, sys_db_objectReferenceElement>;
+    category: $property.$generic.NilableReference<sys_db_objectFields, sys_db_objectGlideRecord>;
     /**
      * Number of digits
      * @type {GLIDE.NilableNumeric}
@@ -4666,12 +4933,12 @@ declare interface sys_numberFields extends sys_metadataFields {
     number: GLIDE.NilableNumeric;
     /**
      * Prefix
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    prefix: GLIDE.NilableElementProperty;
+    prefix: $property.NilableElement;
 }
 declare type sys_numberGlideRecord = sys_metadataGlideRecord & sys_numberFields;
-declare type sys_numberReferenceElement = GLIDE.RecordReferenceElement<sys_numberGlideRecord, sys_numberFields>;
+declare type sys_numberReferenceElement = $element.Reference<sys_numberFields, sys_numberGlideRecord>;
 /**
  * Package
  * @interface sys_packageFields
@@ -4680,52 +4947,52 @@ declare type sys_numberReferenceElement = GLIDE.RecordReferenceElement<sys_numbe
 declare interface sys_packageFields extends IExtendedGlideTableProperties {
     /**
      * Active
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    active: GLIDE.NilableBoolean;
+    active: $property.NilableBoolean;
     /**
      * Subscription requirement
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    enforce_license: GLIDE.NilableElementProperty;
+    enforce_license: $property.NilableElement;
     /**
      * Licensable
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    licensable: GLIDE.NilableBoolean;
+    licensable: $property.NilableBoolean;
     /**
      * Subscription Category
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    license_category: GLIDE.NilableElementProperty;
+    license_category: $property.NilableElement;
     /**
      * Subscription Model
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    license_model: GLIDE.NilableElementProperty;
+    license_model: $property.NilableElement;
     /**
      * Name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    name: GLIDE.NilableElementProperty;
+    name: $property.NilableElement;
     /**
      * ID
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    source: GLIDE.NilableElementProperty;
+    source: $property.NilableElement;
     /**
      * Trackable
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    trackable: GLIDE.NilableBoolean;
+    trackable: $property.NilableBoolean;
     /**
      * Version
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    version: GLIDE.NilableElementProperty;
+    version: $property.NilableElement;
 }
 declare type sys_packageGlideRecord = GlideRecord & sys_packageFields;
-declare type sys_packageReferenceElement = GLIDE.RecordReferenceElement<sys_packageGlideRecord, sys_packageFields>;
+declare type sys_packageReferenceElement = $element.Reference<sys_packageFields, sys_packageGlideRecord>;
 /**
  * Application
  * @interface sys_scopeFields
@@ -4734,9 +5001,9 @@ declare type sys_packageReferenceElement = GLIDE.RecordReferenceElement<sys_pack
 declare interface sys_scopeFields extends sys_packageFields {
     /**
      * JavaScript Mode
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    js_level: GLIDE.NilableElementProperty;
+    js_level: $property.NilableElement;
     /**
      * Logo
      * @type {GLIDE.NilableUserImageProperty}
@@ -4744,52 +5011,52 @@ declare interface sys_scopeFields extends sys_packageFields {
     logo: GLIDE.NilableUserImageProperty;
     /**
      * Private
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    private: GLIDE.NilableBoolean;
+    private: $property.NilableBoolean;
     /**
      * Restrict Table Choices
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    restrict_table_access: GLIDE.NilableBoolean;
+    restrict_table_access: $property.NilableBoolean;
     /**
      * Runtime Access Tracking
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    runtime_access_tracking: GLIDE.NilableElementProperty;
+    runtime_access_tracking: $property.NilableElement;
     /**
      * Scope
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    scope: GLIDE.NilableElementProperty;
+    scope: $property.NilableElement;
     /**
      * Application administration
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    scoped_administration: GLIDE.NilableBoolean;
+    scoped_administration: $property.NilableBoolean;
     /**
      * Short description
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    short_description: GLIDE.NilableElementProperty;
+    short_description: $property.NilableElement;
     /**
      * Template
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    template: GLIDE.NilableElementProperty;
+    template: $property.NilableElement;
     /**
      * Vendor
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    vendor: GLIDE.NilableElementProperty;
+    vendor: $property.NilableElement;
     /**
      * Vendor prefix
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    vendor_prefix: GLIDE.NilableElementProperty;
+    vendor_prefix: $property.NilableElement;
 }
 declare type sys_scopeGlideRecord = sys_packageGlideRecord & sys_scopeFields;
-declare type sys_scopeReferenceElement = GLIDE.RecordReferenceElement<sys_scopeGlideRecord, sys_scopeFields>;
+declare type sys_scopeReferenceElement = $element.Reference<sys_scopeFields, sys_scopeGlideRecord>;
 /**
  * Role
  * @interface sys_user_roleFields
@@ -4798,62 +5065,62 @@ declare type sys_scopeReferenceElement = GLIDE.RecordReferenceElement<sys_scopeG
 declare interface sys_user_roleFields extends sys_metadataFields {
     /**
      * Assignable by
-     * @type {GLIDE.NilableRecordReference<sys_user_roleGlideRecord, sys_user_roleReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_user_roleFields, sys_user_roleGlideRecord>}
      */
-    assignable_by: GLIDE.NilableRecordReference<sys_user_roleGlideRecord, sys_user_roleReferenceElement>;
+    assignable_by: $property.$generic.NilableReference<sys_user_roleFields, sys_user_roleGlideRecord>;
     /**
      * Can delegate
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    can_delegate: GLIDE.NilableBoolean;
+    can_delegate: $property.NilableBoolean;
     /**
      * Description
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    description: GLIDE.NilableElementProperty;
+    description: $property.NilableElement;
     /**
      * Elevated privilege
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    elevated_privilege: GLIDE.NilableBoolean;
+    elevated_privilege: $property.NilableBoolean;
     /**
      * Encryption context
-     * @type {GLIDE.NilableRecordReference<sys_encryption_contextGlideRecord, sys_encryption_contextReferenceElement>}
+     * @type {$property.$generic.NilableReference<sys_encryption_contextFields, sys_encryption_contextGlideRecord>}
      */
-    encryption_context: GLIDE.NilableRecordReference<sys_encryption_contextGlideRecord, sys_encryption_contextReferenceElement>;
+    encryption_context: $property.$generic.NilableReference<sys_encryption_contextFields, sys_encryption_contextGlideRecord>;
     /**
      * Grantable
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    grantable: GLIDE.NilableBoolean;
+    grantable: $property.NilableBoolean;
     /**
      * Includes roles
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    includes_roles: GLIDE.NilableElementProperty;
+    includes_roles: $property.NilableElement;
     /**
      * Name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    name: GLIDE.NilableElementProperty;
+    name: $property.NilableElement;
     /**
      * Requires Subscription
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    requires_subscription: GLIDE.NilableElementProperty;
+    requires_subscription: $property.NilableElement;
     /**
      * Application Administrator
-     * @type {GLIDE.NilableBoolean}
+     * @type {$property.NilableBoolean}
      */
-    scoped_admin: GLIDE.NilableBoolean;
+    scoped_admin: $property.NilableBoolean;
     /**
      * Suffix
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    suffix: GLIDE.NilableElementProperty;
+    suffix: $property.NilableElement;
 }
 declare type sys_user_roleGlideRecord = sys_metadataGlideRecord & sys_user_roleFields;
-declare type sys_user_roleReferenceElement = GLIDE.RecordReferenceElement<sys_user_roleGlideRecord, sys_user_roleFields>;
+declare type sys_user_roleReferenceElement = $element.Reference<sys_user_roleFields, sys_user_roleGlideRecord>;
 /**
  * Encryption Context
  * @interface sys_encryption_contextFields
@@ -4862,19 +5129,19 @@ declare type sys_user_roleReferenceElement = GLIDE.RecordReferenceElement<sys_us
 declare interface sys_encryption_contextFields extends sys_metadataFields {
     /**
      * Encryption key
-     * @type {GLIDE.NilablePassword2Property}
+     * @type {$property.NilablePassword2}
      */
-    encryption_key: GLIDE.NilablePassword2Property;
+    encryption_key: $property.NilablePassword2;
     /**
      * Name
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    name: GLIDE.NilableElementProperty;
+    name: $property.NilableElement;
     /**
      * Type
-     * @type {GLIDE.NilableElementProperty}
+     * @type {$property.NilableElement}
      */
-    type: GLIDE.NilableElementProperty;
+    type: $property.NilableElement;
 }
 declare type sys_encryption_contextGlideRecord = sys_metadataGlideRecord & sys_encryption_contextFields;
-declare type sys_encryption_contextReferenceElement = GLIDE.RecordReferenceElement<sys_encryption_contextGlideRecord, sys_encryption_contextFields>;
+declare type sys_encryption_contextReferenceElement = $element.Reference<sys_encryption_contextFields, sys_encryption_contextGlideRecord>;
