@@ -1,3 +1,30 @@
+let internalTypeToClassNameMapping: { [key: string]: string; } = {
+    "boolean": "GlideElementBoolean", "catalog_preview": "GlideElement", "choice": "GlideElement", "color": "GlideElement", "composite_field": "GlideElement",
+    "compressed": "GlideElementCompressed", "conditions": "GlideElementConditions", "currency": "GlideElementCurrency", "data_object": "GlideElementDataObject", "decimal": "GlideElementNumeric",
+    "decoration": "GlideElement", "document_id": "GlideElementDocumentId", "documentation_field": "GlideElementDocumentation", "domain_id": "GlideElementDomainId",
+    "domain_path": "GlideElement", "due_date": "GlideElementGlideObject", "email": "GlideElement", "email_script": "GlideElement", "field_list": "GlideElement",
+    "field_name": "GlideElement", "float": "GlideElementNumeric", "glide_action_list": "GlideElementGlideObject", "glide_date": "GlideElementGlideObject", "glide_date_time": "GlideElementGlideObject",
+    "glide_duration": "GlideElementGlideObject", "glide_list": "GlideElementGlideObject", "glide_var": "GlideElementGlideVar", "html": "GlideElementGlideObject", "html_script": "GlideElement",
+    "icon": "GlideElementIcon", "image": "GlideElement", "integer": "GlideElementNumeric", "journal": "GlideElementGlideObject", "journal_input": "GlideElementGlideObject",
+    "journal_list": "GlideElementGlideObject", "multi_two_lines": "GlideElement", "name_values": "GlideElementNameValue", "password": "GlideElementPassword", "password2": "GlideElementPassword2",
+    "percent_complete": "GlideElementNumeric", "ph_number": "GlideElement", "price": "GlideElementPrice", "reference": "GlideElementReference", "script": "GlideElementScript",
+    "script_plain": "GlideElementScript", "short_table_name": "GlideElementShortTableName", "string": "GlideElement", "sys_class_code": "GlideElement",
+    "sys_class_name": "GlideElementSysClassName", "sys_class_path": "GlideElement", "sysevent_name": "GlideElement", "table_name": "GlideElement",
+    "template_value": "GlideElementWorkflowConditions", "timer": "GlideElementGlideObject", "translated_field": "GlideElementTranslatedField", "translated_html": "GlideElementTranslatedHTML",
+    "translated_text": "GlideElementTranslatedText", "url": "GlideElementURL", "user_image": "GlideElementUserImage", "user_input": "GlideElementGlideObject", "user_roles": "GlideElement",
+    "variables": "GlideElementVariables", "version": "GlideElement", "wide_text": "GlideElement", "workflow": "GlideElementWorkflow", "xml": "GlideElementScript",
+    "GUID": "GlideElement", "glide_encrypted": "GlideElementEncrypted", "source_table": "GlideElementSourceTable", "time": "GlideElementGlideObject", "html_template": "GlideElement",
+    "glide_precise_time": "GlideElementGlideObject", "source_id": "GlideElementSourceId", "translated": "GlideElementGlideObject", "day_of_week": "GlideElementGlideObject",
+    "data_structure": "GlideElementGlideObject", "week_of_month": "GlideElementGlideObject", "month_of_year": "GlideElementGlideObject", "date": "GlideElementGlideObject", "reference_name": "GlideElement",
+    "properties": "GlideElement", "workflow_conditions": "GlideElementWorkflowConditions", "counter": "GlideElementCounter", "color_display": "GlideElement", "days_of_week": "GlideElement",
+    "source_name": "GlideElementSourceName", "longint": "GlideElement", "string_full_utf8": "GlideElementFullUTF8", "variable_conditions": "GlideElementVariableConditions", "bootstrap_color": "GlideElement",
+    "glyphicon": "GlideElement", "char": "GlideElement", "long": "GlideElement", "datetime": "GlideElementGlideObject", "repeat_type": "GlideElement", "composite_name": "GlideElement",
+    "schedule_date_time": "GlideElementGlideObject", "internal_type": "GlideElementInternalType", "breakdown_element": "GlideElementBreakdownElement", "glide_time": "GlideElementGlideObject",
+    "short_field_name": "GlideElementShortFieldName", "wiki_text": "GlideElementWikiText", "order_index": "GlideElementNumeric", "slushbucket": "GlideElement", "int": "GlideElement",
+    "repeat_count": "GlideElementNumeric", "json": "GlideElement", "integer_time": "GlideElementGlideObject", "integer_date": "GlideElementGlideObject", "css": "GlideElement", "script_server": "GlideElement",
+    "condition_string": "GlideElement"
+};
+
 interface IChoiceInfo {
     label: string;
     value: string;
@@ -5,23 +32,6 @@ interface IChoiceInfo {
     hint?: string;
     sequence?: number;
 }
-let internalTypeToClassNameMapping: { [key: string]: string; } = {
-    "boolean": "GLIDE.NilableBoolean", "catalog_preview": "GLIDE.NilableElementProperty", "choice": "GLIDE.NilableElementProperty", "color": "GLIDE.NilableElementProperty", "composite_field": "GLIDE.NilableElementProperty",
-    "compressed": "GLIDE.NilableCompressedProperty", "conditions": "GLIDE.NilableConditionsProperty", "currency": "GLIDE.NilableCurrencyProperty", "data_object": "GLIDE.NilableDataObjectProperty", "decimal": "GLIDE.NilableNumeric",
-    "decoration": "GLIDE.NilableElementProperty", "document_id": "GLIDE.NilableDocumentIdProperty", "documentation_field": "GLIDE.NilableDocumentationProperty", "domain_id": "GLIDE.NilableDomainIdProperty",
-    "domain_path": "GLIDE.NilableElementProperty", "due_date": "GLIDE.NilableGlideObjectProperty", "email": "GLIDE.NilableElementProperty", "email_script": "GLIDE.NilableElementProperty", "field_list": "GLIDE.NilableElementProperty",
-    "field_name": "GLIDE.NilableElementProperty", "float": "GLIDE.NilableNumeric", "glide_action_list": "GLIDE.NilableGlideObjectProperty", "glide_date": "GLIDE.NilableGlideObjectProperty", "glide_date_time": "GLIDE.NilableGlideObjectProperty",
-    "glide_duration": "GLIDE.NilableGlideObjectProperty", "glide_list": "GLIDE.NilableGlideObjectProperty", "glide_var": "GLIDE.NilableGlideVarProperty", "html": "GLIDE.NilableGlideObjectProperty", "html_script": "GLIDE.NilableElementProperty",
-    "icon": "GLIDE.NilableIconProperty", "image": "GLIDE.NilableElementProperty", "integer": "GLIDE.NilableNumeric", "journal": "GLIDE.NilableGlideObjectProperty", "journal_input": "GLIDE.NilableGlideObjectProperty",
-    "journal_list": "GLIDE.NilableGlideObjectProperty", "multi_two_lines": "GLIDE.NilableElementProperty", "name_values": "GLIDE.NilableNameValueProperty", "password": "GLIDE.NilablePasswordProperty", "password2": "GLIDE.NilablePassword2Property",
-    "percent_complete": "GLIDE.NilableNumeric", "ph_number": "GLIDE.NilableElementProperty", "price": "GLIDE.NilablePriceProperty", "reference": "GLIDE.NilableRecordReference<GlideRecord,IGlideTableProperties>", "script": "GLIDE.NilableScriptProperty",
-    "script_plain": "GLIDE.NilableScriptProperty", "short_table_name": "GLIDE.NilableShortTableNameProperty", "string": "GLIDE.NilableElementProperty", "sys_class_code": "GLIDE.NilableElementProperty",
-    "sys_class_name": "GLIDE.NilableSysClassNameProperty", "sys_class_path": "GLIDE.NilableElementProperty", "sysevent_name": "GLIDE.NilableElementProperty", "table_name": "GLIDE.NilableElementProperty",
-    "template_value": "GLIDE.NilableWorkflowConditionsProperty", "timer": "GLIDE.NilableGlideObjectProperty", "translated_field": "GLIDE.NilableTranslatedFieldProperty", "translated_html": "GLIDE.NilableTranslatedHTMLProperty",
-    "translated_text": "GLIDE.NilableTranslatedTextProperty", "url": "GLIDE.NilableURLProperty", "user_image": "GLIDE.NilableUserImageProperty", "user_input": "GLIDE.NilableGlideObjectProperty", "user_roles": "GLIDE.NilableElementProperty",
-    "variables": "GLIDE.NilableVariablesProperty", "version": "GLIDE.NilableElementProperty", "wide_text": "GLIDE.NilableElementProperty", "workflow": "GLIDE.NilableWorkflowProperty", "xml": "GLIDE.NilableScriptProperty",
-    "GUID": "GLIDE.NilableElementProperty"
-};
 
 let baseFieldNames: string[] = ["sys_created_by", "sys_created_on", "sys_id", "sys_mod_count", "sys_updated_by", "sys_updated_on"];
 
@@ -96,6 +106,7 @@ function getTableInfo(tableGr: sys_db_objectGlideRecord): ITableInfo {
     }
     return result;
 }
+
 gs.info(["sys_metadata", "sys_db_object", "sys_dictionary", "sys_glide_object", "sys_number", "sys_package", "sys_scope", "sys_user_role", "sys_encryption_context"].map(function (n: string): string {
     var gr: sys_db_objectGlideRecord = <sys_db_objectGlideRecord>new GlideRecord("sys_db_object");
     gr.addQuery("name", n);

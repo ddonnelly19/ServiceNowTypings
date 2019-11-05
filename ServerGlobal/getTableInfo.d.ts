@@ -1,3 +1,6 @@
+declare let internalTypeToClassNameMapping: {
+    [key: string]: string;
+};
 interface IChoiceInfo {
     label: string;
     value: string;
@@ -5,9 +8,6 @@ interface IChoiceInfo {
     hint?: string;
     sequence?: number;
 }
-declare let internalTypeToClassNameMapping: {
-    [key: string]: string;
-};
 declare let baseFieldNames: string[];
 declare function internalTypeToClassName(internal_type: string): string;
 interface IElementInfo {
