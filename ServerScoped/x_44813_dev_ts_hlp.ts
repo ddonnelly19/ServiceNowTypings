@@ -1,42 +1,13 @@
 /// <reference path="base.d.ts" />
 
 namespace x_44813_dev_ts_hlp {
-    export interface dts_declFields extends IExtendedGlideTableProperties {
-    }
-    export type dts_declGlideRecord = GlideRecord & dts_declFields;
-    export type dts_declReferenceElement = $$element.Reference<dts_declFields, dts_declGlideRecord>;
-    export interface dts_libraryFields extends dts_declFields {
-    }
-    export type dts_libraryGlideRecord = dts_declGlideRecord & dts_libraryFields;
-    export type dts_libraryReferenceElement = $$element.Reference<dts_libraryFields, dts_libraryGlideRecord>;
-    export interface dts_moduleFields extends dts_declFields {
-    }
-    export type dts_moduleGlideRecord = dts_declGlideRecord & dts_moduleFields;
-    export type dts_moduleReferenceElement = $$element.Reference<dts_moduleFields, dts_moduleGlideRecord>;
-
-    interface IDTSHelperPrototype extends ICustomClassPrototype1<IDTSHelperPrototype, "DTSHelper", GlideRecord | GlideElementReference> {
-        current: GlideRecord;
-        getLibrary(): dts_libraryGlideRecord;
-        getModule(): dts_moduleGlideRecord;
-        getFullName(): string;
-        getPathName(): string;
-    }
-    interface IDTSHelperConstructor extends CustomClassConstructor1<IDTSHelperPrototype, Readonly<IDTSHelperPrototype>, GlideRecord | GlideElementReference> {
-        new(gr: GlideRecord | GlideElementReference): Readonly<IDTSHelperPrototype>;
-        (gr: GlideRecord | GlideElementReference): Readonly<IDTSHelperPrototype>;
-        TypeScriptChoice: ITypeScriptChoiceConstructor;
-        TypeScriptScope: ITypeScriptScopeConstructor;
-        TypeScriptPackage: ITypeScriptPackageConstructor;
-        TypeScriptElement: ITypeScriptElementConstructor;
-        TypeScriptInterface: ITypeScriptInterfaceConstructor;
-        TypeScriptCodeFactory: ITypeScriptCodeFactoryConstructor;
-        getTableTypescriptCode(tableName: string, includeSuperFields?: boolean): string;
-    }
-
     interface ITypeScriptCodeFactoryPrototype extends ICustomClassPrototype0<ITypeScriptCodeFactoryPrototype, "TypeScriptCodeFactory"> {
-        getInterface(tableName: $$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>): TypeScriptInterfaceInstance;
-        getScope(scope: $$property.generic.Reference<sys_scopeFields, sys_scopeGlideRecord>): TypeScriptScopeInstance;
-        getPackage(package: $$property.generic.Reference<sys_packageFields, sys_packageGlideRecord>): TypeScriptPackageInstance;
+        getInterface(tableName: string, cacheOnly?: boolean): TypeScriptInterfaceInstance | undefined;
+        toInterface(obj: sys_db_objectGlideRecord | sys_db_objectReferenceElement, refreshCache?: boolean): TypeScriptInterfaceInstance | undefined;
+        getScope(scope: string, cacheOnly?: boolean): TypeScriptScopeInstance | undefined;
+        toScope(obj: sys_scopeGlideRecord | sys_scopeReferenceElement, refreshCache?: boolean): TypeScriptScopeInstance | undefined;
+        getPackage(pkg: string, cacheOnly?: boolean): TypeScriptPackageInstance | undefined;
+        toPackage(obj: sys_packageGlideRecord | sys_packageReferenceElement, refreshCache?: boolean): TypeScriptPackageInstance | undefined;
     }
     type TypeScriptCodeFactoryInstance = Readonly<ITypeScriptCodeFactoryPrototype>;
     interface ITypeScriptCodeFactoryConstructor extends CustomClassConstructor0<ITypeScriptCodeFactoryPrototype, TypeScriptCodeFactoryInstance> { }
@@ -57,6 +28,7 @@ namespace x_44813_dev_ts_hlp {
         value: string;
         sys_id: string;
         numeric?: number;
+        refresh(gr?: sys_choiceGlideRecord): void;
         toJSON(): ITypeScriptChoiceJSON;
         toString(): string;
         compareTo(other: TypeScriptChoiceInstance): number;
@@ -82,6 +54,7 @@ namespace x_44813_dev_ts_hlp {
         sys_id: string;
         short_description: string;
         version: string;
+        refresh(gr?: sys_scopeGlideRecord): void;
         toJSON(): ITypeScriptScopeProperties;
         toString(): string;
     }
@@ -100,6 +73,7 @@ namespace x_44813_dev_ts_hlp {
         inactive: boolean;
         sys_id: string;
         version: string;
+        refresh(gr?: sys_packageGlideRecord): void;
         toJSON(): ITypeScriptPackageProperties;
         toString(): string;
     }
@@ -138,6 +112,7 @@ namespace x_44813_dev_ts_hlp {
         number_ref?: Readonly<ISysNumberInfo>;
         sys_scope?: TypeScriptScopeInstance;
         sys_package?: TypeScriptPackageInstance;
+        refresh(gr?: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): void;
         getField(element: string, includeSuper?: boolean): TypeScriptElementInstance | undefined;
         toJSON(): ITypeScriptInterfaceJSON;
         toString(): string;
@@ -185,6 +160,7 @@ namespace x_44813_dev_ts_hlp {
         base_table?: TypeScriptInterfaceInstance;
         sys_scope?: TypeScriptScopeInstance;
         sys_package?: TypeScriptPackageInstance;
+        refresh(gr?: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): void;
         toJSON(): ITypeScriptElementJSON;
         toString(): string;
         toTypeScriptLines(): string[];
@@ -193,6 +169,37 @@ namespace x_44813_dev_ts_hlp {
     interface ITypeScriptElementConstructor extends CustomClassConstructor2<ITypeScriptElementPrototype, TypeScriptElementInstance, sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
         new(gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptElementInstance;
         (gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptElementInstance;
+    }
+
+    export interface dts_declFields extends IExtendedGlideTableProperties { }
+    export type dts_declGlideRecord = GlideRecord & dts_declFields;
+    export type dts_declReferenceElement = $$element.Reference<dts_declFields, dts_declGlideRecord>;
+    export interface dts_libraryFields extends dts_declFields {
+    }
+    export type dts_libraryGlideRecord = dts_declGlideRecord & dts_libraryFields;
+    export type dts_libraryReferenceElement = $$element.Reference<dts_libraryFields, dts_libraryGlideRecord>;
+    export interface dts_moduleFields extends dts_declFields {
+    }
+    export type dts_moduleGlideRecord = dts_declGlideRecord & dts_moduleFields;
+    export type dts_moduleReferenceElement = $$element.Reference<dts_moduleFields, dts_moduleGlideRecord>;
+
+    interface IDTSHelperPrototype extends ICustomClassPrototype1<IDTSHelperPrototype, "DTSHelper", GlideRecord | GlideElementReference> {
+        current: GlideRecord;
+        getLibrary(): dts_libraryGlideRecord;
+        getModule(): dts_moduleGlideRecord;
+        getFullName(): string;
+        getPathName(): string;
+    }
+    interface IDTSHelperConstructor extends CustomClassConstructor1<IDTSHelperPrototype, Readonly<IDTSHelperPrototype>, GlideRecord | GlideElementReference> {
+        new(gr: GlideRecord | GlideElementReference): Readonly<IDTSHelperPrototype>;
+        (gr: GlideRecord | GlideElementReference): Readonly<IDTSHelperPrototype>;
+        TypeScriptChoice: ITypeScriptChoiceConstructor;
+        TypeScriptScope: ITypeScriptScopeConstructor;
+        TypeScriptPackage: ITypeScriptPackageConstructor;
+        TypeScriptElement: ITypeScriptElementConstructor;
+        TypeScriptInterface: ITypeScriptInterfaceConstructor;
+        TypeScriptCodeFactory: ITypeScriptCodeFactoryConstructor;
+        getTableTypescriptCode(tableName: string, includeSuperFields?: boolean): string;
     }
 
     var DTSHelper: IDTSHelperConstructor & Function = (function (): IDTSHelperConstructor {
@@ -299,128 +306,188 @@ namespace x_44813_dev_ts_hlp {
         dtsHelper.TypeScriptCodeFactory = TypeScriptCodeFactory;
         TypeScriptCodeFactory.prototype = {
             getInterface: undefined,
+            toInterface: undefined,
             getScope: undefined,
+            toScope: undefined,
             getPackage: undefined,
+            toPackage: undefined,
             initialize: function(this: ITypeScriptCodeFactoryPrototype) {
                 let privateData: ITypeScriptCodeFactoryPrivateData = {
                     interfaces: [],
                     scopes: [],
                     packages: []
                 };
-                function findInterface(tableName: string): TypeScriptInterfaceInstance | undefined {
+
+                this.getInterface = function (tableName: string, cacheOnly?: boolean): TypeScriptInterfaceInstance | undefined {
                     for (let i: number = 0; i < privateData.interfaces.length; i++) {
-                        if (privateData.interfaces[i].name === tableName || privateData.interfaces[i].sys_id === tableName)
+                        if (privateData.interfaces[i].name === tableName)
                             return privateData.interfaces[i];
                     }
-                }
-                function findScope(scope: string): TypeScriptScopeInstance | undefined {
-                    for (let i: number = 0; i < privateData.scopes.length; i++) {
-                        if (privateData.scopes[i].scope === scope || privateData.scopes[i].sys_id === scope)
-                            return privateData.scopes[i];
-                    }
-                }
-                function findPackage(pkg: string): TypeScriptPackageInstance | undefined {
-                    for (let i: number = 0; i < privateData.packages.length; i++) {
-                        if (privateData.packages[i].name === pkg || privateData.packages[i].sys_id === pkg)
-                            return privateData.packages[i];
-                    }
-                }
-
-                this.getInterface = function (this: ITypeScriptCodeFactoryPrototype, table: $$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>): TypeScriptInterfaceInstance {
-                    let gr: sys_db_objectGlideRecord;
-                    let result: TypeScriptInterfaceInstance;
-                    if (table instanceof GlideRecord) {
-                        if (!gr.isValidRecord())
-                            throw new Error("Record is not valid");
-                        result = findInterface("" + table.name);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = table;
-                    } else if (typeof (<sys_db_objectReferenceElement><any>table).getRefRecord === "function") {
-                        gr = (<sys_db_objectReferenceElement><any>table).getRefRecord();
-                        if (gs.nil(gr) || !gr.isValidRecord())
-                            throw new Error("Element did not reference a table");
-                        result = findInterface("" + gr.name);
-                        if (typeof result !== "undefined")
-                            return result;
-                    } else {
-                        let tableName: string = (typeof table === "string") ? table : "" + table;
-                        result = findInterface(tableName);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = <sys_db_objectGlideRecord>new GlideRecord('sys_db_object');
+                    if (cacheOnly !== true) {
+                        var gr: sys_db_objectGlideRecord = <sys_db_objectGlideRecord>new GlideRecord('sys_db_object');
                         gr.addQuery('name', tableName);
                         gr.query();
-                        if (!gr.next())
-                            throw new Error("Table not found")
+                        if (gr.next()) {
+                            let result: TypeScriptInterfaceInstance = new TypeScriptInterface(gr, this);
+                            privateData.interfaces.push(result);
+                            return result;
+                        }
                     }
-                    result = new TypeScriptInterface(gr, this);
+                };
+
+                this.toInterface = function (obj: sys_db_objectGlideRecord | sys_db_objectReferenceElement, refreshCache?: boolean): TypeScriptInterfaceInstance | undefined {
+                    if (gs.nil(obj))
+                        return;
+                    let sys_id: string = "" + obj.sys_id;
+                    if (sys_id.length == 0)
+                        return;
+                    let result: TypeScriptInterfaceInstance;
+                    let gr: sys_db_objectGlideRecord;
+                    for (let i: number = 0; i < privateData.interfaces.length; i++) {
+                        if (privateData.interfaces[i].sys_id === sys_id) {
+                            if (refreshCache !== true)
+                                return privateData.interfaces[i];
+                            if (obj instanceof GlideRecord) {
+                                if (obj.isValidRecord())
+                                    privateData.interfaces[i].refresh(obj);
+                                return privateData.interfaces[i];
+                            }
+                            if (typeof obj.getRefRecord !== "function")
+                                return privateData.interfaces[i];
+                            gr = obj.getRefRecord();
+                            if (!gs.nil(gr) && gr.isValidRecord())
+                                privateData.interfaces[i].refresh(gr);
+                            return privateData.interfaces[i];
+                        }
+                    }
+                    if (obj instanceof GlideRecord) {
+                        if (!obj.isValidRecord())
+                            return;
+                        result = new TypeScriptInterface(obj, this);
+                    } else {
+                        if (typeof obj.getRefRecord !== "function")
+                            return;
+                        gr = obj.getRefRecord();
+                        if (gs.nil(gr))
+                            return;
+                        result = new TypeScriptInterface(gr, this);
+                    }
+
                     privateData.interfaces.push(result);
                     return result;
                 };
 
-                this.getScope = function (scope: $$property.generic.Reference<sys_scopeFields, sys_scopeGlideRecord>): TypeScriptScopeInstance {
-                    let gr: sys_scopeGlideRecord;
-                    let result: TypeScriptScopeInstance;
-                    if (scope instanceof GlideRecord) {
-                        if (!gr.isValidRecord())
-                            throw new Error("Record is not valid");
-                        result = findScope("" + scope.scope);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = scope;
-                    } else if (typeof (<sys_scopeReferenceElement><any>scope).getRefRecord === "function") {
-                        gr = (<sys_scopeReferenceElement><any>scope).getRefRecord();
-                        if (gs.nil(gr) || !gr.isValidRecord())
-                            throw new Error("Element did not reference a table");
-                        result = findScope("" + gr.scope);
-                        if (typeof result !== "undefined")
-                            return result;
-                    } else {
-                        let s: string = (typeof scope === "string") ? scope : "" + scope;
-                        result = findScope(s);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = <sys_scopeGlideRecord>new GlideRecord('sys_scope');
-                        gr.addQuery('scope', s);
-                        gr.query();
-                        if (!gr.next())
-                            throw new Error("Scope not found")
+                this.getScope = function (scope: string, cacheOnly?: boolean): TypeScriptScopeInstance | undefined {
+                    for (let i: number = 0; i < privateData.scopes.length; i++) {
+                        if (privateData.scopes[i].scope === scope)
+                            return privateData.scopes[i];
                     }
-                    result = new TypeScriptScope(gr);
+                    if (cacheOnly !== true) {
+                        var gr: sys_scopeGlideRecord = <sys_scopeGlideRecord>new GlideRecord('sys_scope');
+                        gr.addQuery('scope', scope);
+                        gr.query();
+                        if (gr.next()) {
+                            let result: TypeScriptScopeInstance = new TypeScriptScope(gr);
+                            privateData.scopes.push(result);
+                            return result;
+                        }
+                    }
+                };
+                this.toScope = function (obj: sys_scopeGlideRecord | sys_scopeReferenceElement, refreshCache?: boolean): TypeScriptScopeInstance | undefined {
+                    if (gs.nil(obj))
+                        return;
+                    let sys_id: string = "" + obj.sys_id;
+                    if (sys_id.length == 0)
+                        return;
+                    let result: TypeScriptScopeInstance;
+                    let gr: sys_scopeGlideRecord;
+                    for (let i: number = 0; i < privateData.scopes.length; i++) {
+                        if (privateData.scopes[i].sys_id === sys_id) {
+                            if (refreshCache !== true)
+                                return privateData.scopes[i];
+                            if (obj instanceof GlideRecord) {
+                                if (obj.isValidRecord())
+                                    privateData.scopes[i].refresh(obj);
+                                return privateData.scopes[i];
+                            }
+                            if (typeof obj.getRefRecord !== "function")
+                                return privateData.scopes[i];
+                            gr = obj.getRefRecord();
+                            if (!gs.nil(gr) && gr.isValidRecord())
+                                privateData.scopes[i].refresh(gr);
+                            return privateData.scopes[i];
+                        }
+                    }
+                    if (obj instanceof GlideRecord) {
+                        if (!obj.isValidRecord())
+                            return;
+                        result = new TypeScriptScope(obj);
+                    } else {
+                        if (typeof obj.getRefRecord !== "function")
+                            return;
+                        gr = obj.getRefRecord();
+                        if (gs.nil(gr))
+                            return;
+                        result = new TypeScriptScope(gr);
+                    }
+
                     privateData.scopes.push(result);
                     return result;
                 };
-
-                this.getPackage = function (pkg: $$property.generic.Reference<sys_packageFields, sys_packageGlideRecord>): TypeScriptPackageInstance {
-                    let gr: sys_packageGlideRecord;
-                    let result: TypeScriptPackageInstance;
-                    if (pkg instanceof GlideRecord) {
-                        if (!gr.isValidRecord())
-                            throw new Error("Record is not valid");
-                        result = findPackage("" + pkg.sys_id);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = pkg;
-                    } else if (typeof (<sys_packageReferenceElement><any>pkg).getRefRecord === "function") {
-                        gr = (<sys_packageReferenceElement><any>pkg).getRefRecord();
-                        if (gs.nil(gr) || !gr.isValidRecord())
-                            throw new Error("Element did not reference a table");
-                        result = findPackage("" + gr.sys_id);
-                        if (typeof result !== "undefined")
-                            return result;
-                    } else {
-                        let s: string = (typeof pkg === "string") ? pkg : "" + pkg;
-                        result = findPackage(s);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = <sys_packageGlideRecord>new GlideRecord('sys_package');
-                        gr.addQuery('scope', s);
-                        gr.query();
-                        if (!gr.next())
-                            throw new Error("Package not found")
+                this.getPackage = function (pkg: string, cacheOnly?: boolean): TypeScriptPackageInstance | undefined {
+                    for (let i: number = 0; i < privateData.packages.length; i++) {
+                        if (privateData.packages[i].name === pkg || privateData.packages[i].sys_id === pkg)
+                            return privateData.packages[i];
                     }
-                    result = new TypeScriptPackage(gr);
+                    if (cacheOnly !== true) {
+                        var gr: sys_packageGlideRecord = <sys_packageGlideRecord>new GlideRecord('sys_package');
+                        gr.addQuery('name', pkg);
+                        gr.query();
+                        if (gr.next()) {
+                            let result: TypeScriptPackageInstance = new TypeScriptPackage(gr);
+                            privateData.packages.push(result);
+                            return result;
+                        }
+                    }
+                };
+                this.toPackage = function (obj: sys_packageGlideRecord | sys_packageReferenceElement, refreshCache?: boolean): TypeScriptPackageInstance | undefined {
+                    if (gs.nil(obj))
+                        return;
+                    let sys_id: string = "" + obj.sys_id;
+                    if (sys_id.length == 0)
+                        return;
+                    let result: TypeScriptPackageInstance;
+                    let gr: sys_packageGlideRecord;
+                    for (let i: number = 0; i < privateData.packages.length; i++) {
+                        if (privateData.packages[i].sys_id === sys_id) {
+                            if (refreshCache !== true)
+                                return privateData.packages[i];
+                            if (obj instanceof GlideRecord) {
+                                if (obj.isValidRecord())
+                                    privateData.packages[i].refresh(obj);
+                                return privateData.packages[i];
+                            }
+                            if (typeof obj.getRefRecord !== "function")
+                                return privateData.packages[i];
+                            gr = obj.getRefRecord();
+                            if (!gs.nil(gr) && gr.isValidRecord())
+                                privateData.packages[i].refresh(gr);
+                            return privateData.packages[i];
+                        }
+                    }
+                    if (obj instanceof GlideRecord) {
+                        if (!obj.isValidRecord())
+                            return;
+                        result = new TypeScriptPackage(obj);
+                    } else {
+                        if (typeof obj.getRefRecord !== "function")
+                            return;
+                        gr = obj.getRefRecord();
+                        if (gs.nil(gr))
+                            return;
+                        result = new TypeScriptPackage(gr);
+                    }
+
                     privateData.packages.push(result);
                     return result;
                 };
@@ -464,24 +531,51 @@ namespace x_44813_dev_ts_hlp {
             label: "",
             sys_id: "",
             initialize: function (this: ITypeScriptChoicePrototype, gr: sys_choiceGlideRecord): void {
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr);
+            },
+            refresh(this: ITypeScriptChoicePrototype, gr?: sys_choiceGlideRecord): void {
+                if (gs.nil(gr)) {
+                    gr = <sys_choiceGlideRecord>new GlideRecord('sys_choice');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                } else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.inactive = gr.inactive == true;
-                this.sys_id = "" + gr.sys_id;
                 this.value = "" + gr.value;
                 this.label = "" + gr.label;
-                if (!gs.nil(gr.dependent_value))
+                if (gs.nil(gr.dependent_value))
                     this.dependent_value = "" + gr.dependent_value;
+                else if (typeof this.dependent_value !== "undefined")
+                    this.dependent_value = undefined;
                 if (!gs.nil(gr.hint))
                     this.hint = "" + gr.hint;
+                else if (typeof this.hint !== "undefined")
+                    this.hint = undefined;
                 if (!gs.nil(gr.language))
                     this.language = "" + gr.language;
+                else if (typeof this.language !== "undefined")
+                    this.language = undefined;
                 let n: number = parseInt(this.value);
                 if (!isNaN(n))
                     this.numeric = n;
+                else if (typeof this.numeric !== "undefined")
+                    this.numeric = undefined;
                 if (!gs.nil(gr.sequence)) {
                     n = parseInt("" + gr.sequence);
                     if (!isNaN(n))
                         this.sequence = n;
-                }
+                    else if (typeof this.sequence !== "undefined")
+                        this.sequence = undefined;
+                } else if (typeof this.sequence !== "undefined")
+                    this.sequence = undefined;
             },
             compareTo: function (this: TypeScriptChoiceInstance, other: TypeScriptChoiceInstance): number {
                 if (other.sys_id == this.sys_id)
@@ -535,10 +629,26 @@ namespace x_44813_dev_ts_hlp {
             scope: "",
             short_description: "",
             version: "",
-            initialize: function(this: ITypeScriptScopePrototype, gr: sys_scopeGlideRecord): void {
+            initialize: function (this: ITypeScriptScopePrototype, gr: sys_scopeGlideRecord): void {
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr);
+            },
+            refresh(this: ITypeScriptScopePrototype, gr?: sys_scopeGlideRecord): void {
+                if (gs.nil(gr)) {
+                    gr = <sys_scopeGlideRecord>new GlideRecord('sys_scope');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                } else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.inactive = gr.active != true;
                 this.isPrivate = <any>gr.getValue('private') == true;
-                this.sys_id = "" + gr.sys_id;
                 this.name = "" + gr.name;
                 this.scope = "" + gr.scope;
                 this.short_description = "" + gr.short_description;
@@ -570,9 +680,25 @@ namespace x_44813_dev_ts_hlp {
             sys_id: "",
             version: "",
             name: "",
-            initialize: function(this: ITypeScriptPackagePrototype, gr: sys_packageGlideRecord): void {
+            initialize: function (this: ITypeScriptPackagePrototype, gr: sys_packageGlideRecord): void {
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr);
+            },
+            refresh(this: ITypeScriptPackagePrototype, gr?: sys_packageGlideRecord): void {
+                if (gs.nil(gr)) {
+                    gr = <sys_packageGlideRecord>new GlideRecord('sys_package');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                } else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.inactive = gr.active != true;
-                this.sys_id = "" + gr.sys_id;
                 this.version = "" + gr.version;
                 this.name = "" + gr.name;
             },
@@ -604,10 +730,30 @@ namespace x_44813_dev_ts_hlp {
             internal_type: "",
             choices: [],
             initialize: function (this: ITypeScriptElementPrototype, gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): void {
-                this.sys_id = "" + gr.sys_id;
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr, factory);
+            },
+            refresh(this: ITypeScriptElementPrototype, gr?: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): void {
+                if (gs.nil(gr)) {
+                    gr = <sys_dictionaryGlideRecord>new GlideRecord('sys_dictionary');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                } else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.element = "" + gr.element;
+
                 let table: TypeScriptInterfaceInstance;
                 let f: TypeScriptElementInstance;
+                let choiceTable: TypeScriptInterfaceInstance | undefined;
+                let choiceField: TypeScriptElementInstance | undefined;
+                let choices: TypeScriptChoiceInstance[] = [];
                 if (gr.getTableName() === "sys_dictionaryGlideRecord") {
                     this.inactive = (<sys_dictionaryGlideRecord>gr).active != true;
                     this.array = (<sys_dictionaryGlideRecord>gr).array == true;
@@ -618,12 +764,12 @@ namespace x_44813_dev_ts_hlp {
                     if (!gs.nil((<sys_dictionaryGlideRecord>gr).choice_table)) {
                         if (typeof factory === "undefined")
                             factory = new TypeScriptCodeFactory();
-                        this.choiceTable = factory.getInterface("" + (<sys_dictionaryGlideRecord>gr).choice_table);
+                        choiceTable = factory.getInterface("" + (<sys_dictionaryGlideRecord>gr).choice_table);
                         if (!gs.nil((<sys_dictionaryGlideRecord>gr).choice_field)) {
                             let choice_field: string = "" + (<sys_dictionaryGlideRecord>gr).choice_field;
-                            for (let i: number = 0; i < this.choiceTable.fields.length; i++) {
-                                if (this.choiceTable.fields[i].element == choice_field) {
-                                    this.choiceField = this.choiceTable.fields[i];
+                            for (let i: number = 0; i < choiceTable.fields.length; i++) {
+                                if (choiceTable.fields[i].element == choice_field) {
+                                    choiceField = choiceTable.fields[i];
                                     break;
                                 }
                             }
@@ -632,18 +778,23 @@ namespace x_44813_dev_ts_hlp {
                     this.comments = "" + (<sys_dictionaryGlideRecord>gr).comments;
                     if (!gs.nil(gr.default_value))
                         this.default_value = "" + gr.default_value;
-                    this.sys_id = "" + gr.sys_id;
+                    else if (typeof this.default_value !== "undefined")
+                        this.default_value = undefined;
                     if (!gs.nil((<sys_dictionaryGlideRecord>gr).max_length)) {
                         let n: number = parseInt("" + (<sys_dictionaryGlideRecord>gr).max_length);
                         if (!isNaN(n))
                             this.max_length = n;
-                    }
+                        else if (typeof this.max_length !== "undefined")
+                            this.max_length = undefined;
+                    } else if (typeof this.max_length !== "undefined")
+                        this.max_length = undefined;
                     this.internal_type = "" + (<sys_glide_objectReferenceElement>(<sys_dictionaryGlideRecord>gr).internal_type).name;
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
                     if (!gs.nil((<sys_dictionaryGlideRecord>gr).reference))
-                        this.reference = factory.getInterface(<sys_db_objectReferenceElement>(<sys_dictionaryGlideRecord>gr).reference);
-                    let choices: TypeScriptChoiceInstance[] = [];
+                        this.reference = factory.toInterface(<sys_db_objectReferenceElement>(<sys_dictionaryGlideRecord>gr).reference);
+                    else if (typeof this.reference !== "undefined")
+                        this.reference = undefined;
                     var cGr: sys_choiceGlideRecord = <sys_choiceGlideRecord>new GlideRecord('sys_choice');
                     cGr.addQuery("name", gr.name);
                     cGr.addQuery("element", gr.element);
@@ -655,7 +806,7 @@ namespace x_44813_dev_ts_hlp {
                         f = table.super_class.getField("" + gr.element, true);
                         if (typeof f !== "undefined" && f.choices.length > 0) {
                             if (choices.length == 0)
-                                this.choices = f.choices;
+                                choices = <TypeScriptChoiceInstance[]>f.choices;
                             else {
                                 let cArr: TypeScriptChoiceInstance[] = f.choices.map(function (c: TypeScriptChoiceInstance): TypeScriptChoiceInstance {
                                     for (let i: number = 0; i < choices.length; i++) {
@@ -672,12 +823,12 @@ namespace x_44813_dev_ts_hlp {
                                     }
                                     return c;
                                 });
-                                this.choices = TypeScriptChoice.asSorted((choices.length == 0) ? cArr : ((cArr.length == 0) ? choices : cArr.concat(choices)));
+                                choices = TypeScriptChoice.asSorted((choices.length == 0) ? cArr : ((cArr.length == 0) ? choices : cArr.concat(choices)));
                             }
                         } else
-                            this.choices = TypeScriptChoice.asSorted(choices);
+                            choices = TypeScriptChoice.asSorted(choices);
                     } else
-                        this.choices = TypeScriptChoice.asSorted(choices);
+                        choices = TypeScriptChoice.asSorted(choices);
                 } else {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
@@ -688,35 +839,45 @@ namespace x_44813_dev_ts_hlp {
                     if ((<sys_dictionary_overrideGlideRecord>gr).default_value_override == true) {
                         if (!gs.nil(gr.default_value))
                             this.default_value = "" + gr.default_value;
+                        else if (typeof this.default_value !== "undefined")
+                            this.default_value = undefined;
                     } else if (typeof super_field.default_value !== "undefined")
                         this.default_value = super_field.default_value;
+                    else if (typeof this.default_value !== "undefined")
+                        this.default_value = undefined;
                     this.label = super_field.label;
-                    this.choiceTable = super_field.choiceTable;
-                    this.choiceField = super_field.choiceField;
+                    choiceTable = super_field.choiceTable;
+                    choiceField = super_field.choiceField;
                     this.comments = super_field.comments;
                     if (typeof super_field.max_length !== "undefined")
                         this.max_length = super_field.max_length;
+                    else if (typeof this.max_length !== "undefined")
+                        this.max_length = undefined;
                     this.internal_type = super_field.internal_type;
                     if (typeof super_field.reference !== "undefined")
                         this.reference = super_field.reference;
+                    else if (typeof this.reference !== "undefined")
+                        this.reference = undefined;
                     table = factory.getInterface("" + gr.name);
                     if (typeof table.super_class !== "undefined") {
                         f = table.super_class.getField("" + gr.element, true);
                         if (typeof f !== "undefined" && f.choices.length > 0)
-                            this.choices = f.choices;
+                            choices = <TypeScriptChoiceInstance[]>f.choices;
                     }
                 }
-                this.sys_id = "" + gr.sys_id;
+                this.choices = choices;
                 if (!gs.nil(gr.sys_scope)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.sys_scope = factory.getScope(<sys_scopeReferenceElement>gr.sys_scope);
-                }
+                    this.sys_scope = factory.toScope(<sys_scopeReferenceElement>gr.sys_scope);
+                } else if (typeof this.sys_scope !== "undefined")
+                    this.sys_scope = undefined;
                 if (!gs.nil(gr.sys_package)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.sys_package = factory.getPackage(<sys_scopeReferenceElement>gr.sys_package);
-                }
+                    this.sys_package = factory.toPackage(<sys_scopeReferenceElement>gr.sys_package);
+                } else if (typeof this.sys_package !== "undefined")
+                    this.sys_package = undefined;
             },
             toJSON: function (this: TypeScriptElementInstance): ITypeScriptElementJSON {
                 let json: ITypeScriptElementJSON = { label: this.label, element: this.element, internal_type: this.internal_type };
@@ -847,33 +1008,54 @@ namespace x_44813_dev_ts_hlp {
             name: "",
             fields: [],
             initialize: function (this: ITypeScriptInterfacePrototype, gr: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): void {
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr, factory);
+            },
+            refresh(this: ITypeScriptInterfacePrototype, gr?: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): void {
+                if (gs.nil(gr)) {
+                    gr = <sys_db_objectGlideRecord>new GlideRecord('sys_db_object');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                } else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.package_private = gr.access == "package_private";
                 this.is_extendable = gr.is_extendable == true;
                 this.read_only = gr.sys_policy == "read";
-                this.sys_id = "" + gr.sys_id;
                 this.name = "" + gr.name;
                 if ((this.label = "" + gr.sys_name).trim().length == 0 && (this.label = "" + gr.label).trim().length == 0)
                     this.label = this.name;
                 if (!gs.nil(gr.super_class)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.super_class = factory.getInterface(<sys_db_objectReferenceElement>gr.super_class);
-                }
+                    this.super_class = factory.toInterface(<sys_db_objectReferenceElement>gr.super_class);
+                } else if (typeof this.sys_package !== "undefined")
+                    this.super_class = undefined;
                 if (!gs.nil(gr.number_ref))
                     this.number_ref = {
                         prefix: "" + (<sys_numberReferenceElement>gr.number_ref).prefix,
                         maximum_digits: parseInt("" + (<sys_numberReferenceElement>gr.number_ref).maximum_digits)
                     };
+                else if (typeof this.number_ref !== "undefined")
+                    this.number_ref = undefined;
                 if (!gs.nil(gr.sys_scope)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.sys_scope = factory.getScope(<sys_scopeReferenceElement>gr.sys_scope);
-                }
+                    this.sys_scope = factory.toScope(<sys_scopeReferenceElement>gr.sys_scope);
+                } else if (typeof this.sys_scope !== "undefined")
+                    this.sys_scope = undefined;
                 if (!gs.nil(gr.sys_package)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.sys_package = factory.getPackage(<sys_scopeReferenceElement>gr.sys_package);
-                }
+                    this.sys_package = factory.toPackage(<sys_scopeReferenceElement>gr.sys_package);
+                } else if (typeof this.sys_package !== "undefined")
+                    this.sys_package = undefined;
                 var dictGr: sys_dictionaryGlideRecord = <sys_dictionaryGlideRecord>new GlideRecord("sys_dictionary");
                 dictGr.addNotNullQuery("element");
                 dictGr.addQuery("name", this.name);
@@ -884,8 +1066,6 @@ namespace x_44813_dev_ts_hlp {
                         factory = new TypeScriptCodeFactory();
                     while (dictGr.next())
                         fields.push(new TypeScriptElement(dictGr, factory));
-                    if (fields.length > 0)
-                        this.fields = fields;
                 } else {
                     let ovr: { [key: string]: TypeScriptElementInstance; };
                     var ovrGr: sys_dictionary_overrideGlideRecord = <sys_dictionary_overrideGlideRecord>new GlideRecord("sys_dictionary_override");
@@ -910,6 +1090,7 @@ namespace x_44813_dev_ts_hlp {
                             fields.push(ovr[n]);
                     }
                 }
+                this.fields = fields;
             },
             getField: function (this: TypeScriptInterfaceInstance, element: string, includeSuper?: boolean): TypeScriptElementInstance | undefined {
                 for (let i: number = 0; i < this.fields.length; i++) {

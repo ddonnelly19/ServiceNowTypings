@@ -95,131 +95,185 @@ var x_44813_dev_ts_hlp;
         dtsHelper.TypeScriptCodeFactory = TypeScriptCodeFactory;
         TypeScriptCodeFactory.prototype = {
             getInterface: undefined,
+            toInterface: undefined,
             getScope: undefined,
+            toScope: undefined,
             getPackage: undefined,
+            toPackage: undefined,
             initialize: function () {
                 var privateData = {
                     interfaces: [],
                     scopes: [],
                     packages: []
                 };
-                function findInterface(tableName) {
+                this.getInterface = function (tableName, cacheOnly) {
                     for (var i = 0; i < privateData.interfaces.length; i++) {
-                        if (privateData.interfaces[i].name === tableName || privateData.interfaces[i].sys_id === tableName)
+                        if (privateData.interfaces[i].name === tableName)
                             return privateData.interfaces[i];
                     }
-                }
-                function findScope(scope) {
+                    if (cacheOnly !== true) {
+                        var gr = new GlideRecord('sys_db_object');
+                        gr.addQuery('name', tableName);
+                        gr.query();
+                        if (gr.next()) {
+                            var result = new TypeScriptInterface(gr, this);
+                            privateData.interfaces.push(result);
+                            return result;
+                        }
+                    }
+                };
+                this.toInterface = function (obj, refreshCache) {
+                    if (gs.nil(obj))
+                        return;
+                    var sys_id = "" + obj.sys_id;
+                    if (sys_id.length == 0)
+                        return;
+                    var result;
+                    var gr;
+                    for (var i = 0; i < privateData.interfaces.length; i++) {
+                        if (privateData.interfaces[i].sys_id === sys_id) {
+                            if (refreshCache !== true)
+                                return privateData.interfaces[i];
+                            if (obj instanceof GlideRecord) {
+                                if (obj.isValidRecord())
+                                    privateData.interfaces[i].refresh(obj);
+                                return privateData.interfaces[i];
+                            }
+                            if (typeof obj.getRefRecord !== "function")
+                                return privateData.interfaces[i];
+                            gr = obj.getRefRecord();
+                            if (!gs.nil(gr) && gr.isValidRecord())
+                                privateData.interfaces[i].refresh(gr);
+                            return privateData.interfaces[i];
+                        }
+                    }
+                    if (obj instanceof GlideRecord) {
+                        if (!obj.isValidRecord())
+                            return;
+                        result = new TypeScriptInterface(obj, this);
+                    }
+                    else {
+                        if (typeof obj.getRefRecord !== "function")
+                            return;
+                        gr = obj.getRefRecord();
+                        if (gs.nil(gr))
+                            return;
+                        result = new TypeScriptInterface(gr, this);
+                    }
+                    privateData.interfaces.push(result);
+                    return result;
+                };
+                this.getScope = function (scope, cacheOnly) {
                     for (var i = 0; i < privateData.scopes.length; i++) {
-                        if (privateData.scopes[i].scope === scope || privateData.scopes[i].sys_id === scope)
+                        if (privateData.scopes[i].scope === scope)
                             return privateData.scopes[i];
                     }
-                }
-                function findPackage(pkg) {
+                    if (cacheOnly !== true) {
+                        var gr = new GlideRecord('sys_scope');
+                        gr.addQuery('scope', scope);
+                        gr.query();
+                        if (gr.next()) {
+                            var result = new TypeScriptScope(gr);
+                            privateData.scopes.push(result);
+                            return result;
+                        }
+                    }
+                };
+                this.toScope = function (obj, refreshCache) {
+                    if (gs.nil(obj))
+                        return;
+                    var sys_id = "" + obj.sys_id;
+                    if (sys_id.length == 0)
+                        return;
+                    var result;
+                    var gr;
+                    for (var i = 0; i < privateData.scopes.length; i++) {
+                        if (privateData.scopes[i].sys_id === sys_id) {
+                            if (refreshCache !== true)
+                                return privateData.scopes[i];
+                            if (obj instanceof GlideRecord) {
+                                if (obj.isValidRecord())
+                                    privateData.scopes[i].refresh(obj);
+                                return privateData.scopes[i];
+                            }
+                            if (typeof obj.getRefRecord !== "function")
+                                return privateData.scopes[i];
+                            gr = obj.getRefRecord();
+                            if (!gs.nil(gr) && gr.isValidRecord())
+                                privateData.scopes[i].refresh(gr);
+                            return privateData.scopes[i];
+                        }
+                    }
+                    if (obj instanceof GlideRecord) {
+                        if (!obj.isValidRecord())
+                            return;
+                        result = new TypeScriptScope(obj);
+                    }
+                    else {
+                        if (typeof obj.getRefRecord !== "function")
+                            return;
+                        gr = obj.getRefRecord();
+                        if (gs.nil(gr))
+                            return;
+                        result = new TypeScriptScope(gr);
+                    }
+                    privateData.scopes.push(result);
+                    return result;
+                };
+                this.getPackage = function (pkg, cacheOnly) {
                     for (var i = 0; i < privateData.packages.length; i++) {
                         if (privateData.packages[i].name === pkg || privateData.packages[i].sys_id === pkg)
                             return privateData.packages[i];
                     }
-                }
-                this.getInterface = function (table) {
-                    var gr;
-                    var result;
-                    if (table instanceof GlideRecord) {
-                        if (!gr.isValidRecord())
-                            throw new Error("Record is not valid");
-                        result = findInterface("" + table.name);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = table;
-                    }
-                    else if (typeof table.getRefRecord === "function") {
-                        gr = table.getRefRecord();
-                        if (gs.nil(gr) || !gr.isValidRecord())
-                            throw new Error("Element did not reference a table");
-                        result = findInterface("" + gr.name);
-                        if (typeof result !== "undefined")
-                            return result;
-                    }
-                    else {
-                        var tableName = (typeof table === "string") ? table : "" + table;
-                        result = findInterface(tableName);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = new GlideRecord('sys_db_object');
-                        gr.addQuery('name', tableName);
+                    if (cacheOnly !== true) {
+                        var gr = new GlideRecord('sys_package');
+                        gr.addQuery('name', pkg);
                         gr.query();
-                        if (!gr.next())
-                            throw new Error("Table not found");
+                        if (gr.next()) {
+                            var result = new TypeScriptPackage(gr);
+                            privateData.packages.push(result);
+                            return result;
+                        }
                     }
-                    result = new TypeScriptInterface(gr, this);
-                    privateData.interfaces.push(result);
-                    return result;
                 };
-                this.getScope = function (scope) {
-                    var gr;
+                this.toPackage = function (obj, refreshCache) {
+                    if (gs.nil(obj))
+                        return;
+                    var sys_id = "" + obj.sys_id;
+                    if (sys_id.length == 0)
+                        return;
                     var result;
-                    if (scope instanceof GlideRecord) {
-                        if (!gr.isValidRecord())
-                            throw new Error("Record is not valid");
-                        result = findScope("" + scope.scope);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = scope;
+                    var gr;
+                    for (var i = 0; i < privateData.packages.length; i++) {
+                        if (privateData.packages[i].sys_id === sys_id) {
+                            if (refreshCache !== true)
+                                return privateData.packages[i];
+                            if (obj instanceof GlideRecord) {
+                                if (obj.isValidRecord())
+                                    privateData.packages[i].refresh(obj);
+                                return privateData.packages[i];
+                            }
+                            if (typeof obj.getRefRecord !== "function")
+                                return privateData.packages[i];
+                            gr = obj.getRefRecord();
+                            if (!gs.nil(gr) && gr.isValidRecord())
+                                privateData.packages[i].refresh(gr);
+                            return privateData.packages[i];
+                        }
                     }
-                    else if (typeof scope.getRefRecord === "function") {
-                        gr = scope.getRefRecord();
-                        if (gs.nil(gr) || !gr.isValidRecord())
-                            throw new Error("Element did not reference a table");
-                        result = findScope("" + gr.scope);
-                        if (typeof result !== "undefined")
-                            return result;
+                    if (obj instanceof GlideRecord) {
+                        if (!obj.isValidRecord())
+                            return;
+                        result = new TypeScriptPackage(obj);
                     }
                     else {
-                        var s = (typeof scope === "string") ? scope : "" + scope;
-                        result = findScope(s);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = new GlideRecord('sys_scope');
-                        gr.addQuery('scope', s);
-                        gr.query();
-                        if (!gr.next())
-                            throw new Error("Scope not found");
+                        if (typeof obj.getRefRecord !== "function")
+                            return;
+                        gr = obj.getRefRecord();
+                        if (gs.nil(gr))
+                            return;
+                        result = new TypeScriptPackage(gr);
                     }
-                    result = new TypeScriptScope(gr);
-                    privateData.scopes.push(result);
-                    return result;
-                };
-                this.getPackage = function (pkg) {
-                    var gr;
-                    var result;
-                    if (pkg instanceof GlideRecord) {
-                        if (!gr.isValidRecord())
-                            throw new Error("Record is not valid");
-                        result = findPackage("" + pkg.sys_id);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = pkg;
-                    }
-                    else if (typeof pkg.getRefRecord === "function") {
-                        gr = pkg.getRefRecord();
-                        if (gs.nil(gr) || !gr.isValidRecord())
-                            throw new Error("Element did not reference a table");
-                        result = findPackage("" + gr.sys_id);
-                        if (typeof result !== "undefined")
-                            return result;
-                    }
-                    else {
-                        var s = (typeof pkg === "string") ? pkg : "" + pkg;
-                        result = findPackage(s);
-                        if (typeof result !== "undefined")
-                            return result;
-                        gr = new GlideRecord('sys_package');
-                        gr.addQuery('scope', s);
-                        gr.query();
-                        if (!gr.next())
-                            throw new Error("Package not found");
-                    }
-                    result = new TypeScriptPackage(gr);
                     privateData.packages.push(result);
                     return result;
                 };
@@ -262,24 +316,53 @@ var x_44813_dev_ts_hlp;
             label: "",
             sys_id: "",
             initialize: function (gr) {
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr);
+            },
+            refresh: function (gr) {
+                if (gs.nil(gr)) {
+                    gr = new GlideRecord('sys_choice');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                }
+                else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.inactive = gr.inactive == true;
-                this.sys_id = "" + gr.sys_id;
                 this.value = "" + gr.value;
                 this.label = "" + gr.label;
-                if (!gs.nil(gr.dependent_value))
+                if (gs.nil(gr.dependent_value))
                     this.dependent_value = "" + gr.dependent_value;
+                else if (typeof this.dependent_value !== "undefined")
+                    this.dependent_value = undefined;
                 if (!gs.nil(gr.hint))
                     this.hint = "" + gr.hint;
+                else if (typeof this.hint !== "undefined")
+                    this.hint = undefined;
                 if (!gs.nil(gr.language))
                     this.language = "" + gr.language;
+                else if (typeof this.language !== "undefined")
+                    this.language = undefined;
                 var n = parseInt(this.value);
                 if (!isNaN(n))
                     this.numeric = n;
+                else if (typeof this.numeric !== "undefined")
+                    this.numeric = undefined;
                 if (!gs.nil(gr.sequence)) {
                     n = parseInt("" + gr.sequence);
                     if (!isNaN(n))
                         this.sequence = n;
+                    else if (typeof this.sequence !== "undefined")
+                        this.sequence = undefined;
                 }
+                else if (typeof this.sequence !== "undefined")
+                    this.sequence = undefined;
             },
             compareTo: function (other) {
                 if (other.sys_id == this.sys_id)
@@ -333,9 +416,26 @@ var x_44813_dev_ts_hlp;
             short_description: "",
             version: "",
             initialize: function (gr) {
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr);
+            },
+            refresh: function (gr) {
+                if (gs.nil(gr)) {
+                    gr = new GlideRecord('sys_scope');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                }
+                else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.inactive = gr.active != true;
                 this.isPrivate = gr.getValue('private') == true;
-                this.sys_id = "" + gr.sys_id;
                 this.name = "" + gr.name;
                 this.scope = "" + gr.scope;
                 this.short_description = "" + gr.short_description;
@@ -367,8 +467,25 @@ var x_44813_dev_ts_hlp;
             version: "",
             name: "",
             initialize: function (gr) {
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr);
+            },
+            refresh: function (gr) {
+                if (gs.nil(gr)) {
+                    gr = new GlideRecord('sys_package');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                }
+                else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.inactive = gr.active != true;
-                this.sys_id = "" + gr.sys_id;
                 this.version = "" + gr.version;
                 this.name = "" + gr.name;
             },
@@ -399,10 +516,30 @@ var x_44813_dev_ts_hlp;
             internal_type: "",
             choices: [],
             initialize: function (gr, factory) {
-                this.sys_id = "" + gr.sys_id;
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr, factory);
+            },
+            refresh: function (gr, factory) {
+                if (gs.nil(gr)) {
+                    gr = new GlideRecord('sys_dictionary');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                }
+                else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.element = "" + gr.element;
                 var table;
                 var f;
+                var choiceTable;
+                var choiceField;
+                var choices = [];
                 if (gr.getTableName() === "sys_dictionaryGlideRecord") {
                     this.inactive = gr.active != true;
                     this.array = gr.array == true;
@@ -413,12 +550,12 @@ var x_44813_dev_ts_hlp;
                     if (!gs.nil(gr.choice_table)) {
                         if (typeof factory === "undefined")
                             factory = new TypeScriptCodeFactory();
-                        this.choiceTable = factory.getInterface("" + gr.choice_table);
+                        choiceTable = factory.getInterface("" + gr.choice_table);
                         if (!gs.nil(gr.choice_field)) {
                             var choice_field = "" + gr.choice_field;
-                            for (var i = 0; i < this.choiceTable.fields.length; i++) {
-                                if (this.choiceTable.fields[i].element == choice_field) {
-                                    this.choiceField = this.choiceTable.fields[i];
+                            for (var i = 0; i < choiceTable.fields.length; i++) {
+                                if (choiceTable.fields[i].element == choice_field) {
+                                    choiceField = choiceTable.fields[i];
                                     break;
                                 }
                             }
@@ -427,54 +564,60 @@ var x_44813_dev_ts_hlp;
                     this.comments = "" + gr.comments;
                     if (!gs.nil(gr.default_value))
                         this.default_value = "" + gr.default_value;
-                    this.sys_id = "" + gr.sys_id;
+                    else if (typeof this.default_value !== "undefined")
+                        this.default_value = undefined;
                     if (!gs.nil(gr.max_length)) {
                         var n = parseInt("" + gr.max_length);
                         if (!isNaN(n))
                             this.max_length = n;
+                        else if (typeof this.max_length !== "undefined")
+                            this.max_length = undefined;
                     }
+                    else if (typeof this.max_length !== "undefined")
+                        this.max_length = undefined;
                     this.internal_type = "" + gr.internal_type.name;
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
                     if (!gs.nil(gr.reference))
-                        this.reference = factory.getInterface(gr.reference);
-                    var choices_1 = [];
+                        this.reference = factory.toInterface(gr.reference);
+                    else if (typeof this.reference !== "undefined")
+                        this.reference = undefined;
                     var cGr = new GlideRecord('sys_choice');
                     cGr.addQuery("name", gr.name);
                     cGr.addQuery("element", gr.element);
                     cGr.query();
                     while (cGr.next())
-                        choices_1.push(new TypeScriptChoice(cGr));
+                        choices.push(new TypeScriptChoice(cGr));
                     table = factory.getInterface("" + gr.name);
                     if (typeof table.super_class !== "undefined") {
                         f = table.super_class.getField("" + gr.element, true);
                         if (typeof f !== "undefined" && f.choices.length > 0) {
-                            if (choices_1.length == 0)
-                                this.choices = f.choices;
+                            if (choices.length == 0)
+                                choices = f.choices;
                             else {
                                 var cArr = f.choices.map(function (c) {
-                                    for (var i = 0; i < choices_1.length; i++) {
-                                        var v = choices_1[i];
+                                    for (var i = 0; i < choices.length; i++) {
+                                        var v = choices[i];
                                         if (v.value === c.value) {
                                             if (i == 0)
-                                                choices_1.shift();
-                                            else if (i < choices_1.length - 1)
-                                                choices_1.splice(i, 1);
+                                                choices.shift();
+                                            else if (i < choices.length - 1)
+                                                choices.splice(i, 1);
                                             else
-                                                choices_1.pop();
+                                                choices.pop();
                                             return v;
                                         }
                                     }
                                     return c;
                                 });
-                                this.choices = TypeScriptChoice.asSorted((choices_1.length == 0) ? cArr : ((cArr.length == 0) ? choices_1 : cArr.concat(choices_1)));
+                                choices = TypeScriptChoice.asSorted((choices.length == 0) ? cArr : ((cArr.length == 0) ? choices : cArr.concat(choices)));
                             }
                         }
                         else
-                            this.choices = TypeScriptChoice.asSorted(choices_1);
+                            choices = TypeScriptChoice.asSorted(choices);
                     }
                     else
-                        this.choices = TypeScriptChoice.asSorted(choices_1);
+                        choices = TypeScriptChoice.asSorted(choices);
                 }
                 else {
                     if (typeof factory === "undefined")
@@ -486,36 +629,48 @@ var x_44813_dev_ts_hlp;
                     if (gr.default_value_override == true) {
                         if (!gs.nil(gr.default_value))
                             this.default_value = "" + gr.default_value;
+                        else if (typeof this.default_value !== "undefined")
+                            this.default_value = undefined;
                     }
                     else if (typeof super_field.default_value !== "undefined")
                         this.default_value = super_field.default_value;
+                    else if (typeof this.default_value !== "undefined")
+                        this.default_value = undefined;
                     this.label = super_field.label;
-                    this.choiceTable = super_field.choiceTable;
-                    this.choiceField = super_field.choiceField;
+                    choiceTable = super_field.choiceTable;
+                    choiceField = super_field.choiceField;
                     this.comments = super_field.comments;
                     if (typeof super_field.max_length !== "undefined")
                         this.max_length = super_field.max_length;
+                    else if (typeof this.max_length !== "undefined")
+                        this.max_length = undefined;
                     this.internal_type = super_field.internal_type;
                     if (typeof super_field.reference !== "undefined")
                         this.reference = super_field.reference;
+                    else if (typeof this.reference !== "undefined")
+                        this.reference = undefined;
                     table = factory.getInterface("" + gr.name);
                     if (typeof table.super_class !== "undefined") {
                         f = table.super_class.getField("" + gr.element, true);
                         if (typeof f !== "undefined" && f.choices.length > 0)
-                            this.choices = f.choices;
+                            choices = f.choices;
                     }
                 }
-                this.sys_id = "" + gr.sys_id;
+                this.choices = choices;
                 if (!gs.nil(gr.sys_scope)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.sys_scope = factory.getScope(gr.sys_scope);
+                    this.sys_scope = factory.toScope(gr.sys_scope);
                 }
+                else if (typeof this.sys_scope !== "undefined")
+                    this.sys_scope = undefined;
                 if (!gs.nil(gr.sys_package)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.sys_package = factory.getPackage(gr.sys_package);
+                    this.sys_package = factory.toPackage(gr.sys_package);
                 }
+                else if (typeof this.sys_package !== "undefined")
+                    this.sys_package = undefined;
             },
             toJSON: function () {
                 var json = { label: this.label, element: this.element, internal_type: this.internal_type };
@@ -644,33 +799,58 @@ var x_44813_dev_ts_hlp;
             name: "",
             fields: [],
             initialize: function (gr, factory) {
+                if (gs.nil(gr) || !gr.isValidRecord() || (this.sys_id = "" + gr.sys_id).length == 0)
+                    throw new Error("Invalid record");
+                this.refresh(gr, factory);
+            },
+            refresh: function (gr, factory) {
+                if (gs.nil(gr)) {
+                    gr = new GlideRecord('sys_db_object');
+                    gr.addQuery('sys_id', this.sys_id);
+                    gr.query();
+                    if (!gr.next())
+                        throw new Error("Record not found");
+                }
+                else {
+                    if (!gr.isValidRecord())
+                        throw new Error("Invalid record");
+                    if (gr.sys_id != this.sys_id)
+                        throw new Error("GlideRecord did not match sys_id");
+                }
                 this.package_private = gr.access == "package_private";
                 this.is_extendable = gr.is_extendable == true;
                 this.read_only = gr.sys_policy == "read";
-                this.sys_id = "" + gr.sys_id;
                 this.name = "" + gr.name;
                 if ((this.label = "" + gr.sys_name).trim().length == 0 && (this.label = "" + gr.label).trim().length == 0)
                     this.label = this.name;
                 if (!gs.nil(gr.super_class)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.super_class = factory.getInterface(gr.super_class);
+                    this.super_class = factory.toInterface(gr.super_class);
                 }
+                else if (typeof this.sys_package !== "undefined")
+                    this.super_class = undefined;
                 if (!gs.nil(gr.number_ref))
                     this.number_ref = {
                         prefix: "" + gr.number_ref.prefix,
                         maximum_digits: parseInt("" + gr.number_ref.maximum_digits)
                     };
+                else if (typeof this.number_ref !== "undefined")
+                    this.number_ref = undefined;
                 if (!gs.nil(gr.sys_scope)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.sys_scope = factory.getScope(gr.sys_scope);
+                    this.sys_scope = factory.toScope(gr.sys_scope);
                 }
+                else if (typeof this.sys_scope !== "undefined")
+                    this.sys_scope = undefined;
                 if (!gs.nil(gr.sys_package)) {
                     if (typeof factory === "undefined")
                         factory = new TypeScriptCodeFactory();
-                    this.sys_package = factory.getPackage(gr.sys_package);
+                    this.sys_package = factory.toPackage(gr.sys_package);
                 }
+                else if (typeof this.sys_package !== "undefined")
+                    this.sys_package = undefined;
                 var dictGr = new GlideRecord("sys_dictionary");
                 dictGr.addNotNullQuery("element");
                 dictGr.addQuery("name", this.name);
@@ -681,8 +861,6 @@ var x_44813_dev_ts_hlp;
                         factory = new TypeScriptCodeFactory();
                     while (dictGr.next())
                         fields.push(new TypeScriptElement(dictGr, factory));
-                    if (fields.length > 0)
-                        this.fields = fields;
                 }
                 else {
                     var ovr = void 0;
@@ -709,6 +887,7 @@ var x_44813_dev_ts_hlp;
                             fields.push(ovr[n]);
                     }
                 }
+                this.fields = fields;
             },
             getField: function (element, includeSuper) {
                 for (var i = 0; i < this.fields.length; i++) {
