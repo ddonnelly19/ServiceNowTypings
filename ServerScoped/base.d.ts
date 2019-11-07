@@ -326,6 +326,7 @@ declare namespace $$property {
     export type UserImage = GlideElementUserImage | $$rhino.String;
     export type Password2 = GlideElementPassword2 | $$rhino.String;
     export type Reference = GlideElementReference | $$rhino.String;
+    export type DomainId = GlideElementDomainId | $$rhino.String;
     export namespace generic {
         export type Element<S extends string> = $$element.Element<S> | S;
         export type Numeric<N extends number, S extends string> = $$element.Numeric<N, S> | number | S;
@@ -4600,6 +4601,24 @@ declare interface CustomClassConstructor3<TPrototype extends ICustomClassPrototy
 declare interface CustomClassConstructor4<TPrototype extends ICustomClassPrototype4<TPrototype, string, TArg0, TArg1, TArg2, TArg3>, TInstance extends TPrototype, TArg0, TArg1, TArg2, TArg3> { new(arg0: TArg0, arg1: TArg1, arg2: TArg2, arg3: TArg3): TInstance;(arg0: TArg0, arg1: TArg1, arg2: TArg2, arg3: TArg3): TInstance; prototype: TPrototype; }
 declare interface CustomClassConstructorN<TPrototype extends ICustomClassPrototypeN<TPrototype, string>, TInstance extends TPrototype> { new(...args: any[]): TInstance;(): TInstance; prototype: TPrototype; }
 
+declare type CustomClassPrototype<TProperties> = TProperties & (ICustomClassPrototype0<ICustomClassPrototype0<any, string>, string> |
+    ICustomClassPrototype1<ICustomClassPrototype1<any, string, any>, string, any> |
+    ICustomClassPrototype2<ICustomClassPrototype2<any, string, any, any>, string, any, any> |
+    ICustomClassPrototype3<ICustomClassPrototype3<any, string, any, any, any>, string, any, any, any> |
+    ICustomClassPrototype4<ICustomClassPrototype4<any, string, any, any, any, any>, string, any, any, any, any> |
+    ICustomClassPrototypeN<ICustomClassPrototypeN<any, string>, string>);
+declare type CustomClassConstructor<TPrototype extends CustomClassPrototype<any>> = CustomClassConstructor0<ICustomClassPrototype0<TPrototype & ICustomClassPrototype0<any, string>, string>, ICustomClassPrototype0<TPrototype & ICustomClassPrototype0<any, string>, string>> |
+    CustomClassConstructor1<ICustomClassPrototype1<TPrototype & ICustomClassPrototype1<any, string, any>, string, any>, ICustomClassPrototype1<TPrototype & ICustomClassPrototype1<any, string, any>, string, any>, any> |
+    CustomClassConstructor2<ICustomClassPrototype2<TPrototype & ICustomClassPrototype2<any, string, any, any>, string, any, any>, ICustomClassPrototype2<TPrototype & ICustomClassPrototype2<any, string, any, any>, string, any, any>, any, any> |
+    CustomClassConstructor3<ICustomClassPrototype3<TPrototype & ICustomClassPrototype3<any, string, any, any, any>, string, any, any, any>, ICustomClassPrototype3<TPrototype & ICustomClassPrototype3<any, string, any, any, any>, string, any, any, any>, any, any, any> |
+    CustomClassConstructor4<ICustomClassPrototype4<TPrototype & ICustomClassPrototype4<any, string, any, any, any, any>, string, any, any, any, any>, ICustomClassPrototype4<TPrototype & ICustomClassPrototype4<any, string, any, any, any, any>, string, any, any, any, any>, any, any, any, any> |
+    CustomClassConstructorN<ICustomClassPrototypeN<TPrototype & ICustomClassPrototypeN<any, string>, string>, ICustomClassPrototypeN<TPrototype & ICustomClassPrototypeN<any, string>, string>>;
+
+declare interface ObjectConstructor {
+    extendsObject<TBaseProperties, TBaseConstructor extends CustomClassConstructor<CustomClassPrototype<TBaseProperties>>, TPrototype extends CustomClassPrototype<any>,
+        TInstance extends TBaseProperties & TPrototype, TConstructor extends CustomClassConstructor<TInstance>>(baseConstructor: TBaseConstructor, prototype: TPrototype): TConstructor;
+}
+
 declare var Class: {
     create<TConstructor extends CustomClassConstructor0<ICustomClassPrototype0<any, string>, ICustomClassPrototype0<any, string>> |
         CustomClassConstructor1<ICustomClassPrototype1<any, string, any>, ICustomClassPrototype1<any, string, any>, any> |
@@ -5131,6 +5150,169 @@ declare interface sys_numberFields extends sys_metadataFields {
 }
 declare type sys_numberGlideRecord = sys_metadataGlideRecord & sys_numberFields;
 declare type sys_numberReferenceElement = $$element.Reference<sys_numberFields, sys_numberGlideRecord>;
+/**
+ * Number
+ * @interface sys_choiceFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_choiceFields extends IGlideTableProperties {
+    /**
+     * Dependent value
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    dependent_value: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Element
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    element: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Hint
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    hint: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Inactive
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    inactive: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Label
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    label: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Language
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    language: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Table
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Sequence
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     */
+    sequence: $$rhino.Nilable<$$property.Numeric>;
+    /**
+     * Domain
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     */
+    sys_domain: $$rhino.Nilable<$$property.DomainId>;
+    /**
+     * Domain Path
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     */
+    sys_domain_path: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Value
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    value: $$rhino.Nilable<$$property.Element>;
+}
+declare type sys_choiceGlideRecord = sys_metadataGlideRecord & sys_choiceFields;
+declare type sys_choiceReferenceElement = $$element.Reference<sys_choiceFields, sys_choiceGlideRecord>;
+/**
+ * Dictionary Entry Override
+ * @interface sys_dictionary_overrideFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_dictionary_overrideFields extends sys_metadataFields {
+    /**
+     * Attributes
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    attributes: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Override attributes
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    attributes_override: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Base table
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    base_table: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Calculation
+     * @type {$$rhino.Nilable<$$property.Script>}
+     */
+    calculation: $$rhino.Nilable<$$property.Script>;
+    /**
+     * Override calculation
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    calculation_override: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Default value
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    default_value: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Override default value
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    default_value_override: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Dependent
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    dependent: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Override dependent
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    dependent_override: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Override display value
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    display_override: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Column name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    element: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Mandatory
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    mandatory: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Override mandatory
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    mandatory_override: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Table
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Read only
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    read_only: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Override read only
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    read_only_override: $$rhino.Nilable<$$property.Boolean>;
+    /**
+     * Reference qual
+     * @type {$$rhino.Nilable<$$property.Element>}
+     */
+    reference_qual: $$rhino.Nilable<$$property.Element>;
+    /**
+     * Override reference qualifier
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     */
+    reference_qual_override: $$rhino.Nilable<$$property.Boolean>;
+}
+declare type sys_dictionary_overrideGlideRecord = sys_metadataGlideRecord & sys_dictionary_overrideFields;
+declare type sys_dictionary_overrideReferenceElement = $$element.Reference<sys_dictionary_overrideFields, sys_dictionary_overrideGlideRecord>;
 /**
  * Package
  * @interface sys_packageFields
