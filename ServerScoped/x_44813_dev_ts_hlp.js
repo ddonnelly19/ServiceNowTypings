@@ -2,6 +2,7 @@
 var x_44813_dev_ts_hlp;
 (function (x_44813_dev_ts_hlp) {
     var DTSHelper = (function () {
+        var dtsHelper = Class.create();
         var internalTypeToClassNameMapping = {
             "boolean": "GlideElementBoolean", "catalog_preview": "GlideElement", "choice": "GlideElement", "color": "GlideElement", "composite_field": "GlideElement",
             "compressed": "GlideElementCompressed", "conditions": "GlideElementConditions", "currency": "GlideElementCurrency", "data_object": "GlideElementDataObject", "decimal": "GlideElementNumeric",
@@ -90,21 +91,8 @@ var x_44813_dev_ts_hlp;
                 return "$$property.generic." + propertyName + "<" + sv[0] + ">";
             return "$$property.generic." + propertyName + "<(" + sv.join(" | ") + ")>";
         }
-        function definesField(tableInfo, element) {
-            if (tableInfo.is_extendable && element.name == "sys_class_name")
-                return true;
-            var i;
-            for (i = 0; i < baseFieldNames.length; i++) {
-                if (baseFieldNames[i] == element.name)
-                    return true;
-            }
-            for (i = 0; i < tableInfo.elements.length; i++) {
-                if (tableInfo.elements[i].name == element.name)
-                    return true;
-            }
-            return typeof tableInfo.super_class !== "undefined" && definesField(tableInfo.super_class, element);
-        }
         var TypeScriptCodeFactory = Class.create();
+        dtsHelper.TypeScriptCodeFactory = TypeScriptCodeFactory;
         TypeScriptCodeFactory.prototype = {
             getInterface: undefined,
             getScope: undefined,
@@ -239,6 +227,7 @@ var x_44813_dev_ts_hlp;
             type: "TypeScriptCodeFactory"
         };
         var TypeScriptChoice = Class.create();
+        dtsHelper.TypeScriptChoice = TypeScriptChoice;
         TypeScriptChoice.asSorted = function (source) {
             if (source.length < 2)
                 return source;
@@ -334,6 +323,7 @@ var x_44813_dev_ts_hlp;
             type: "TypeScriptChoice"
         };
         var TypeScriptScope = Class.create();
+        dtsHelper.TypeScriptScope = TypeScriptScope;
         TypeScriptScope.prototype = {
             inactive: true,
             isPrivate: false,
@@ -370,6 +360,7 @@ var x_44813_dev_ts_hlp;
             type: "TypeScriptScope"
         };
         var TypeScriptPackage = Class.create();
+        dtsHelper.TypeScriptPackage = TypeScriptPackage;
         TypeScriptPackage.prototype = {
             inactive: true,
             sys_id: "",
@@ -395,6 +386,7 @@ var x_44813_dev_ts_hlp;
             type: "TypeScriptPackage"
         };
         var TypeScriptElement = Class.create();
+        dtsHelper.TypeScriptElement = TypeScriptElement;
         TypeScriptElement.prototype = {
             inactive: false,
             array: false,
@@ -629,6 +621,7 @@ var x_44813_dev_ts_hlp;
             type: "TypeScriptElement"
         };
         var TypeScriptInterface = Class.create();
+        dtsHelper.TypeScriptInterface = TypeScriptInterface;
         function areFieldsEqual(x, y) {
             if (x.sys_id == y.sys_id)
                 return true;
@@ -802,7 +795,6 @@ var x_44813_dev_ts_hlp;
             },
             type: "TypeScriptInterface"
         };
-        var dtsHelper = Class.create();
         dtsHelper.prototype = {
             current: undefined,
             initialize: function (gr) { this.current = (gr instanceof GlideRecord) ? gr : gr.getRefRecord(); },

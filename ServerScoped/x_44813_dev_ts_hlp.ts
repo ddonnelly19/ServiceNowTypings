@@ -24,10 +24,180 @@ namespace x_44813_dev_ts_hlp {
     interface IDTSHelperConstructor extends CustomClassConstructor1<IDTSHelperPrototype, Readonly<IDTSHelperPrototype>, GlideRecord | GlideElementReference> {
         new(gr: GlideRecord | GlideElementReference): Readonly<IDTSHelperPrototype>;
         (gr: GlideRecord | GlideElementReference): Readonly<IDTSHelperPrototype>;
+        TypeScriptChoice: ITypeScriptChoiceConstructor;
+        TypeScriptScope: ITypeScriptScopeConstructor;
+        TypeScriptPackage: ITypeScriptPackageConstructor;
+        TypeScriptElement: ITypeScriptElementConstructor;
+        TypeScriptInterface: ITypeScriptInterfaceConstructor;
+        TypeScriptCodeFactory: ITypeScriptCodeFactoryConstructor;
         getTableTypescriptCode(tableName: string, includeSuperFields?: boolean): string;
     }
 
+    interface ITypeScriptCodeFactoryPrototype extends ICustomClassPrototype0<ITypeScriptCodeFactoryPrototype, "TypeScriptCodeFactory"> {
+        getInterface(tableName: $$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>): TypeScriptInterfaceInstance;
+        getScope(scope: $$property.generic.Reference<sys_scopeFields, sys_scopeGlideRecord>): TypeScriptScopeInstance;
+        getPackage(package: $$property.generic.Reference<sys_packageFields, sys_packageGlideRecord>): TypeScriptPackageInstance;
+    }
+    type TypeScriptCodeFactoryInstance = Readonly<ITypeScriptCodeFactoryPrototype>;
+    interface ITypeScriptCodeFactoryConstructor extends CustomClassConstructor0<ITypeScriptCodeFactoryPrototype, TypeScriptCodeFactoryInstance> { }
+
+    interface ITypeScriptChoiceProperties {
+        inactive?: boolean;
+        label: string;
+        dependent_value?: string;
+        hint?: string;
+        language?: string;
+        sequence?: number;
+    }
+    interface ITypeScriptChoiceJSON extends ITypeScriptChoiceProperties {
+        value: string | number;
+    }
+    interface ITypeScriptChoicePrototype extends ITypeScriptChoiceProperties, ICustomClassPrototype1<ITypeScriptChoicePrototype, "TypeScriptChoice", sys_choiceGlideRecord> {
+        inactive: boolean;
+        value: string;
+        sys_id: string;
+        numeric?: number;
+        toJSON(): ITypeScriptChoiceJSON;
+        toString(): string;
+        compareTo(other: TypeScriptChoiceInstance): number;
+    }
+    type TypeScriptChoiceInstance = Readonly<ITypeScriptChoicePrototype>;
+    interface ITypeScriptChoiceConstructor extends CustomClassConstructor1<ITypeScriptChoicePrototype, TypeScriptChoiceInstance, sys_choiceGlideRecord> {
+        new(gr: sys_choiceGlideRecord): TypeScriptChoiceInstance;
+        (gr: sys_choiceGlideRecord): TypeScriptChoiceInstance;
+        asSorted(source: TypeScriptChoiceInstance[]): TypeScriptChoiceInstance[];
+    }
+
+    interface ITypeScriptScopeProperties {
+        inactive?: boolean;
+        isPrivate?: boolean;
+        name: string;
+        scope: string;
+        short_description?: string;
+        version?: string;
+    }
+    interface ITypeScriptScopePrototype extends ITypeScriptScopeProperties, ICustomClassPrototype1<ITypeScriptScopePrototype, "TypeScriptScope", sys_scopeGlideRecord> {
+        inactive: boolean;
+        isPrivate: boolean;
+        sys_id: string;
+        short_description: string;
+        version: string;
+        toJSON(): ITypeScriptScopeProperties;
+        toString(): string;
+    }
+    type TypeScriptScopeInstance = Readonly<ITypeScriptScopePrototype>;
+    interface ITypeScriptScopeConstructor extends CustomClassConstructor1<ITypeScriptScopePrototype, TypeScriptScopeInstance, sys_scopeGlideRecord> {
+        new(gr: sys_scopeGlideRecord): TypeScriptScopeInstance;
+        (gr: sys_scopeGlideRecord): TypeScriptScopeInstance;
+    }
+
+    interface ITypeScriptPackageProperties {
+        inactive?: boolean;
+        name: string;
+        version?: string;
+    }
+    interface ITypeScriptPackagePrototype extends ITypeScriptPackageProperties, ICustomClassPrototype1<ITypeScriptPackagePrototype, "TypeScriptPackage", sys_packageGlideRecord> {
+        inactive: boolean;
+        sys_id: string;
+        version: string;
+        toJSON(): ITypeScriptPackageProperties;
+        toString(): string;
+    }
+    type TypeScriptPackageInstance = Readonly<ITypeScriptPackagePrototype>;
+    interface ITypeScriptPackageConstructor extends CustomClassConstructor1<ITypeScriptPackagePrototype, TypeScriptPackageInstance, sys_packageGlideRecord> {
+        new(gr: sys_packageGlideRecord): TypeScriptPackageInstance;
+        (gr: sys_packageGlideRecord): TypeScriptPackageInstance;
+    }
+
+    interface ISysNumberInfo {
+        prefix: string;
+        maximum_digits: number;
+    }
+
+    interface ITypeScriptInterfaceProperties {
+        package_private?: boolean;
+        is_extendable?: boolean;
+        read_only?: boolean;
+        label: string;
+        name: string;
+        number_ref?: ISysNumberInfo;
+    }
+    interface ITypeScriptInterfaceJSON extends ITypeScriptInterfaceProperties {
+        super_class?: string;
+        sys_scope?: string;
+        sys_package?: string;
+        fields?: ITypeScriptElementProperties[];
+    }
+    interface ITypeScriptInterfacePrototype extends ITypeScriptInterfaceProperties, ICustomClassPrototype2<ITypeScriptInterfacePrototype, "TypeScriptInterface", sys_db_objectGlideRecord, TypeScriptCodeFactoryInstance> {
+        package_private: boolean;
+        is_extendable: boolean;
+        read_only: boolean;
+        sys_id: string;
+        fields: ReadonlyArray<TypeScriptElementInstance>;
+        super_class?: TypeScriptInterfaceInstance;
+        number_ref?: Readonly<ISysNumberInfo>;
+        sys_scope?: TypeScriptScopeInstance;
+        sys_package?: TypeScriptPackageInstance;
+        getField(element: string, includeSuper?: boolean): TypeScriptElementInstance | undefined;
+        toJSON(): ITypeScriptInterfaceJSON;
+        toString(): string;
+        toTypeScriptLines(includeSuperFields?: boolean): string[];
+        getAllFields(): TypeScriptElementInstance[];
+    }
+    type TypeScriptInterfaceInstance = Readonly<ITypeScriptInterfacePrototype>;
+    interface ITypeScriptInterfaceConstructor extends CustomClassConstructor2<ITypeScriptInterfacePrototype, TypeScriptInterfaceInstance, sys_db_objectGlideRecord, TypeScriptCodeFactoryInstance> {
+        new(gr: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptInterfaceInstance;
+        (gr: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptInterfaceInstance;
+    }
+
+    interface ITypeScriptElementProperties {
+        inactive?: boolean;
+        array?: boolean;
+        mandatory?: boolean;
+        read_only?: boolean;
+        label: string;
+        element: string;
+        comments?: string;
+        default_value?: string;
+        max_length?: number;
+        internal_type: string;
+    }
+    interface ITypeScriptElementJSON extends ITypeScriptElementProperties {
+        choices?: ITypeScriptChoiceJSON[];
+        choiceTable?: string;
+        choiceField?: string;
+        reference?: string;
+        base_table?: string;
+        sys_scope?: string;
+        sys_package?: string;
+    }
+    interface ITypeScriptElementPrototype extends ITypeScriptElementProperties, ICustomClassPrototype2<ITypeScriptElementPrototype, "TypeScriptElement", sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
+        inactive: boolean;
+        array: boolean;
+        mandatory: boolean;
+        read_only: boolean;
+        sys_id: string;
+        comments: string;
+        choices: ReadonlyArray<TypeScriptChoiceInstance>;
+        choiceTable?: TypeScriptInterfaceInstance;
+        choiceField?: TypeScriptElementInstance;
+        reference?: TypeScriptInterfaceInstance;
+        base_table?: TypeScriptInterfaceInstance;
+        sys_scope?: TypeScriptScopeInstance;
+        sys_package?: TypeScriptPackageInstance;
+        toJSON(): ITypeScriptElementJSON;
+        toString(): string;
+        toTypeScriptLines(): string[];
+    }
+    type TypeScriptElementInstance = Readonly<ITypeScriptElementPrototype>;
+    interface ITypeScriptElementConstructor extends CustomClassConstructor2<ITypeScriptElementPrototype, TypeScriptElementInstance, sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
+        new(gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptElementInstance;
+        (gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptElementInstance;
+    }
+
     var DTSHelper: IDTSHelperConstructor & Function = (function (): IDTSHelperConstructor {
+        var dtsHelper: IDTSHelperConstructor = Class.create<IDTSHelperConstructor>();
+
         let internalTypeToClassNameMapping: { [key: string]: string; } = {
             "boolean": "GlideElementBoolean", "catalog_preview": "GlideElement", "choice": "GlideElement", "color": "GlideElement", "composite_field": "GlideElement",
             "compressed": "GlideElementCompressed", "conditions": "GlideElementConditions", "currency": "GlideElementCurrency", "data_object": "GlideElementDataObject", "decimal": "GlideElementNumeric",
@@ -119,51 +289,14 @@ namespace x_44813_dev_ts_hlp {
             return "$$property.generic." + propertyName + "<(" + sv.join(" | ") + ")>";
         }
 
-        function definesField(tableInfo: ITableInfo, element: IElementInfo): boolean {
-            if (tableInfo.is_extendable && element.name == "sys_class_name")
-                return true;
-            let i: number;
-            for (i = 0; i < baseFieldNames.length; i++) {
-                if (baseFieldNames[i] == element.name)
-                    return true;
-            }
-            for (i = 0; i < tableInfo.elements.length; i++) {
-                if (tableInfo.elements[i].name == element.name)
-                    return true;
-            }
-            return typeof tableInfo.super_class !== "undefined" && definesField(tableInfo.super_class, element);
-        }
-
-        interface IElementInfo {
-            label: string;
-            name: string;
-            internal_type: string;
-            className: string;
-            property_type: string;
-            refersTo?: { label: string, name: string };
-        }
-        interface ITableInfo {
-            is_extendable?: boolean;
-            label: string;
-            name: string;
-            super_class?: ITableInfo;
-            elements: IElementInfo[];
-        }
-
         interface ITypeScriptCodeFactoryPrivateData {
             interfaces: TypeScriptInterfaceInstance[];
             scopes: TypeScriptScopeInstance[];
             packages: TypeScriptPackageInstance[];
         }
-        interface ITypeScriptCodeFactoryPrototype extends ICustomClassPrototype0<ITypeScriptCodeFactoryPrototype, "TypeScriptCodeFactory"> {
-            getInterface(tableName: $$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>): TypeScriptInterfaceInstance;
-            getScope(scope: $$property.generic.Reference<sys_scopeFields, sys_scopeGlideRecord>): TypeScriptScopeInstance;
-            getPackage(package: $$property.generic.Reference<sys_packageFields, sys_packageGlideRecord>): TypeScriptPackageInstance;
-        }
-        type TypeScriptCodeFactoryInstance = Readonly<ITypeScriptCodeFactoryPrototype>;
-        interface ITypeScriptCodeFactoryConstructor extends CustomClassConstructor0<ITypeScriptCodeFactoryPrototype, TypeScriptCodeFactoryInstance> { }
 
         let TypeScriptCodeFactory: ITypeScriptCodeFactoryConstructor = Class.create<ITypeScriptCodeFactoryConstructor>();
+        dtsHelper.TypeScriptCodeFactory = TypeScriptCodeFactory;
         TypeScriptCodeFactory.prototype = {
             getInterface: undefined,
             getScope: undefined,
@@ -295,33 +428,8 @@ namespace x_44813_dev_ts_hlp {
             type: "TypeScriptCodeFactory"
         }
 
-        interface ITypeScriptChoiceProperties {
-            inactive?: boolean;
-            label: string;
-            dependent_value?: string;
-            hint?: string;
-            language?: string;
-            sequence?: number;
-        }
-        interface ITypeScriptChoiceJSON extends ITypeScriptChoiceProperties {
-            value: string | number;
-        }
-        interface ITypeScriptChoicePrototype extends ITypeScriptChoiceProperties, ICustomClassPrototype1<ITypeScriptChoicePrototype, "TypeScriptChoice", sys_choiceGlideRecord> {
-            inactive: boolean;
-            value: string;
-            sys_id: string;
-            numeric?: number;
-            toJSON(): ITypeScriptChoiceJSON;
-            toString(): string;
-            compareTo(other: TypeScriptChoiceInstance): number;
-        }
-        type TypeScriptChoiceInstance = Readonly<ITypeScriptChoicePrototype>;
-        interface ITypeScriptChoiceConstructor extends CustomClassConstructor1<ITypeScriptChoicePrototype, TypeScriptChoiceInstance, sys_choiceGlideRecord> {
-            new(gr: sys_choiceGlideRecord): TypeScriptChoiceInstance;
-            (gr: sys_choiceGlideRecord): TypeScriptChoiceInstance;
-            asSorted(source: TypeScriptChoiceInstance[]): TypeScriptChoiceInstance[];
-        }
         let TypeScriptChoice: ITypeScriptChoiceConstructor = Class.create<ITypeScriptChoiceConstructor>();
+        dtsHelper.TypeScriptChoice = TypeScriptChoice;
         TypeScriptChoice.asSorted = function (source: TypeScriptChoiceInstance[]): TypeScriptChoiceInstance[] {
             if (source.length < 2)
                 return source;
@@ -416,30 +524,9 @@ namespace x_44813_dev_ts_hlp {
             toString: function (): string { return this.value; },
             type: "TypeScriptChoice"
         };
-        
-        interface ITypeScriptScopeProperties {
-            inactive?: boolean;
-            isPrivate?: boolean;
-            name: string;
-            scope: string;
-            short_description?: string;
-            version?: string;
-        }
-        interface ITypeScriptScopePrototype extends ITypeScriptScopeProperties, ICustomClassPrototype1<ITypeScriptScopePrototype, "TypeScriptScope", sys_scopeGlideRecord> {
-            inactive: boolean;
-            isPrivate: boolean;
-            sys_id: string;
-            short_description: string;
-            version: string;
-            toJSON(): ITypeScriptScopeProperties;
-            toString(): string;
-        }
-        type TypeScriptScopeInstance = Readonly<ITypeScriptScopePrototype>;
-        interface ITypeScriptScopeConstructor extends CustomClassConstructor1<ITypeScriptScopePrototype, TypeScriptScopeInstance, sys_scopeGlideRecord> {
-            new(gr: sys_scopeGlideRecord): TypeScriptScopeInstance;
-            (gr: sys_scopeGlideRecord): TypeScriptScopeInstance;
-        }
+
         let TypeScriptScope: ITypeScriptScopeConstructor = Class.create<ITypeScriptScopeConstructor>();
+        dtsHelper.TypeScriptScope = TypeScriptScope;
         TypeScriptScope.prototype = {
             inactive: true,
             isPrivate: false,
@@ -476,24 +563,8 @@ namespace x_44813_dev_ts_hlp {
             type: "TypeScriptScope"
         }
 
-        interface ITypeScriptPackageProperties {
-            inactive?: boolean;
-            name: string;
-            version?: string;
-        }
-        interface ITypeScriptPackagePrototype extends ITypeScriptPackageProperties, ICustomClassPrototype1<ITypeScriptPackagePrototype, "TypeScriptPackage", sys_packageGlideRecord> {
-            inactive: boolean;
-            sys_id: string;
-            version: string;
-            toJSON(): ITypeScriptPackageProperties;
-            toString(): string;
-        }
-        type TypeScriptPackageInstance = Readonly<ITypeScriptPackagePrototype>;
-        interface ITypeScriptPackageConstructor extends CustomClassConstructor1<ITypeScriptPackagePrototype, TypeScriptPackageInstance, sys_packageGlideRecord> {
-            new(gr: sys_packageGlideRecord): TypeScriptPackageInstance;
-            (gr: sys_packageGlideRecord): TypeScriptPackageInstance;
-        }
         let TypeScriptPackage: ITypeScriptPackageConstructor = Class.create<ITypeScriptPackageConstructor>();
+        dtsHelper.TypeScriptPackage = TypeScriptPackage;
         TypeScriptPackage.prototype = {
             inactive: true,
             sys_id: "",
@@ -519,51 +590,8 @@ namespace x_44813_dev_ts_hlp {
             type: "TypeScriptPackage"
         }
 
-        interface ITypeScriptElementProperties {
-            inactive?: boolean;
-            array?: boolean;
-            mandatory?: boolean;
-            read_only?: boolean;
-            label: string;
-            element: string;
-            comments?: string;
-            default_value?: string;
-            max_length?: number;
-            internal_type: string;
-        }
-        interface ITypeScriptElementJSON extends ITypeScriptElementProperties {
-            choices?: ITypeScriptChoiceJSON[];
-            choiceTable?: string;
-            choiceField?: string;
-            reference?: string;
-            base_table?: string;
-            sys_scope?: string;
-            sys_package?: string;
-        }
-        interface ITypeScriptElementPrototype extends ITypeScriptElementProperties, ICustomClassPrototype2<ITypeScriptElementPrototype, "TypeScriptElement", sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
-            inactive: boolean;
-            array: boolean;
-            mandatory: boolean;
-            read_only: boolean;
-            sys_id: string;
-            comments: string;
-            choices: ReadonlyArray<TypeScriptChoiceInstance>;
-            choiceTable?: TypeScriptInterfaceInstance;
-            choiceField?: TypeScriptElementInstance;
-            reference?: TypeScriptInterfaceInstance;
-            base_table?: TypeScriptInterfaceInstance;
-            sys_scope?: TypeScriptScopeInstance;
-            sys_package?: TypeScriptPackageInstance;
-            toJSON(): ITypeScriptElementJSON;
-            toString(): string;
-            toTypeScriptLines(): string[];
-        }
-        type TypeScriptElementInstance = Readonly<ITypeScriptElementPrototype>;
-        interface ITypeScriptElementConstructor extends CustomClassConstructor2<ITypeScriptElementPrototype, TypeScriptElementInstance, sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
-            new(gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptElementInstance;
-            (gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptElementInstance;
-        }
         let TypeScriptElement: ITypeScriptElementConstructor = Class.create<ITypeScriptElementConstructor>();
+        dtsHelper.TypeScriptElement = TypeScriptElement;
         TypeScriptElement.prototype = {
             inactive: false,
             array: false,
@@ -795,47 +823,8 @@ namespace x_44813_dev_ts_hlp {
             type: "TypeScriptElement"
         };
 
-        interface ISysNumberInfo {
-            prefix: string;
-            maximum_digits: number;
-        }
-
-        interface ITypeScriptInterfaceProperties {
-            package_private?: boolean;
-            is_extendable?: boolean;
-            read_only?: boolean;
-            label: string;
-            name: string;
-            number_ref?: ISysNumberInfo;
-        }
-        interface ITypeScriptInterfaceJSON extends ITypeScriptInterfaceProperties {
-            super_class?: string;
-            sys_scope?: string;
-            sys_package?: string;
-            fields?: ITypeScriptElementProperties[];
-        }
-        interface ITypeScriptInterfacePrototype extends ITypeScriptInterfaceProperties, ICustomClassPrototype2<ITypeScriptInterfacePrototype, "TypeScriptInterface", sys_db_objectGlideRecord, TypeScriptCodeFactoryInstance> {
-            package_private: boolean;
-            is_extendable: boolean;
-            read_only: boolean;
-            sys_id: string;
-            fields: ReadonlyArray<TypeScriptElementInstance>;
-            super_class?: TypeScriptInterfaceInstance;
-            number_ref?: Readonly<ISysNumberInfo>;
-            sys_scope?: TypeScriptScopeInstance;
-            sys_package?: TypeScriptPackageInstance;
-            getField(element: string, includeSuper?: boolean): TypeScriptElementInstance | undefined;
-            toJSON(): ITypeScriptInterfaceJSON;
-            toString(): string;
-            toTypeScriptLines(includeSuperFields?: boolean): string[];
-            getAllFields(): TypeScriptElementInstance[];
-        }
-        type TypeScriptInterfaceInstance = Readonly<ITypeScriptInterfacePrototype>;
-        interface ITypeScriptInterfaceConstructor extends CustomClassConstructor2<ITypeScriptInterfacePrototype, TypeScriptInterfaceInstance, sys_db_objectGlideRecord, TypeScriptCodeFactoryInstance> {
-            new(gr: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptInterfaceInstance;
-            (gr: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptInterfaceInstance;
-        }
         let TypeScriptInterface: ITypeScriptInterfaceConstructor = Class.create<ITypeScriptInterfaceConstructor>();
+        dtsHelper.TypeScriptInterface = TypeScriptInterface;
         function areFieldsEqual(x: TypeScriptElementInstance, y: TypeScriptElementInstance): boolean {
             if (x.sys_id == y.sys_id)
                 return true;
@@ -1016,7 +1005,6 @@ namespace x_44813_dev_ts_hlp {
             type: "TypeScriptInterface"
         };
 
-        var dtsHelper: IDTSHelperConstructor = Class.create<IDTSHelperConstructor>();
         dtsHelper.prototype = {
             current: undefined,
             initialize(gr: GlideRecord | GlideElementReference): void { this.current = (gr instanceof GlideRecord) ? gr : gr.getRefRecord(); },
