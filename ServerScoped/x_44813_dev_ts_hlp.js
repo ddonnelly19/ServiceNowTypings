@@ -1,6 +1,184 @@
 /// <reference path="base.d.ts" />
 var x_44813_dev_ts_hlp;
 (function (x_44813_dev_ts_hlp) {
+    var DtsNode = (function () {
+        var $DtsNode = Class.create();
+        $DtsNode.NodeMapIterator = Class.create();
+        function createMapPrototype(extended) {
+            extended._items = [];
+            extended.add = function (value) {
+                if (typeof value !== "object" || value === null)
+                    throw new Error("Invalid value");
+                if (typeof value._parent !== "undefined")
+                    throw new Error("Item has already been added to a parent node");
+                if (this.has(value._key))
+                    throw new Error("Another item already has the same key");
+                var i = this._items.length;
+                value._parent = this;
+                this._items.push(value);
+                return i;
+            };
+            extended.clear = function () {
+                if (this._items.length > 0) {
+                    this._items.forEach(function (i) { i._parent = undefined; });
+                    this._items = [];
+                }
+            };
+            extended["delete"] = function (arg) {
+                if (typeof arg !== "number") {
+                    if ((arg = this.indexOf(arg)) < 0)
+                        return false;
+                    this["delete"](arg);
+                    return true;
+                }
+                if (arg < 0 || arg >= this._items.length)
+                    throw new RangeError("Index out of range");
+                this._items[arg]._parent = undefined;
+                if (arg == 0)
+                    this._items.shift();
+                else if (arg < this._items.length - 1)
+                    this._items.splice(arg, 1);
+                else
+                    this._items.pop();
+            };
+            extended.filter = function (callbackfn, thisArg) {
+                if (this._items.length == 0)
+                    return [];
+                if (arguments.length < 2)
+                    return this._items.filter(function (value, index) { return callbackfn(value, index, this); }, this);
+                return this._items.filter(function (value, index) { return callbackfn.call(thisArg, value, index, this); }, this);
+            };
+            extended.forEach = function (callbackfn, thisArg) {
+                if (this._items.length == 0)
+                    return;
+                if (arguments.length < 2)
+                    this._items.forEach(function (value, index) { callbackfn(value, index, this); }, this);
+                else
+                    this._items.forEach(function (value, index) { callbackfn.call(thisArg, value, index, this); }, this);
+            };
+            extended.get = function (arg) {
+                if (typeof arg !== "number") {
+                    if ((arg = this.indexOf(arg)) >= 0)
+                        return this._items[arg];
+                }
+                else {
+                    if (arg < 0 || arg >= this._items.length)
+                        throw new RangeError("Index out of range");
+                    return this._items[arg];
+                }
+            };
+            extended.has = function (arg, thisArg) {
+                if (this._items.length == 0)
+                    return false;
+                var i;
+                if (typeof arg == "string")
+                    for (i = 0; i < this._items.length; i++) {
+                        if (this._items[i]._key === arg)
+                            return true;
+                    }
+                else if (typeof arg === "function") {
+                    if (arguments.length < 2)
+                        for (i = 0; i < this._items.length; i++) {
+                            if (arg(this._items[i], i, this))
+                                return true;
+                        }
+                    else
+                        for (i = 0; i < this._items.length; i++) {
+                            if (arg.call(thisArg, this._items[i], i, this))
+                                return true;
+                        }
+                }
+                return false;
+            };
+            extended.indexOf = function (arg, thisArg) {
+                if (this._items.length == 0)
+                    return -1;
+                var i;
+                if (typeof arg == "string")
+                    for (i = 0; i < this._items.length; i++) {
+                        if (this._items[i]._key === arg)
+                            return i;
+                    }
+                else if (typeof arg === "function") {
+                    if (arguments.length < 2)
+                        for (i = 0; i < this._items.length; i++) {
+                            if (arg(this._items[i], i, this))
+                                return i;
+                        }
+                    else
+                        for (i = 0; i < this._items.length; i++) {
+                            if (arg.call(thisArg, this._items[i], i, this))
+                                return i;
+                        }
+                }
+                return -1;
+            };
+            extended.keys = function () { return new $DtsNode.NodeMapIterator(this); };
+            extended.map = function (callbackfn, thisArg) { throw new Error("Method not implemented."); };
+            extended.reduce = function (initialValue, callbackfn, thisArg) { throw new Error("Method not implemented."); };
+            extended.set = function (value, index) {
+                if (typeof value !== "object" || value === null)
+                    throw new Error("Invalid value");
+                if (typeof value._parent !== "undefined")
+                    throw new Error("Item has already been added to a parent node");
+                var i = this.indexOf(value._key);
+                if (typeof index !== "number")
+                    index = (i < 0) ? this._items.length : i;
+                else {
+                    if (index < 0 || index > this._items.length)
+                        throw new RangeError("Index out of range");
+                    if (i >= 0 && i !== index)
+                        throw new Error("Another item already has the same key");
+                }
+                if (index == this._items.length) {
+                    value._parent = this;
+                    this._items.push(value);
+                }
+                else {
+                    var replaced = this._items[index];
+                    replaced._parent = undefined;
+                    value._parent = this;
+                    this._items[index] = value;
+                }
+                return this;
+            };
+            extended.size = function () { return this._items.length; };
+            extended.values = function () { return this._items.values(); };
+            return extended;
+        }
+        $DtsNode.NodeMapIterator.prototype = {
+            _index: -1,
+            initialize: function (source) {
+                if (typeof source === "object" && source !== null)
+                    this._source = source;
+            },
+            next: function () {
+                if (typeof this._source !== "undefined") {
+                    if (++this._index < this._source._items.length)
+                        return { value: this._source._items[this._index]._key };
+                    this._source = undefined;
+                }
+                return { value: undefined, done: true };
+            },
+            type: "NodeMapIterator"
+        };
+        $DtsNode.Namespace = Object.extendsObject($DtsNode, createMapPrototype({
+            name: function () { return ""; },
+            initialize: function (name) {
+                this.name = function () { return name; };
+                $DtsNode.prototype.initialize.call(this, "type:" + name);
+            },
+            type: "DtsNamespace"
+        }));
+        $DtsNode.prototype = {
+            _key: "",
+            initialize: function (key) {
+                this._key = key;
+            },
+            type: "DtsNode"
+        };
+        return $DtsNode;
+    })();
     var DTSHelper = (function () {
         var dtsHelper = Class.create();
         var internalTypeToClassNameMapping = {

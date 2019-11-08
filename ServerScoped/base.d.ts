@@ -4587,45 +4587,50 @@ declare class GlideSystem {
 
 declare var gs: GlideSystem;
 
-declare interface ICustomClassPrototype0<TPrototype extends ICustomClassPrototype0<TPrototype, Type>, Type extends string> { initialize(this: TPrototype): void; type: Type; }
-declare interface ICustomClassPrototype1<TPrototype extends ICustomClassPrototype1<TPrototype, Type, TArg>, Type extends string, TArg> { initialize(this: TPrototype, arg: TArg): void; type: Type; }
-declare interface ICustomClassPrototype2<TPrototype extends ICustomClassPrototype2<TPrototype, Type, TArg0, TArg1>, Type extends string, TArg0, TArg1> { initialize(this: TPrototype, arg0: TArg0, arg1: TArg1): void; type: Type; }
-declare interface ICustomClassPrototype3<TPrototype extends ICustomClassPrototype3<TPrototype, Type, TArg0, TArg1, TArg2>, Type extends string, TArg0, TArg1, TArg2> { initialize(this: TPrototype, arg0: TArg0, arg1: TArg1, arg2: TArg2): void; type: Type; }
-declare interface ICustomClassPrototype4<TPrototype extends ICustomClassPrototype4<TPrototype, Type, TArg0, TArg1, TArg2, TArg3>, Type extends string, TArg0, TArg1, TArg2, TArg3> { initialize(this: TPrototype, arg0: TArg0, arg1: TArg1, arg2: TArg2, arg3: TArg3): void; type: Type; }
-declare interface ICustomClassPrototypeN<TPrototype extends ICustomClassPrototypeN<TPrototype, Type>, Type extends string> { initialize(this: TPrototype, ...args: any[]): void; type: Type; }
+/**
+ * Prototype object for ServiceNow class constructors.
+ * @interface ISnClassPrototype0
+ * @template P - Type of prototype.
+ */
+declare interface ISnClassPrototype0<P extends ISnClassPrototype0<P>> { initialize(this: P): void; type: string; }
+declare interface ISnClassPrototype1<P extends ISnClassPrototype1<P, A>, A> { initialize(this: P, arg: A): void; type: string; }
+declare interface ISnClassPrototype2<P extends ISnClassPrototype2<P, A0, A1>, A0, A1> { initialize(this: P, arg0: A0, arg1: A1): void; type: string; }
+declare interface ISnClassPrototype3<P extends ISnClassPrototype3<P, A0, A1, A2>, A0, A1, A2> { initialize(this: P, arg0: A0, arg1: A1, arg2: A2): void; type: string; }
+declare interface ISnClassPrototype4<P extends ISnClassPrototype4<P, A0, A1, A2, A3>, A0, A1, A2, A3> { initialize(this: P, arg0: A0, arg1: A1, arg2: A2, arg3: A3): void; type: string; }
+declare interface ISnClassPrototypeN<P extends ISnClassPrototypeN<P>> { initialize(this: P, ...args: any[]); type: string; }
+declare type ISnClassPrototype = ISnClassPrototype0<any> | ISnClassPrototype1<any, any> | ISnClassPrototype2<any, any, any> | ISnClassPrototype3<any, any, any, any> | ISnClassPrototype4<any, any, any, any, any> |
+    ISnClassPrototypeN<any>;
 
-declare interface CustomClassConstructor0<TPrototype extends ICustomClassPrototype0<TPrototype, string>, TInstance extends TPrototype> { new(): TInstance;(): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructor1<TPrototype extends ICustomClassPrototype1<TPrototype, string, TArg>, TInstance extends TPrototype, TArg> { new(arg: TArg): TInstance;(arg: TArg): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructor2<TPrototype extends ICustomClassPrototype2<TPrototype, string, TArg0, TArg1>, TInstance extends TPrototype, TArg0, TArg1> { new(arg0: TArg0, arg1: TArg1): TInstance;(arg0: TArg0, arg1: TArg1): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructor3<TPrototype extends ICustomClassPrototype3<TPrototype, string, TArg0, TArg1, TArg2>, TInstance extends TPrototype, TArg0, TArg1, TArg2> { new(arg0: TArg0, arg1: TArg1, arg2: TArg2): TInstance;(arg0: TArg0, arg1: TArg1, arg2: TArg2): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructor4<TPrototype extends ICustomClassPrototype4<TPrototype, string, TArg0, TArg1, TArg2, TArg3>, TInstance extends TPrototype, TArg0, TArg1, TArg2, TArg3> { new(arg0: TArg0, arg1: TArg1, arg2: TArg2, arg3: TArg3): TInstance;(arg0: TArg0, arg1: TArg1, arg2: TArg2, arg3: TArg3): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructorN<TPrototype extends ICustomClassPrototypeN<TPrototype, string>, TInstance extends TPrototype> { new(...args: any[]): TInstance;(): TInstance; prototype: TPrototype; }
-
-declare type CustomClassPrototype<TProperties> = TProperties & (ICustomClassPrototype0<ICustomClassPrototype0<any, string>, string> |
-    ICustomClassPrototype1<ICustomClassPrototype1<any, string, any>, string, any> |
-    ICustomClassPrototype2<ICustomClassPrototype2<any, string, any, any>, string, any, any> |
-    ICustomClassPrototype3<ICustomClassPrototype3<any, string, any, any, any>, string, any, any, any> |
-    ICustomClassPrototype4<ICustomClassPrototype4<any, string, any, any, any, any>, string, any, any, any, any> |
-    ICustomClassPrototypeN<ICustomClassPrototypeN<any, string>, string>);
-declare type CustomClassConstructor<TPrototype extends CustomClassPrototype<any>> = CustomClassConstructor0<ICustomClassPrototype0<TPrototype & ICustomClassPrototype0<any, string>, string>, ICustomClassPrototype0<TPrototype & ICustomClassPrototype0<any, string>, string>> |
-    CustomClassConstructor1<ICustomClassPrototype1<TPrototype & ICustomClassPrototype1<any, string, any>, string, any>, ICustomClassPrototype1<TPrototype & ICustomClassPrototype1<any, string, any>, string, any>, any> |
-    CustomClassConstructor2<ICustomClassPrototype2<TPrototype & ICustomClassPrototype2<any, string, any, any>, string, any, any>, ICustomClassPrototype2<TPrototype & ICustomClassPrototype2<any, string, any, any>, string, any, any>, any, any> |
-    CustomClassConstructor3<ICustomClassPrototype3<TPrototype & ICustomClassPrototype3<any, string, any, any, any>, string, any, any, any>, ICustomClassPrototype3<TPrototype & ICustomClassPrototype3<any, string, any, any, any>, string, any, any, any>, any, any, any> |
-    CustomClassConstructor4<ICustomClassPrototype4<TPrototype & ICustomClassPrototype4<any, string, any, any, any, any>, string, any, any, any, any>, ICustomClassPrototype4<TPrototype & ICustomClassPrototype4<any, string, any, any, any, any>, string, any, any, any, any>, any, any, any, any> |
-    CustomClassConstructorN<ICustomClassPrototypeN<TPrototype & ICustomClassPrototypeN<any, string>, string>, ICustomClassPrototypeN<TPrototype & ICustomClassPrototypeN<any, string>, string>>;
+/**
+ * ServiceNow class constructor.
+ * @interface ISnClassConstructor0
+ * @template M - Members of both the prototype and the constructed object instance.
+ * @template P - Type of prototype.
+ * @template I - Type of constructed object instance.
+ */
+declare interface ISnClassConstructor0<M, P extends ISnClassPrototype0<P> & M, I extends M> { new(): I;(): I; prototype: P; }
+declare interface ISnClassConstructor1<M, P extends ISnClassPrototype1<P, A> & M, I extends M, A> { new(arg: A): I;(arg: A): I; prototype: P; }
+declare interface ISnClassConstructor2<M, P extends ISnClassPrototype2<P, A0, A1> & M, I extends M, A0, A1> { new(arg0: A0, arg1: A1): I;(arg0: A0, arg1: A1): I; prototype: P; }
+declare interface ISnClassConstructor3<M, P extends ISnClassPrototype3<P, A0, A1, A2> & M, I extends M, A0, A1, A2> { new(arg0: A0, arg1: A1, arg2: A2): I;(arg0: A0, arg1: A1, arg2: A2): I; prototype: P; }
+declare interface ISnClassConstructor4<M, P extends ISnClassPrototype4<P, A0, A1, A2, A3> & M, I extends M, A0, A1, A2, A3> { new(arg0: A0, arg1: A1, arg2: A2, arg3: A3): I;(arg0: A0, arg1: A1, arg2: A2, arg3: A3): I; prototype: P; }
+declare interface ISnClassConstructorN<M, P extends ISnClassPrototypeN<P> & M, I extends M> { new(...args: any[]): I;(...args: any[]): I; prototype: P; }
+declare type ISnClassConstructor = ISnClassConstructor0<any, any, any> | ISnClassConstructor1<any, any, any, any> | ISnClassConstructor2<any, any, any, any, any> |
+    ISnClassConstructor3<any, any, any, any, any, any> | ISnClassConstructor4<any, any, any, any, any, any, any> | ISnClassConstructorN<any, any, any>;
 
 declare interface ObjectConstructor {
-    extendsObject<TBaseProperties, TBaseConstructor extends CustomClassConstructor<CustomClassPrototype<TBaseProperties>>, TPrototype extends CustomClassPrototype<any>,
-        TInstance extends TBaseProperties & TPrototype, TConstructor extends CustomClassConstructor<TInstance>>(baseConstructor: TBaseConstructor, prototype: TPrototype): TConstructor;
+    /**
+     * ServiceNow method for extending classes.
+     * @template B - The base constructor type.
+     * @template E - The type of the extended prototype.
+     * @template C - The constructor type for the extended object.
+     * @param baseConstructor - The base constructor.
+     * @param prototype - The extended prototype.
+     */
+    extendsObject<B extends ISnClassConstructor, E extends ISnClassPrototype, C extends ISnClassConstructor>(baseConstructor: B, prototype: E): C;
 }
 
 declare var Class: {
-    create<TConstructor extends CustomClassConstructor0<ICustomClassPrototype0<any, string>, ICustomClassPrototype0<any, string>> |
-        CustomClassConstructor1<ICustomClassPrototype1<any, string, any>, ICustomClassPrototype1<any, string, any>, any> |
-        CustomClassConstructor2<ICustomClassPrototype2<any, string, any, any>, ICustomClassPrototype2<any, string, any, any>, any, any> |
-        CustomClassConstructor3<ICustomClassPrototype3<any, string, any, any, any>, ICustomClassPrototype3<any, string, any, any, any>, any, any, any> |
-        CustomClassConstructor4<ICustomClassPrototype4<any, string, any, any, any, any>, ICustomClassPrototype4<any, string, any, any, any, any>, any, any, any, any> |
-        CustomClassConstructorN<ICustomClassPrototypeN<any, string>, ICustomClassPrototypeN<any, string>>>(): TConstructor;
+    create<C extends ISnClassConstructor>(): C;
 };
 
 /**

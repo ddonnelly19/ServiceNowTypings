@@ -1,7 +1,259 @@
 /// <reference path="base.d.ts" />
 
 namespace x_44813_dev_ts_hlp {
-    interface ITypeScriptCodeFactoryPrototype extends ICustomClassPrototype0<ITypeScriptCodeFactoryPrototype, "TypeScriptCodeFactory"> {
+    interface IDtsNode {
+    }
+    interface IDtsNodePrototype extends IDtsNode, ISnClassPrototype1<IDtsNodePrototype, string> {
+        _key: string;
+        _parent?: INodeMapPrototype<any, IDtsNodePrototype>;
+        type: "DtsNode";
+    }
+    interface DtsNode extends Readonly<IDtsNode> {
+
+    }
+    interface IDtsNodeConstructor extends ISnClassConstructor1<IDtsNode, IDtsNodePrototype, DtsNode, string> {
+        new(key: string): DtsNode;
+        (key: string): DtsNode;
+        Namespace: IDtsNamespaceConstructor;
+        NodeMapIterator: INodeMapIteratorConstructor;
+    }
+
+    interface IDtsNamespace {
+        name(): string;
+    }
+    interface IDtsNamespacePrototypeBase extends IDtsNamespace, ISnClassPrototype1<IDtsNamespacePrototype, string> {
+        type: "DtsNamespace";
+    }
+    type DtsNamespaceChildItem = DtsNamespace;
+    interface IDtsNamespacePrototype extends IDtsNamespacePrototypeBase, INodeMapPrototype<IDtsNamespacePrototype, DtsNamespaceChildItem & IDtsNamespacePrototype> {
+    }
+    interface DtsNamespace extends DtsNode, Readonly<IDtsNamespace>, INodeMap<DtsNamespace, DtsNamespaceChildItem> {
+
+    }
+    interface IDtsNamespaceConstructor extends ISnClassConstructor1<IDtsNamespace, IDtsNamespacePrototype, DtsNamespace, string> {
+        new(name: string): DtsNamespace;
+        (name: string): DtsNamespace;
+    }
+
+    interface INodeMapIterator {
+        next(): IteratorYieldResult<string> | IteratorReturnResult<any>;
+    }
+    interface INodeMapIteratorPrototype extends INodeMapIterator, ISnClassPrototype1<INodeMapIteratorPrototype, INodeMapPrototype<any, IDtsNodePrototype>> {
+        _index: number;
+        _source?: INodeMapPrototype<any, IDtsNodePrototype>,
+        type: "NodeMapIterator";
+    }
+    interface NodeMapIterator extends Readonly<INodeMapIterator> { }
+    interface INodeMapIteratorConstructor extends ISnClassConstructor1<INodeMapIterator, INodeMapIteratorPrototype, NodeMapIterator, INodeMapPrototype<any, IDtsNodePrototype>> {
+    }
+    interface INodeMap<P extends INodeMap<P, V> & DtsNode, V extends DtsNode> {
+        add(value: V): number;
+        clear(): void;
+        delete(index: number): void;
+        delete(key: string): boolean;
+        filter<T>(callbackfn: { (this: T, value: V, index: number, parent: P): boolean; }, thisArg: T): V[];
+        filter(callbackfn: { (value: V, index: number, parent: P): boolean; }): V[];
+        forEach<T>(callbackfn: { (this: T, value: V, index: number, parent: P): void; }, thisArg: T): void;
+        forEach(callbackfn: { (value: V, index: number, parent: P): void; }): void;
+        get(index: number): V;
+        get(key: string): V | undefined;
+        has(key: string): boolean;
+        has<T>(callbackfn: { (this: T, value: V, index: number, parent: P): boolean; }, thisArg: T): boolean;
+        has(callbackfn: { (value: V, index: number, parent: P): boolean; }): boolean;
+        indexOf(key: string): number;
+        indexOf<T>(callbackfn: { (this: T, value: V, index: number, parent: P): boolean; }, thisArg: T): number;
+        indexOf(callbackfn: { (value: V, index: number, parent: P): boolean; }): number;
+        keys(): INodeMapIterator;
+        map<T, R>(callbackfn: { (this: T, value: V, index: number, parent: P): R; }, thisArg: T): R[];
+        map<R>(callbackfn: { (value: V, index: number, parent: P): R; }): R[];
+        reduce<T, R>(initialValue: R, callbackfn: { (this: T, value: V, current: R, index: number, parent: P): R; }, thisArg: T): R;
+        reduce<R>(initialValue: R, callbackfn: { (value: V, current: R, index: number, parent: P): R; }): R;
+        set(value: V, index?: number): P;
+        size(): number;
+        values(): IterableIterator<V>;
+    }
+    interface INodeMapPrototype<P extends INodeMapPrototype<P, N> & IDtsNodePrototype, N extends IDtsNodePrototype> extends IDtsNodePrototype, INodeMap<P, N> {
+        _items: N[];
+    }
+    let DtsNode: IDtsNodeConstructor = (function (): IDtsNodeConstructor {
+        let $DtsNode: IDtsNodeConstructor = Class.create<IDtsNodeConstructor>();
+        $DtsNode.NodeMapIterator = Class.create<INodeMapIteratorConstructor>();
+        function createMapPrototype<E extends ISnClassPrototype, P extends E & INodeMapPrototype<P, N>, N extends IDtsNodePrototype>(extended: E): P {
+            (<P>extended)._items = [];
+            (<P>extended).add = function (this: P, value: N): number {
+                if (typeof value !== "object" || value === null)
+                    throw new Error("Invalid value");
+                if (typeof value._parent !== "undefined")
+                    throw new Error("Item has already been added to a parent node");
+                if (this.has(value._key))
+                    throw new Error("Another item already has the same key");
+                let i: number = this._items.length;
+                value._parent = this;
+                this._items.push(value);
+                return i;
+            };
+            (<P>extended).clear = function (this: P): void {
+                if (this._items.length > 0) {
+                    this._items.forEach(function (i: N): void { i._parent = undefined; });
+                    this._items = [];
+                }
+            };
+            (<P>extended).delete = function (this: P, arg: string | number): boolean | undefined {
+                if (typeof arg !== "number") {
+                    if ((arg = this.indexOf(arg)) < 0)
+                        return false;
+                    this.delete(arg);
+                    return true;
+                }
+                if (arg < 0 || arg >= this._items.length)
+                    throw new RangeError("Index out of range");
+                this._items[arg]._parent = undefined;
+                if (arg == 0)
+                    this._items.shift();
+                else if (arg < this._items.length - 1)
+                    this._items.splice(arg, 1);
+                else
+                    this._items.pop();
+            };
+            (<P>extended).filter = function (this: P, callbackfn: { (value: N, index: number, parent: P): boolean; }, thisArg?: any): N[] {
+                if (this._items.length == 0)
+                    return [];
+                if (arguments.length < 2)
+                    return this._items.filter(function (this: P, value: N, index: number): boolean { return callbackfn(value, index, this); }, this);
+                return this._items.filter(function (this: P, value: N, index: number): boolean { return callbackfn.call(thisArg, value, index, this); }, this);
+            };
+            (<P>extended).forEach = function (this: P, callbackfn: { (value: N, index: number, parent: P): void; }, thisArg?: any): void {
+                if (this._items.length == 0)
+                    return;
+                if (arguments.length < 2)
+                    this._items.forEach(function (this: P, value: N, index: number): void { callbackfn(value, index, this); }, this);
+                else
+                    this._items.forEach(function (this: P, value: N, index: number): void { callbackfn.call(thisArg, value, index, this); }, this);
+            };
+            (<P>extended).get = function (this: P, arg: string | number): N | undefined {
+                if (typeof arg !== "number") {
+                    if ((arg = this.indexOf(arg)) >= 0)
+                        return this._items[arg];
+                } else {
+                    if (arg < 0 || arg >= this._items.length)
+                        throw new RangeError("Index out of range");
+                    return this._items[arg];
+                }
+            };
+            (<P>extended).has = function (this: P, arg: string | { (value: N, index: number, parent: P): boolean; }, thisArg?: any): boolean {
+                if (this._items.length == 0)
+                    return false;
+                let i: number;
+                if (typeof arg == "string")
+                    for (i = 0; i < this._items.length; i++) {
+                        if (this._items[i]._key === arg)
+                            return true;
+                    }
+                else if (typeof arg === "function") {
+                    if (arguments.length < 2)
+                        for (i = 0; i < this._items.length; i++) {
+                            if (arg(this._items[i], i, this))
+                                return true;
+                        }
+                    else
+                        for (i = 0; i < this._items.length; i++) {
+                            if (arg.call(thisArg, this._items[i], i, this))
+                                return true;
+                        }
+                }
+                return false;
+            };
+            (<P>extended).indexOf = function (this: P, arg: string | { (value: N, index: number, parent: P): boolean; }, thisArg?: any): number {
+                if (this._items.length == 0)
+                    return -1;
+                let i: number;
+                if (typeof arg == "string")
+                    for (i = 0; i < this._items.length; i++) {
+                        if (this._items[i]._key === arg)
+                            return i;
+                    }
+                else if (typeof arg === "function") {
+                    if (arguments.length < 2)
+                        for (i = 0; i < this._items.length; i++) {
+                            if (arg(this._items[i], i, this))
+                                return i;
+                        }
+                    else
+                        for (i = 0; i < this._items.length; i++) {
+                            if (arg.call(thisArg, this._items[i], i, this))
+                                return i;
+                        }
+                }
+                return -1;
+            };
+            (<P>extended).keys = function (this: P): INodeMapIterator { return new $DtsNode.NodeMapIterator(this); };
+            (<P>extended).map = function (this: P, callbackfn: { (value: N, index: number, parent: P): any; }, thisArg?: any): any[] { throw new Error("Method not implemented."); };
+            (<P>extended).reduce = function (this: P, initialValue: any, callbackfn: { (value: N, current: any, index: number, parent: P): any; }, thisArg?: any): any { throw new Error("Method not implemented."); };
+            (<P>extended).set = function (this: P, value: N, index?: number): P {
+                if (typeof value !== "object" || value === null)
+                    throw new Error("Invalid value");
+                if (typeof value._parent !== "undefined")
+                    throw new Error("Item has already been added to a parent node");
+                let i: number = this.indexOf(value._key);
+                if (typeof index !== "number")
+                    index = (i < 0) ? this._items.length : i;
+                else {
+                    if (index < 0 || index > this._items.length)
+                        throw new RangeError("Index out of range");
+                    if (i >= 0 && i !== index)
+                        throw new Error("Another item already has the same key");
+                }
+                if (index == this._items.length) {
+                    value._parent = this;
+                    this._items.push(value);
+                } else {
+                    let replaced: N = this._items[index];
+                    replaced._parent = undefined;
+                    value._parent = this;
+                    this._items[index] = value;
+                }
+                return this;
+            };
+            (<P>extended).size = function (this: P): number { return this._items.length; };
+            (<P>extended).values = function (this: P): IterableIterator<N> { return this._items.values(); };
+            return <P>extended;
+        }
+        $DtsNode.NodeMapIterator.prototype = {
+            _index: -1,
+            initialize(this: INodeMapIteratorPrototype, source: INodeMapPrototype<any, IDtsNodePrototype>): void {
+                if (typeof source === "object" && source !== null)
+                    this._source = source;
+            },
+            next: function (this: INodeMapIteratorPrototype): IteratorYieldResult<string> | IteratorReturnResult<any> {
+                if (typeof this._source !== "undefined") {
+                    if (++this._index < this._source._items.length)
+                        return { value: this._source._items[this._index]._key };
+                    this._source = undefined;
+                }
+                return { value: undefined, done: true };
+            },
+            type: "NodeMapIterator"
+        }
+        $DtsNode.Namespace = Object.extendsObject<IDtsNodeConstructor, IDtsNamespacePrototype, IDtsNamespaceConstructor>($DtsNode, createMapPrototype<IDtsNamespacePrototypeBase, IDtsNamespacePrototype, DtsNamespaceChildItem & IDtsNamespacePrototype>({
+            name: function (): string { return ""; },
+            initialize: function (this: IDtsNamespacePrototype, name: string): void {
+                this.name = function () { return name; }
+                $DtsNode.prototype.initialize.call(this, "type:" + name);
+            },
+            type: "DtsNamespace"
+        }));
+        $DtsNode.prototype = {
+            _key: "",
+            initialize: function (this: IDtsNodePrototype, key: string): void {
+                this._key = key;
+            },
+            type: "DtsNode"
+        }
+        return $DtsNode;
+    })();
+
+
+    interface ITypeScriptCodeFactory {
         getInterface(tableName: string, cacheOnly?: boolean): TypeScriptInterfaceInstance | undefined;
         toInterface(obj: sys_db_objectGlideRecord | sys_db_objectReferenceElement, refreshCache?: boolean): TypeScriptInterfaceInstance | undefined;
         getScope(scope: string, cacheOnly?: boolean): TypeScriptScopeInstance | undefined;
@@ -9,8 +261,11 @@ namespace x_44813_dev_ts_hlp {
         getPackage(pkg: string, cacheOnly?: boolean): TypeScriptPackageInstance | undefined;
         toPackage(obj: sys_packageGlideRecord | sys_packageReferenceElement, refreshCache?: boolean): TypeScriptPackageInstance | undefined;
     }
-    type TypeScriptCodeFactoryInstance = Readonly<ITypeScriptCodeFactoryPrototype>;
-    interface ITypeScriptCodeFactoryConstructor extends CustomClassConstructor0<ITypeScriptCodeFactoryPrototype, TypeScriptCodeFactoryInstance> { }
+    interface ITypeScriptCodeFactoryPrototype extends ITypeScriptCodeFactory, ISnClassPrototype0<ITypeScriptCodeFactoryPrototype> {
+        type: "TypeScriptCodeFactory";
+    }
+    type TypeScriptCodeFactoryInstance = Readonly<ITypeScriptCodeFactory>;
+    interface ITypeScriptCodeFactoryConstructor extends ISnClassConstructor0<ITypeScriptCodeFactory, ITypeScriptCodeFactoryPrototype, TypeScriptCodeFactoryInstance> { }
 
     interface ITypeScriptChoiceProperties {
         inactive?: boolean;
@@ -20,10 +275,7 @@ namespace x_44813_dev_ts_hlp {
         language?: string;
         sequence?: number;
     }
-    interface ITypeScriptChoiceJSON extends ITypeScriptChoiceProperties {
-        value: string | number;
-    }
-    interface ITypeScriptChoicePrototype extends ITypeScriptChoiceProperties, ICustomClassPrototype1<ITypeScriptChoicePrototype, "TypeScriptChoice", sys_choiceGlideRecord> {
+    interface ITypeScriptChoice extends ITypeScriptChoiceProperties {
         inactive: boolean;
         value: string;
         sys_id: string;
@@ -33,8 +285,14 @@ namespace x_44813_dev_ts_hlp {
         toString(): string;
         compareTo(other: TypeScriptChoiceInstance): number;
     }
-    type TypeScriptChoiceInstance = Readonly<ITypeScriptChoicePrototype>;
-    interface ITypeScriptChoiceConstructor extends CustomClassConstructor1<ITypeScriptChoicePrototype, TypeScriptChoiceInstance, sys_choiceGlideRecord> {
+    interface ITypeScriptChoiceJSON extends ITypeScriptChoiceProperties {
+        value: string | number;
+    }
+    interface ITypeScriptChoicePrototype extends ITypeScriptChoice, ISnClassPrototype1<ITypeScriptChoicePrototype, sys_choiceGlideRecord> {
+        type: "TypeScriptChoice";
+    }
+    type TypeScriptChoiceInstance = Readonly<ITypeScriptChoice>;
+    interface ITypeScriptChoiceConstructor extends ISnClassConstructor1<ITypeScriptChoice, ITypeScriptChoicePrototype, TypeScriptChoiceInstance, sys_choiceGlideRecord> {
         new(gr: sys_choiceGlideRecord): TypeScriptChoiceInstance;
         (gr: sys_choiceGlideRecord): TypeScriptChoiceInstance;
         asSorted(source: TypeScriptChoiceInstance[]): TypeScriptChoiceInstance[];
@@ -48,7 +306,7 @@ namespace x_44813_dev_ts_hlp {
         short_description?: string;
         version?: string;
     }
-    interface ITypeScriptScopePrototype extends ITypeScriptScopeProperties, ICustomClassPrototype1<ITypeScriptScopePrototype, "TypeScriptScope", sys_scopeGlideRecord> {
+    interface ITypeScriptScope extends ITypeScriptScopeProperties {
         inactive: boolean;
         isPrivate: boolean;
         sys_id: string;
@@ -58,8 +316,11 @@ namespace x_44813_dev_ts_hlp {
         toJSON(): ITypeScriptScopeProperties;
         toString(): string;
     }
-    type TypeScriptScopeInstance = Readonly<ITypeScriptScopePrototype>;
-    interface ITypeScriptScopeConstructor extends CustomClassConstructor1<ITypeScriptScopePrototype, TypeScriptScopeInstance, sys_scopeGlideRecord> {
+    interface ITypeScriptScopePrototype extends ITypeScriptScope, ISnClassPrototype1<ITypeScriptScopePrototype, sys_scopeGlideRecord> {
+        type: "TypeScriptScope";
+    }
+    type TypeScriptScopeInstance = Readonly<ITypeScriptScope>;
+    interface ITypeScriptScopeConstructor extends ISnClassConstructor1<ITypeScriptScope, ITypeScriptScopePrototype, TypeScriptScopeInstance, sys_scopeGlideRecord> {
         new(gr: sys_scopeGlideRecord): TypeScriptScopeInstance;
         (gr: sys_scopeGlideRecord): TypeScriptScopeInstance;
     }
@@ -69,7 +330,7 @@ namespace x_44813_dev_ts_hlp {
         name: string;
         version?: string;
     }
-    interface ITypeScriptPackagePrototype extends ITypeScriptPackageProperties, ICustomClassPrototype1<ITypeScriptPackagePrototype, "TypeScriptPackage", sys_packageGlideRecord> {
+    interface ITypeScriptPackage extends ITypeScriptPackageProperties {
         inactive: boolean;
         sys_id: string;
         version: string;
@@ -77,8 +338,11 @@ namespace x_44813_dev_ts_hlp {
         toJSON(): ITypeScriptPackageProperties;
         toString(): string;
     }
-    type TypeScriptPackageInstance = Readonly<ITypeScriptPackagePrototype>;
-    interface ITypeScriptPackageConstructor extends CustomClassConstructor1<ITypeScriptPackagePrototype, TypeScriptPackageInstance, sys_packageGlideRecord> {
+    interface ITypeScriptPackagePrototype extends ITypeScriptPackage, ISnClassPrototype1<ITypeScriptPackagePrototype, sys_packageGlideRecord> {
+        type: "TypeScriptPackage";
+    }
+    type TypeScriptPackageInstance = Readonly<ITypeScriptPackage>;
+    interface ITypeScriptPackageConstructor extends ISnClassConstructor1<ITypeScriptPackage, ITypeScriptPackagePrototype, TypeScriptPackageInstance, sys_packageGlideRecord> {
         new(gr: sys_packageGlideRecord): TypeScriptPackageInstance;
         (gr: sys_packageGlideRecord): TypeScriptPackageInstance;
     }
@@ -96,13 +360,7 @@ namespace x_44813_dev_ts_hlp {
         name: string;
         number_ref?: ISysNumberInfo;
     }
-    interface ITypeScriptInterfaceJSON extends ITypeScriptInterfaceProperties {
-        super_class?: string;
-        sys_scope?: string;
-        sys_package?: string;
-        fields?: ITypeScriptElementProperties[];
-    }
-    interface ITypeScriptInterfacePrototype extends ITypeScriptInterfaceProperties, ICustomClassPrototype2<ITypeScriptInterfacePrototype, "TypeScriptInterface", sys_db_objectGlideRecord, TypeScriptCodeFactoryInstance> {
+    interface ITypeScriptInterface extends ITypeScriptInterfaceProperties {
         package_private: boolean;
         is_extendable: boolean;
         read_only: boolean;
@@ -119,8 +377,17 @@ namespace x_44813_dev_ts_hlp {
         toTypeScriptLines(includeSuperFields?: boolean): string[];
         getAllFields(): TypeScriptElementInstance[];
     }
-    type TypeScriptInterfaceInstance = Readonly<ITypeScriptInterfacePrototype>;
-    interface ITypeScriptInterfaceConstructor extends CustomClassConstructor2<ITypeScriptInterfacePrototype, TypeScriptInterfaceInstance, sys_db_objectGlideRecord, TypeScriptCodeFactoryInstance> {
+    interface ITypeScriptInterfaceJSON extends ITypeScriptInterfaceProperties {
+        super_class?: string;
+        sys_scope?: string;
+        sys_package?: string;
+        fields?: ITypeScriptElementProperties[];
+    }
+    interface ITypeScriptInterfacePrototype extends ITypeScriptInterface, ISnClassPrototype2<ITypeScriptInterfacePrototype, sys_db_objectGlideRecord, TypeScriptCodeFactoryInstance> {
+        type: "TypeScriptInterface";
+    }
+    type TypeScriptInterfaceInstance = Readonly<ITypeScriptInterface>;
+    interface ITypeScriptInterfaceConstructor extends ISnClassConstructor2<ITypeScriptInterface, ITypeScriptInterfacePrototype, TypeScriptInterfaceInstance, sys_db_objectGlideRecord, TypeScriptCodeFactoryInstance> {
         new(gr: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptInterfaceInstance;
         (gr: sys_db_objectGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptInterfaceInstance;
     }
@@ -137,16 +404,7 @@ namespace x_44813_dev_ts_hlp {
         max_length?: number;
         internal_type: string;
     }
-    interface ITypeScriptElementJSON extends ITypeScriptElementProperties {
-        choices?: ITypeScriptChoiceJSON[];
-        choiceTable?: string;
-        choiceField?: string;
-        reference?: string;
-        base_table?: string;
-        sys_scope?: string;
-        sys_package?: string;
-    }
-    interface ITypeScriptElementPrototype extends ITypeScriptElementProperties, ICustomClassPrototype2<ITypeScriptElementPrototype, "TypeScriptElement", sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
+    interface ITypeScriptElement extends ITypeScriptElementProperties {
         inactive: boolean;
         array: boolean;
         mandatory: boolean;
@@ -165,8 +423,20 @@ namespace x_44813_dev_ts_hlp {
         toString(): string;
         toTypeScriptLines(): string[];
     }
-    type TypeScriptElementInstance = Readonly<ITypeScriptElementPrototype>;
-    interface ITypeScriptElementConstructor extends CustomClassConstructor2<ITypeScriptElementPrototype, TypeScriptElementInstance, sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
+    interface ITypeScriptElementJSON extends ITypeScriptElementProperties {
+        choices?: ITypeScriptChoiceJSON[];
+        choiceTable?: string;
+        choiceField?: string;
+        reference?: string;
+        base_table?: string;
+        sys_scope?: string;
+        sys_package?: string;
+    }
+    interface ITypeScriptElementPrototype extends ITypeScriptElement, ISnClassPrototype2<ITypeScriptElementPrototype, sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
+        type: "TypeScriptElement";
+    }
+    type TypeScriptElementInstance = Readonly<ITypeScriptElement>;
+    interface ITypeScriptElementConstructor extends ISnClassConstructor2<ITypeScriptElement, ITypeScriptElementPrototype, TypeScriptElementInstance, sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, TypeScriptCodeFactoryInstance> {
         new(gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptElementInstance;
         (gr: sys_dictionaryGlideRecord | sys_dictionary_overrideGlideRecord, factory?: TypeScriptCodeFactoryInstance): TypeScriptElementInstance;
     }
@@ -183,14 +453,17 @@ namespace x_44813_dev_ts_hlp {
     export type dts_moduleGlideRecord = dts_declGlideRecord & dts_moduleFields;
     export type dts_moduleReferenceElement = $$element.Reference<dts_moduleFields, dts_moduleGlideRecord>;
 
-    interface IDTSHelperPrototype extends ICustomClassPrototype1<IDTSHelperPrototype, "DTSHelper", GlideRecord | GlideElementReference> {
+    interface IDTSHelper {
         current: GlideRecord;
         getLibrary(): dts_libraryGlideRecord;
         getModule(): dts_moduleGlideRecord;
         getFullName(): string;
         getPathName(): string;
     }
-    interface IDTSHelperConstructor extends CustomClassConstructor1<IDTSHelperPrototype, Readonly<IDTSHelperPrototype>, GlideRecord | GlideElementReference> {
+    interface IDTSHelperPrototype extends IDTSHelper, ISnClassPrototype1<IDTSHelperPrototype, GlideRecord | GlideElementReference> {
+        type: "DTSHelper"
+    }
+    interface IDTSHelperConstructor extends ISnClassConstructor1<IDTSHelper, IDTSHelperPrototype, Readonly<IDTSHelper>, GlideRecord | GlideElementReference> {
         new(gr: GlideRecord | GlideElementReference): Readonly<IDTSHelperPrototype>;
         (gr: GlideRecord | GlideElementReference): Readonly<IDTSHelperPrototype>;
         TypeScriptChoice: ITypeScriptChoiceConstructor;
