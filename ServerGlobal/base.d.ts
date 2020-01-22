@@ -8031,12 +8031,12 @@ declare interface sys_dictionaryFields extends sys_metadataFields {
      * Dynamic default value
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_filter_option_dynamicFields, sys_filter_option_dynamicGlideRecord>>}
      */
-    dynamic_default_value: $$rhino.Nilable<$$property.generic.Reference<GlideRecord, GlideElementReference>>;
+    dynamic_default_value: $$rhino.Nilable<$$property.generic.Reference<GlideRecord, GlideRecord>>;
     /**
      * Dynamic ref qual
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_filter_option_dynamicFields, sys_filter_option_dynamicGlideRecord>>}
      */
-    dynamic_ref_qual: $$rhino.Nilable<$$property.generic.Reference<GlideRecord, GlideElementReference>>;
+    dynamic_ref_qual: $$rhino.Nilable<$$property.generic.Reference<GlideRecord, GlideRecord>>;
     /**
      * Column name
      * @type {$$rhino.Nilable<$$property.Element>}
@@ -8225,7 +8225,7 @@ declare interface sys_glide_objectFields extends sys_metadataFields {
      * Label
      * @type {$$rhino.Nilable<$$property.ranslatedField>}
      */
-    label: $$rhino.Nilable<$$property.ranslatedField>;
+    label: $$rhino.Nilable<$$property.TranslatedField>;
     /**
      * Name
      * @type {$$rhino.Nilable<$$property.Element>}

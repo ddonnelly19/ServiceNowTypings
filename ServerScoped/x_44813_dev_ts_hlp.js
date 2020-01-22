@@ -1,9 +1,8 @@
 /// <reference path="base.d.ts" />
 var x_44813_dev_ts_hlp;
 (function (x_44813_dev_ts_hlp) {
-    var DtsNode = (function () {
-        var $DtsNode = Class.create();
-        $DtsNode.NodeMapIterator = Class.create();
+    var DtsFactory = (function () {
+        var DtsNode = Class.create();
         function createMapPrototype(extended) {
             extended._items = [];
             extended.add = function (value) {
@@ -113,7 +112,7 @@ var x_44813_dev_ts_hlp;
                 }
                 return -1;
             };
-            extended.keys = function () { return new $DtsNode.NodeMapIterator(this); };
+            extended.keys = function () { return new $DtsFactory.NodeMapIterator(this); };
             extended.map = function (callbackfn, thisArg) { throw new Error("Method not implemented."); };
             extended.reduce = function (initialValue, callbackfn, thisArg) { throw new Error("Method not implemented."); };
             extended.set = function (value, index) {
@@ -146,7 +145,22 @@ var x_44813_dev_ts_hlp;
             extended.values = function () { return this._items.values(); };
             return extended;
         }
-        $DtsNode.NodeMapIterator.prototype = {
+        DtsNode.prototype = {
+            _key: "",
+            initialize: function (key) {
+                this._key = key;
+            },
+            type: "DtsNode"
+        };
+        var $DtsFactory = Object.extendsObject(DtsNode, createMapPrototype({
+            initialize: function () {
+                DtsNode.prototype.initialize.call(this, '');
+            },
+            type: 'DtsFactory'
+        }));
+        $DtsFactory.DtsNode = DtsNode;
+        $DtsFactory.NodeMapIterator = Class.create();
+        $DtsFactory.NodeMapIterator.prototype = {
             _index: -1,
             initialize: function (source) {
                 if (typeof source === "object" && source !== null)
@@ -162,22 +176,23 @@ var x_44813_dev_ts_hlp;
             },
             type: "NodeMapIterator"
         };
-        $DtsNode.Namespace = Object.extendsObject($DtsNode, createMapPrototype({
+        $DtsFactory.Namespace = Object.extendsObject(DtsNode, createMapPrototype({
             name: function () { return ""; },
             initialize: function (name) {
                 this.name = function () { return name; };
-                $DtsNode.prototype.initialize.call(this, "type:" + name);
+                DtsNode.prototype.initialize.call(this, "type:" + name);
             },
-            type: "DtsNamespace"
+            type: 'DtsNamespace'
         }));
-        $DtsNode.prototype = {
-            _key: "",
-            initialize: function (key) {
-                this._key = key;
+        $DtsFactory.Enum = Object.extendsObject2(DtsNode, {
+            name: function () { return ""; },
+            initialize: function (name, scalarType) {
+                this.name = function () { return name; };
+                DtsNode.prototype.initialize.call(this, "type:" + name);
             },
-            type: "DtsNode"
-        };
-        return $DtsNode;
+            type: "DtsEnum"
+        });
+        return $DtsFactory;
     })();
     var DTSHelper = (function () {
         var dtsHelper = Class.create();

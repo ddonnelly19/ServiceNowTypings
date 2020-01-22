@@ -1,52 +1,27 @@
 /// <reference path="base.d.ts" />
 
 namespace x_44813_dev_ts_hlp {
-    interface IDtsNode {
-    }
-    interface IDtsNodePrototype extends IDtsNode, ISnClassPrototype1<IDtsNodePrototype, string> {
+    interface IDtsNode extends ISnClassPrototype1<IDtsNode, "DtsNode", string> {
         _key: string;
-        _parent?: INodeMapPrototype<any, IDtsNodePrototype>;
-        type: "DtsNode";
+        _parent?: INodeMapPrototype<any, IDtsNode>;
     }
-    interface DtsNode extends Readonly<IDtsNode> {
 
-    }
-    interface IDtsNodeConstructor extends ISnClassConstructor1<IDtsNode, IDtsNodePrototype, DtsNode, string> {
+    type DtsNode = Readonly<Omit<IDtsNode, "_key" | "_parent">>;
+    interface IDtsNodeConstructor extends ISnClassConstructor1<IDtsNode, IDtsNode, DtsNode, string> {
         new(key: string): DtsNode;
         (key: string): DtsNode;
-        Namespace: IDtsNamespaceConstructor;
-        NodeMapIterator: INodeMapIteratorConstructor;
     }
-
-    interface IDtsNamespace {
-        name(): string;
-    }
-    interface IDtsNamespacePrototypeBase extends IDtsNamespace, ISnClassPrototype1<IDtsNamespacePrototype, string> {
-        type: "DtsNamespace";
-    }
-    type DtsNamespaceChildItem = DtsNamespace;
-    interface IDtsNamespacePrototype extends IDtsNamespacePrototypeBase, INodeMapPrototype<IDtsNamespacePrototype, DtsNamespaceChildItem & IDtsNamespacePrototype> {
-    }
-    interface DtsNamespace extends DtsNode, Readonly<IDtsNamespace>, INodeMap<DtsNamespace, DtsNamespaceChildItem> {
-
-    }
-    interface IDtsNamespaceConstructor extends ISnClassConstructor1<IDtsNamespace, IDtsNamespacePrototype, DtsNamespace, string> {
-        new(name: string): DtsNamespace;
-        (name: string): DtsNamespace;
-    }
-
     interface INodeMapIterator {
         next(): IteratorYieldResult<string> | IteratorReturnResult<any>;
-    }
-    interface INodeMapIteratorPrototype extends INodeMapIterator, ISnClassPrototype1<INodeMapIteratorPrototype, INodeMapPrototype<any, IDtsNodePrototype>> {
         _index: number;
-        _source?: INodeMapPrototype<any, IDtsNodePrototype>,
-        type: "NodeMapIterator";
+        _source?: INodeMapPrototype<any, IDtsNode>;
     }
-    interface NodeMapIterator extends Readonly<INodeMapIterator> { }
-    interface INodeMapIteratorConstructor extends ISnClassConstructor1<INodeMapIterator, INodeMapIteratorPrototype, NodeMapIterator, INodeMapPrototype<any, IDtsNodePrototype>> {
+    interface INodeMapIteratorPrototype extends INodeMapIterator, ISnClassPrototype1<INodeMapIteratorPrototype, "NodeMapIterator", INodeMapPrototype<any, IDtsNode>> {
     }
-    interface INodeMap<P extends INodeMap<P, V> & DtsNode, V extends DtsNode> {
+    type NodeMapIterator = Readonly<INodeMapIteratorPrototype>;
+    interface INodeMapIteratorConstructor extends ISnClassConstructor1<INodeMapIterator, INodeMapIteratorPrototype, NodeMapIterator, INodeMapPrototype<any, IDtsNode>> {
+    }
+    interface INodeMap<P extends INodeMap<P, V> & ISnClassPrototype & ISnPrototypeBase<IDtsNode>, V extends IDtsNode> {
         add(value: V): number;
         clear(): void;
         delete(index: number): void;
@@ -72,13 +47,64 @@ namespace x_44813_dev_ts_hlp {
         size(): number;
         values(): IterableIterator<V>;
     }
-    interface INodeMapPrototype<P extends INodeMapPrototype<P, N> & IDtsNodePrototype, N extends IDtsNodePrototype> extends IDtsNodePrototype, INodeMap<P, N> {
+    interface INodeMapPrototype<P extends INodeMapPrototype<P, N> & ISnClassPrototype & ISnPrototypeBase<IDtsNode>, N extends IDtsNode> extends INodeMap<P, N> {
         _items: N[];
     }
-    let DtsNode: IDtsNodeConstructor = (function (): IDtsNodeConstructor {
-        let $DtsNode: IDtsNodeConstructor = Class.create<IDtsNodeConstructor>();
-        $DtsNode.NodeMapIterator = Class.create<INodeMapIteratorConstructor>();
-        function createMapPrototype<E extends ISnClassPrototype, P extends E & INodeMapPrototype<P, N>, N extends IDtsNodePrototype>(extended: E): P {
+
+    interface IDtsFactoryBase extends ISnClassPrototype0<IDtsFactory, "DtsFactory"> {
+
+    }
+    interface IDtsFactory extends IDtsFactoryBase, ISnPrototypeBase<IDtsNode>, INodeMapPrototype<IDtsFactory, DtsNamespaceLevelChild> {
+
+    }
+    interface IDtsFactoryExtension extends IDtsFactoryBase {
+    }
+    interface IDtsFactoryPrototype extends IDtsFactoryExtension, IDtsFactory {
+    }
+
+    type DtsFactory = DtsNode & Readonly<IDtsFactoryPrototype>;
+    interface IDtsFactoryConstructor extends ISnClassConstructor0<IDtsFactory, IDtsFactoryPrototype, DtsFactory> {
+        new(): DtsFactory;
+        (): DtsFactory;
+        DtsNode: IDtsNodeConstructor;
+        NodeMapIterator: INodeMapIteratorConstructor;
+        Namespace: IDtsNamespaceConstructor;
+        Enum: IDtsEnumConstructor;
+    }
+
+    interface IDtsNamespaceBase extends ISnClassPrototype1<IDtsNamespace, 'DtsNamespace', string> {
+        name(): string;
+    }
+    interface IDtsNamespace extends IDtsNamespaceBase, ISnPrototypeBase<IDtsNode>, INodeMapPrototype<IDtsNamespace, DtsNamespaceLevelChild> {
+    }
+    interface IDtsNamespaceExtension extends IDtsNamespace {
+
+    }
+    interface IDtsNamespacePrototype extends IDtsNamespaceExtension, IDtsNamespace {
+    }
+    type DtsNamespace = DtsNode & Readonly<IDtsNamespacePrototype>;
+    interface IDtsNamespaceConstructor extends ISnClassConstructor1<IDtsNamespace, IDtsNamespacePrototype, DtsNamespace, string> {
+        new(name: string): DtsNamespace;
+        (name: string): DtsNamespace;
+    }
+
+    interface IDtsEnumBase extends ISnClassPrototype2<IDtsEnum, 'DtsEnum', string, string> {
+        name(): string;
+    }
+    interface IDtsEnum extends IDtsNamespaceBase, ISnPrototypeBase<IDtsNode>, INodeMapPrototype<IDtsEnum, DtsNamespaceLevelChild> {
+    }
+    interface IDtsEnumPrototype extends IDtsEnum {
+
+    }
+    type DtsEnum = DtsNode & Readonly<IDtsEnumPrototype>;
+    interface IDtsEnumConstructor extends ISnClassConstructor2<IDtsEnum, IDtsEnumPrototype, DtsEnum, string, string> {
+
+    }
+    type DtsNamespaceLevelChild = IDtsNamespacePrototype | IDtsEnumPrototype;
+
+    let DtsFactory: IDtsFactoryConstructor = (function (): IDtsFactoryConstructor {
+        let DtsNode: IDtsNodeConstructor = Class.create<IDtsNodeConstructor>();
+        function createMapPrototype<E extends ISnClassPrototype, P extends E & INodeMapPrototype<P, N>, N extends IDtsNode>(extended: E): P {
             (<P>extended)._items = [];
             (<P>extended).add = function (this: P, value: N): number {
                 if (typeof value !== "object" || value === null)
@@ -186,7 +212,7 @@ namespace x_44813_dev_ts_hlp {
                 }
                 return -1;
             };
-            (<P>extended).keys = function (this: P): INodeMapIterator { return new $DtsNode.NodeMapIterator(this); };
+            (<P>extended).keys = function (this: P): INodeMapIterator { return new $DtsFactory.NodeMapIterator(this); };
             (<P>extended).map = function (this: P, callbackfn: { (value: N, index: number, parent: P): any; }, thisArg?: any): any[] { throw new Error("Method not implemented."); };
             (<P>extended).reduce = function (this: P, initialValue: any, callbackfn: { (value: N, current: any, index: number, parent: P): any; }, thisArg?: any): any { throw new Error("Method not implemented."); };
             (<P>extended).set = function (this: P, value: N, index?: number): P {
@@ -218,9 +244,24 @@ namespace x_44813_dev_ts_hlp {
             (<P>extended).values = function (this: P): IterableIterator<N> { return this._items.values(); };
             return <P>extended;
         }
-        $DtsNode.NodeMapIterator.prototype = {
+        DtsNode.prototype = {
+            _key: "",
+            initialize: function (this: IDtsNode, key: string): void {
+                this._key = key;
+            },
+            type: "DtsNode"
+        };
+        let $DtsFactory: IDtsFactoryConstructor = Object.extendsObject<IDtsNodeConstructor, IDtsFactoryPrototype, IDtsFactoryConstructor>(DtsNode, createMapPrototype<IDtsFactoryPrototypeExtension, IDtsFactoryPrototype, IDtsNodePrototype>({
+            initialize: function (this: IDtsFactoryPrototype) {
+                DtsNode.prototype.initialize.call(this, '');
+            },
+            type: 'DtsFactory'
+        }));
+        $DtsFactory.DtsNode = DtsNode;
+        $DtsFactory.NodeMapIterator = Class.create<INodeMapIteratorConstructor>();
+        $DtsFactory.NodeMapIterator.prototype = {
             _index: -1,
-            initialize(this: INodeMapIteratorPrototype, source: INodeMapPrototype<any, IDtsNodePrototype>): void {
+            initialize(this: INodeMapIteratorPrototype, source: INodeMapPrototype<any, IDtsNode>): void {
                 if (typeof source === "object" && source !== null)
                     this._source = source;
             },
@@ -234,22 +275,23 @@ namespace x_44813_dev_ts_hlp {
             },
             type: "NodeMapIterator"
         }
-        $DtsNode.Namespace = Object.extendsObject<IDtsNodeConstructor, IDtsNamespacePrototype, IDtsNamespaceConstructor>($DtsNode, createMapPrototype<IDtsNamespacePrototypeBase, IDtsNamespacePrototype, DtsNamespaceChildItem & IDtsNamespacePrototype>({
-            name: function (): string { return ""; },
+        $DtsFactory.Namespace = Object.extendsObject<IDtsNodeConstructor, IDtsNamespacePrototypeExtension, IDtsNamespaceConstructor>(DtsNode, createMapPrototype<IDtsNamespacePrototypeExtension, IDtsNamespacePrototype, IDtsNodePrototype>({
+            name: function () { return ""; },
             initialize: function (this: IDtsNamespacePrototype, name: string): void {
-                this.name = function () { return name; }
-                $DtsNode.prototype.initialize.call(this, "type:" + name);
+                this.name = function () { return name; };
+                DtsNode.prototype.initialize.call(this, "type:" + name);
             },
-            type: "DtsNamespace"
+            type: 'DtsNamespace'
         }));
-        $DtsNode.prototype = {
-            _key: "",
-            initialize: function (this: IDtsNodePrototype, key: string): void {
-                this._key = key;
+        $DtsFactory.Enum = Object.extendsObject2<IDtsNodePrototype, IDtsEnumPrototype, IDtsEnumConstructor>(DtsNode, {
+            name: function () { return ""; },
+            initialize(name: string, scalarType: string): void {
+                this.name = function () { return name; };
+                DtsNode.prototype.initialize.call(this, "type:" + name);
             },
-            type: "DtsNode"
-        }
-        return $DtsNode;
+            type: "DtsEnum"
+        });
+        return $DtsFactory;
     })();
 
 
