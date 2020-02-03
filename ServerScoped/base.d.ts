@@ -1534,7 +1534,7 @@ declare namespace Packages {
                  */
                 set(e: E): void;
             }
-            export abstract class List<E> implements Collection<E> {
+            export interface List<E> extends Collection<E> {
                 /**
                  * Ensures that this collection contains the specified element.
                  */
@@ -1847,8 +1847,8 @@ declare namespace Packages {
                  */
                 setValue(value: V): V;
             }
-            export abstract class Set<E> implements Collection<E> { }
-            export abstract class Map<K, V> {
+            export interface Set<E> extends Collection<E> { }
+            export interface Map<K, V> {
                 /**
                  * Removes all of the mappings from this map.
                  */
@@ -2948,7 +2948,7 @@ declare class GlideTime {
  */
 declare class GlideElement extends $$element.StringBased<string, GlideElement, string> { protected constructor(); }
 declare class GlideElementBoolean extends Packages.java.lang.Boolean implements $$element.IValueSpecific<boolean, GlideElementBoolean, $$rhino.BooleanString> {
-    protected constructor(); 
+    protected constructor();
 
     /**
      * Determines if the user's role permits the creation of new records in this field.
@@ -3144,7 +3144,7 @@ declare class GlideElementNameValue extends $$element.StringBased<string, GlideE
 declare class GlideElementNumeric extends $$element.StringBased<number, GlideElementNumeric, string> implements $$element.IValueSpecific<number, GlideElementNumeric, string> { protected constructor(); }
 declare class GlideElementPassword extends $$element.StringBased<string, GlideElementPassword, string> { protected constructor(); }
 declare class GlideElementPassword2 extends $$element.StringBased<string, GlideElementPassword2, string> { protected constructor(); }
-declare class GlideElementPrice extends $$element.StringBased<number, GlideElementPrice, string> { protected constructor();  }
+declare class GlideElementPrice extends $$element.StringBased<number, GlideElementPrice, string> { protected constructor(); }
 
 /**
  * A Glide element that references another GlideRecord.
@@ -3152,7 +3152,7 @@ declare class GlideElementPrice extends $$element.StringBased<number, GlideEleme
  * @todo Verify whether Packages.com.glide.script.glide_elements.GlideReference exists
  */
 declare class GlideElementReference extends $$element.StringBased<string, GlideElementReference, string> implements $$element.IReference<IGlideTableProperties, GlideRecord>, IGlideTableProperties {
-    protected constructor(); 
+    protected constructor();
     /**
      * Created by
      * @type {$$property.Element}
@@ -4812,14 +4812,14 @@ declare interface CustomClassConstructor0<B extends ICustomClassBase<B, string>,
      * @memberof CustomClassConstructor0
      */
     new(): I;
-    
+
     /**
      * Creates an instance of CustomClassConstructor0.
      * @param {A} arg - The constructor argument.
      * @memberof CustomClassConstructor0
      */
     (): I;
-    
+
     /**
      * The prototype that will be used to create the new object.
      * @type {P}
@@ -4844,7 +4844,7 @@ declare interface CustomClassConstructor1<B extends ICustomClassBase<B, string>,
      * @returns {I} - The new object instance.
      */
     new(arg: A): I;
-    
+
     /**
      * Creates an instance of CustomClassConstructor1.
      * @param {A} arg - The constructor argument.
@@ -4852,7 +4852,7 @@ declare interface CustomClassConstructor1<B extends ICustomClassBase<B, string>,
      * @returns {I} - The new object instance.
      */
     (arg: A): I;
-    
+
     /**
      * The prototype that will be used to create the new object.
      * @type {P}
@@ -4879,7 +4879,7 @@ declare interface CustomClassConstructor2<B extends ICustomClassBase<B, string>,
      * @returns {I} - The new object instance.
      */
     new(arg0: A0, arg1: A1): I;
-    
+
     /**
      * Creates an instance of CustomClassConstructor2.
      * @param {A0} arg0 - The first constructor argument.
@@ -4888,7 +4888,7 @@ declare interface CustomClassConstructor2<B extends ICustomClassBase<B, string>,
      * @returns {I} - The new object instance.
      */
     (arg0: A0, arg1: A1): I;
-    
+
     /**
      * The prototype that will be used to create the new object.
      * @type {P}
@@ -4917,7 +4917,7 @@ declare interface CustomClassConstructor3<B extends ICustomClassBase<B, string>,
      * @returns {I} - The new object instance.
      */
     new(arg0: A0, arg1: A1, arg2: A2): I;
-    
+
     /**
      * Creates an instance of CustomClassConstructor3.
      * @param {A0} arg0 - The first constructor argument.
@@ -4927,7 +4927,7 @@ declare interface CustomClassConstructor3<B extends ICustomClassBase<B, string>,
      * @returns {I} - The new object instance.
      */
     (arg0: A0, arg1: A1, arg2: A2): I;
-    
+
     /**
      * The prototype that will be used to create the new object.
      * @type {P}
@@ -4969,13 +4969,13 @@ declare interface CustomClassConstructor4<B extends ICustomClassBase<B, string>,
      * @returns {I} - The new object instance.
      */
     (arg0: A0, arg1: A1, arg2: A2, arg3: A3): I;
-    
+
     /**
      * The prototype that will be used to create the new object.
      * @type {P}
      * @memberof CustomClassConstructor4
      */
-    prototype: P; 
+    prototype: P;
 }
 
 /**
@@ -4993,7 +4993,7 @@ declare interface CustomClassConstructorN<B extends ICustomClassBase<B, string>,
      * @returns {I} - The new object instance.
      */
     new(...args: any[]): I;
-    
+
     /**
      * Creates an instance of CustomClassConstructorN.
      * @param {...any[]} args - The constructor arguments.
@@ -5035,15 +5035,15 @@ declare var Class: {
 
 /**
  *
- * @type {("not requested" | "requested" | "approved" | "rejected")}
+ * @type {("not requested" | "cancelled" | "requested" | "duplicate" | "not_required" | "approved" | "rejected")}
  */
-declare type TaskAppproval = "not requested" | "requested" | "approved" | "rejected";
+declare type TaskAppproval = "not requested" | "cancelled" | "requested" | "duplicate" | "not_required" | "approved" | "rejected";
 
 /**
- *
- * @type {("email" | "phone" | "self-service" | "walk-in")}
+ * email=Email; endpoint_security=Endpoint Security; ids_ips=IDS/IPS; network_monitoring=Network Monitoring; phone=Phone; self-service=Self-service; siem=SIEM; virtual_agent=Virtual Agent; vulnerability_response=Vulnerability Response; walk-in=Walk-in
+ * @type {("email" | "endpoint_security" | "ids_ips" | "network_monitoring" | "phone" | "self-service" | "siem" | "virtual_agent" | "vulnerability_response" | "walk-in")}
  */
-declare type TaskContactType = "email" | "phone" | "self-service" | "walk-in";
+declare type TaskContactType = "email" | "endpoint_security" | "ids_ips" | "network_monitoring" | "phone" | "self-service" | "siem" | "virtual_agent" | "vulnerability_response" | "walk-in";
 
 /**
  *
@@ -6740,10 +6740,10 @@ declare interface taskFields extends IExtendedGlideTableProperties {
 
     /**
      * Approval
-     * @type {$$rhino.Nilable<$$property.Element>}
+     * @type {$$rhino.Nilable<$$property.generic.Element<TaskAppproval>>}
      * @memberof taskFields
      */
-    approval: $$rhino.Nilable<$$property.Element>;
+    approval: $$rhino.Nilable<$$property.generic.Element<TaskAppproval>>;
 
     /**
      * Approval history
@@ -6856,10 +6856,10 @@ declare interface taskFields extends IExtendedGlideTableProperties {
 
     /**
      * Contact type
-     * @type {$$rhino.Nilable<$$property.Element>}
+     * @type {$$rhino.Nilable<$$property.generic.Element<TaskContactType>>}
      * @memberof taskFields
      */
-    contact_type: $$rhino.Nilable<$$property.Element>;
+    contact_type: $$rhino.Nilable<$$property.generic.Element<TaskContactType>>;
 
     /**
      * Contract
@@ -7095,7 +7095,7 @@ declare interface taskFields extends IExtendedGlideTableProperties {
      * Upon approval
      * @type {$$rhino.Nilable<$$property.generic.Element<("proceed" | "do_nothing")>>}
      * @memberof taskFields
-     * @description "proceed"=""; "do_nothing"=""
+     * @description "proceed"="Proceed to Next Task"; "do_nothing"="Wait for a User to Close this task"
      */
     upon_approval: $$rhino.Nilable<$$property.generic.Element<("proceed" | "do_nothing")>>;
 
@@ -7103,7 +7103,7 @@ declare interface taskFields extends IExtendedGlideTableProperties {
      * Upon reject
      * @type {$$rhino.Nilable<$$property.generic.Element<("cancel" | "goto")>>}
      * @memberof taskFields
-     * @description "cancel"=""; "goto"=""
+     * @description "cancel"="Cancel all future Tasks"; "goto"="Go to a previous Task"
      */
     upon_reject: $$rhino.Nilable<$$property.generic.Element<("cancel" | "goto")>>;
 
@@ -7421,10 +7421,10 @@ declare interface change_requestFields extends taskFields {
 
     /**
      * Close code
-     * @type {$$rhino.Nilable<$$property.Element>}
+     * @type {$$rhino.Nilable<$$property.generic.Element<IncidentCloseCode>>}
      * @memberof change_requestFields
      */
-    close_code: $$rhino.Nilable<$$property.Element>;
+    close_code: $$rhino.Nilable<$$property.generic.Element<IncidentCloseCode>>;
 
     /**
      * Conflict last run
@@ -11843,7 +11843,7 @@ declare interface change_request_imacFields extends change_requestFields {
      * @memberof change_request_imacFields
      */
     move_user: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
-    
+
     /**
      * Network component
      * @type {$$property.Boolean}
