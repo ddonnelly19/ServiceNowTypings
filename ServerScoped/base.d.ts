@@ -1,3 +1,7 @@
+/**
+ * Helper types for relating primitive JavaScript and Java/Rhino types.
+ * @namespace $$rhino
+*/
 declare namespace $$rhino {
     /**
      * Utility type to include empty string values as well as well as null and undefined values.
@@ -14,9 +18,9 @@ declare namespace $$rhino {
     export type BooleanString = "true" | "false";
     /**
      * Utility type for javascript primitive string values and Java string-like objects.
-     * @typedef {(string | Packages.java.lang.String | Packages.java.lang.Character)} String
+     * @typedef {(string | Packages.java.lang.CharSequence | Packages.java.lang.Character)} String
      */
-    export type String = string | Packages.java.lang.String | Packages.java.lang.Character;
+    export type String = string | Packages.java.lang.CharSequence | Packages.java.lang.Character;
     /**
      * Utility type for javascript primitive boolean values and Java Boolean objects.
      * @typedef {(boolean | Packages.java.lang.Boolean)} Boolean
@@ -31,19 +35,19 @@ declare namespace $$rhino {
     export type NumberLike<N extends number, S extends ExcludeEmptyString<string>> = N | Packages.java.lang.Number | S;
     /**
      * Utility type for javascript arrays and Java Collection objects.
-     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     * @typedef {(E[] | Packages.java.util.Collection<E>)} EmptyString
      */
     export type Collection<E> = E[] | Packages.java.util.Collection<E>;
     /**
      * Utility type for javascript arrays and Java List objects.
-     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     * @typedef {(E[] | Packages.java.util.List<E)} EmptyString
      */
     export type List<E> = E[] | Packages.java.util.List<E>;
     /**
      * Utility type for javascript primitive string values and Java string-like objects that are empty.
-     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     * @typedef {("" | (Packages.java.lang.CharSequence & { length(): 0; }))} EmptyString
      */
-    export type EmptyString = "" | (Packages.java.lang.String & { size(): 0; });
+    export type EmptyString = "" | (Packages.java.lang.CharSequence & { length(): 0; });
     /**
      * Utility type to include empty string values.
      * @typedef {(S | "")} IncludeEmptyString
@@ -56,9 +60,13 @@ declare namespace $$rhino {
      * @template S - Type of value that is to exclude empty string values.
      */
     export type ExcludeEmptyString<S> = S extends EmptyString ? never : S;
-    export type StringValue<S extends string> = S | Packages.java.lang.String;
+    export type StringValue<S extends string> = S | Packages.java.lang.CharSequence | Packages.java.lang.Character;
 }
 
+/**
+ * Helper types for GlideElement and GlideRecord objects.
+ * @namespace $$element
+ */
 declare namespace $$element {
     /**
      * Defines members that are common to both GlideRecord and GlideElement objects
@@ -314,6 +322,10 @@ declare namespace $$element {
     export type Reference<P extends IGlideTableProperties, R extends P & GlideRecord> = IReference<P, R> & GlideElementReference & P;
 }
 
+/**
+ * Helper types for GlideElement and GlideRecord properties.
+ * @namespace $$property
+ */
 declare namespace $$property {
     export type Boolean = GlideElementBoolean | $$rhino.BooleanLike;
     export type BreakdownElement = GlideElementBreakdownElement | $$rhino.String;
@@ -518,30 +530,12 @@ declare type NumberQueryOperator = "=" | "!=" | ">" | ">=" | "<" | "<=";
  */
 declare type QueryOperator = StringQueryOperator | NumberQueryOperator;
 
-declare interface IJavaArray<E> extends Packages.java.util.List<E> {
+declare interface IJavaArray<E> {
     /**
-     * Returns a shallow copy of this ArrayList instance.
-     * @returns {*}
+     * Gets the length of the array.
      */
-    clone(): any;
-    ///**
-    // * Returns true if this list contains the specified element.
-    // * @returns {boolean}
-    // */
-    //contains(o: any): boolean;
-    /**
-     * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
-     */
-    ensureCapacity(minCapacity: Packages.java.lang.Integer): void;
-    /**
-     * Returns the element at the specified position in this list.
-     * @returns {E}
-     */
-    get(index: Packages.java.lang.Integer): E;
-    /**
-     * Trims the capacity of this ArrayList instance to be the list's current size.
-     */
-    trimToSize(): void;
+    readonly length: Packages.java.lang.Integer;
+    [n: number]: E;
 }
 
 declare namespace Packages {
@@ -552,375 +546,486 @@ declare namespace Packages {
              * @export
              * @class Object
              */
-            export class Object { protected constructor(); }
+            export class Object {
+                protected constructor();
+                /**
+                 * Indicates whether some other object is "equal to" this one.
+                 * @param obj {object}
+                 * @returns {Boolean}
+                 */
+                equals(obj: object): Boolean;
+
+                /**
+                 * Returns a hash code value for the object.
+                 * @returns {Integer}
+                 */
+                hashCode(): Integer;
+
+                /**
+                 * Returns a string representation of the object.
+                 * @returns {String}
+                 */
+                toString(): String;
+            }
+            export interface Comparable<T> {
+                /**
+                 * Compares this object with the specified object for order.
+                 * @param o {T}
+                 * @returns {Integer}
+                 */
+                compareTo(o: T): Integer;
+
+                /**
+                 * Converts this Date object to a String of the form:
+                 * @returns {lang.String}
+                 */
+                toString(): lang.String;
+            }
+            export interface CharSequence {
+                /**
+                 * Returns the char value at the specified index.
+                 * @param index {$$rhino.Number}
+                 * @returns {Character}
+                 */
+                charAt(index: $$rhino.Number): Character;
+
+                /**
+                 * Returns the length of this character sequence.
+                 * @returns {Integer}
+                 */
+                length(): Integer;
+
+                /**
+                 * Returns a new CharSequence that is a subsequence of this sequence.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {CharSequence}
+                 */
+                subSequence(start: $$rhino.Number, end: $$rhino.Number): CharSequence;
+
+                /**
+                 * Returns a string containing the characters in this sequence in the same order as this sequence.
+                 * @returns {String}
+                 */
+                toString(): String;
+            }
+            export interface Iterable<T> {
+                /**
+                 * Returns an iterator over the elements in this collection in proper sequence.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): util.Iterator<T>;
+            }
+            export class Character extends Object implements Comparable<Character> {
+                protected constructor();
+                /**
+                 * Returns the value of this Character object.
+                 * @returns {Character}
+                 */
+                charValue(): Character;
+
+                /**
+                 * Compares two Character objects numerically.
+                 * @param anotherCharacter {$$rhino.String}
+                 * @returns {Integer}
+                 */
+                compareTo(anotherCharacter: $$rhino.String): Integer;
+            }
             /**
              * Java String object.
              * @export
              * @class String
              * @extends {Object}
              */
-            export class String extends Object {
+            export class String extends Object implements Comparable<String>, CharSequence {
                 protected constructor();
                 /**
                  * Returns the char value at the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param index {$$rhino.Number}
+                 * @returns {Character}
                  */
-                charAt(index: Integer): number;
+                charAt(index: $$rhino.Number): Character;
+
                 /**
                  * Returns the character (Unicode code point) at the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param index {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                codePointAt(index: Integer): number;
+                codePointAt(index: $$rhino.Number): Integer;
+
                 /**
                  * Returns the character (Unicode code point) before the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param index {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                codePointBefore(index: Integer): number;
+                codePointBefore(index: $$rhino.Number): Integer;
+
                 /**
                  * Returns the number of Unicode code points in the specified text range of this String.
-                 * @param {number} beginIndex -
-                 * @param {number} endIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param beginIndex {$$rhino.Number}
+                 * @param endIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                codePointCount(beginIndex: number, endIndex: number): number;
+                codePointCount(beginIndex: $$rhino.Number, endIndex: $$rhino.Number): Integer;
+
                 /**
                  * Compares two strings lexicographically.
-                 * @param {String} anotherString -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param anotherString {$$rhino.String}
+                 * @returns {Integer}
                  */
-                compareTo(anotherString: String): number;
+                compareTo(anotherString: $$rhino.String): Integer;
+
                 /**
                  * Compares two strings lexicographically, ignoring case differences.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
                  */
-                compareToIgnoreCase(str: String): number;
+                compareToIgnoreCase(str: $$rhino.String): Integer;
+
                 /**
                  * Concatenates the specified string to the end of this string.
-                 * @param {String} str -
+                 * @param str {$$rhino.String}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                concat(str: String): String;
+                concat(str: $$rhino.String): String;
+
+                /**
+                 * Returns true if and only if this string contains the specified sequence of char values.
+                 * @param s {CharSequence}
+                 * @returns {Boolean}
+                 */
+                contains(s: CharSequence): Boolean;
+
+                /**
+                 * Compares this string to the specified CharSequence.
+                 * @param cs {CharSequence}
+                 * @returns {Boolean}
+                 */
+                contentEquals(cs: CharSequence): Boolean;
+
+                /**
+                 * Compares this string to the specified StringBuffer.
+                 * @param sb {StringBuffer}
+                 * @returns {Boolean}
+                 */
+                contentEquals(sb: StringBuffer): Boolean;
+
                 /**
                  * Tests if this string ends with the specified suffix.
-                 * @param {String} suffix -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param suffix {$$rhino.String}
+                 * @returns {Boolean}
                  */
-                endsWith(suffix: String): boolean;
-                /**
-                 * Compares this string to the specified object.
-                 * @param {Object} anObject -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                equals(anObject: Object): boolean;
+                endsWith(suffix: $$rhino.String): Boolean;
+
                 /**
                  * Compares this String to another String, ignoring case considerations.
-                 * @param {String} anotherString -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param anotherString {$$rhino.String}
+                 * @returns {Boolean}
                  */
-                equalsIgnoreCase(anotherString: String): boolean;
+                equalsIgnoreCase(anotherString: $$rhino.String): Boolean;
+
                 /**
                  * Encodes this String into a sequence of bytes using the platform's default charset, storing the result into a new byte array.
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
+                 * @returns {IJavaArray<Byte>}
                  */
-                getBytes(): IJavaArray<number>;
+                getBytes(): IJavaArray<Byte>;
+
                 /**
                  * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
-                 * @param {String} charsetName -
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
+                 * @param charsetName {$$rhino.String}
+                 * @returns {IJavaArray<Byte>}
                  */
-                getBytes(charsetName: String): IJavaArray<number>;
+                getBytes(charsetName: $$rhino.String): IJavaArray<Byte>;
+
                 /**
                  * Copies characters from this string into the destination character array.
-                 * @param {number} srcBegin -
-                 * @param {number} srcEnd -
-                 * @param {IJavaArray<number>} dst -
-                 * @param {number} dstBegin -
-                 * @memberof {String}
+                 * @param srcBegin {$$rhino.Number}
+                 * @param srcEnd {$$rhino.Number}
+                 * @param dst {IJavaArray<$$rhino.String>}
+                 * @param dstBegin {$$rhino.Number}
                  */
-                getChars(srcBegin: number, srcEnd: number, dst: IJavaArray<number>, dstBegin: number): void;
-                /**
-                 * Returns a hash code for this string.
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                hashCode(): number;
+                getChars(srcBegin: $$rhino.Number, srcEnd: $$rhino.Number, dst: IJavaArray<$$rhino.String>, dstBegin: $$rhino.Number): void;
+
                 /**
                  * Returns the index within this string of the first occurrence of the specified character.
-                 * @param {number} ch -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param ch {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                indexOf(ch: number): number;
+                indexOf(ch: $$rhino.Number): Integer;
+
                 /**
                  * Returns the index within this string of the first occurrence of the specified character, starting the search at the specified index.
-                 * @param {number} ch -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param ch {$$rhino.Number}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                indexOf(ch: number, fromIndex: number): number;
+                indexOf(ch: $$rhino.Number, fromIndex: $$rhino.Number): Integer;
+
                 /**
                  * Returns the index within this string of the first occurrence of the specified substring.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
                  */
-                indexOf(str: String): number;
+                indexOf(str: $$rhino.String): Integer;
+
                 /**
                  * Returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
-                 * @param {String} str -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                indexOf(str: String, fromIndex: number): number;
+                indexOf(str: $$rhino.String, fromIndex: $$rhino.Number): Integer;
+
                 /**
                  * Returns a canonical representation for the string object.
                  * @returns {String}
-                 * @memberof {String}
                  */
                 intern(): String;
+
                 /**
                  * Returns true if, and only if, length() is 0.
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @returns {Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): Boolean;
+
                 /**
                  * Returns the index within this string of the last occurrence of the specified character.
-                 * @param {number} ch -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param ch {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                lastIndexOf(ch: number): number;
+                lastIndexOf(ch: $$rhino.Number): Integer;
+
                 /**
                  * Returns the index within this string of the last occurrence of the specified character, searching backward starting at the specified index.
-                 * @param {number} ch -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param ch {$$rhino.Number}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                lastIndexOf(ch: number, fromIndex: number): number;
+                lastIndexOf(ch: $$rhino.Number, fromIndex: $$rhino.Number): Integer;
+
                 /**
                  * Returns the index within this string of the last occurrence of the specified substring.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
                  */
-                lastIndexOf(str: String): number;
+                lastIndexOf(str: $$rhino.String): Integer;
+
                 /**
                  * Returns the index within this string of the last occurrence of the specified substring, searching backward starting at the specified index.
-                 * @param {String} str -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                lastIndexOf(str: String, fromIndex: number): number;
+                lastIndexOf(str: $$rhino.String, fromIndex: $$rhino.Number): Integer;
+
                 /**
                  * Returns the length of this string.
-                 * @returns {number}
-                 * @memberof {String}
+                 * @returns {Integer}
                  */
-                length(): number;
+                length(): Integer;
+
                 /**
                  * Tells whether or not this string matches the given regular expression.
-                 * @param {String} regex -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param regex {$$rhino.String}
+                 * @returns {Boolean}
                  */
-                matches(regex: String): boolean;
+                matches(regex: $$rhino.String): Boolean;
+
                 /**
                  * Returns the index within this String that is offset from the given index by codePointOffset code points.
-                 * @param {number} index -
-                 * @param {number} codePointOffset -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param index {$$rhino.Number}
+                 * @param codePointOffset {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                offsetByCodePoints(index: Integer, codePointOffset: number): number;
+                offsetByCodePoints(index: $$rhino.Number, codePointOffset: $$rhino.Number): Integer;
+
                 /**
                  * Tests if two string regions are equal.
-                 * @param {boolean} ignoreCase -
-                 * @param {number} toffset -
-                 * @param {String} other -
-                 * @param {number} ooffset -
-                 * @param {number} len -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param ignoreCase {$$rhino.Boolean}
+                 * @param toffset {$$rhino.Number}
+                 * @param other {$$rhino.String}
+                 * @param ooffset {$$rhino.Number}
+                 * @param len {$$rhino.Number}
+                 * @returns {Boolean}
                  */
-                regionMatches(ignoreCase: boolean, toffset: number, other: String, ooffset: number, len: number): boolean;
+                regionMatches(ignoreCase: $$rhino.Boolean, toffset: $$rhino.Number, other: $$rhino.String, ooffset: $$rhino.Number, len: $$rhino.Number): Boolean;
+
                 /**
                  * Tests if two string regions are equal.
-                 * @param {number} toffset -
-                 * @param {String} other -
-                 * @param {number} ooffset -
-                 * @param {number} len -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param toffset {$$rhino.Number}
+                 * @param other {$$rhino.String}
+                 * @param ooffset {$$rhino.Number}
+                 * @param len {$$rhino.Number}
+                 * @returns {Boolean}
                  */
-                regionMatches(toffset: number, other: String, ooffset: number, len: number): boolean;
+                regionMatches(toffset: $$rhino.Number, other: $$rhino.String, ooffset: $$rhino.Number, len: $$rhino.Number): Boolean;
+
                 /**
                  * Returns a new string resulting from replacing all occurrences of oldChar in this string with newChar.
-                 * @param {number} oldChar -
-                 * @param {number} newChar -
+                 * @param oldChar {$$rhino.String}
+                 * @param newChar {$$rhino.String}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                replace(oldChar: number, newChar: number): String;
+                replace(oldChar: $$rhino.String, newChar: $$rhino.String): String;
+
+                /**
+                 * Replaces each substring of this string that matches the literal target sequence with the specified literal replacement sequence.
+                 * @param target {CharSequence}
+                 * @param replacement {CharSequence}
+                 * @returns {String}
+                 */
+                replace(target: CharSequence, replacement: CharSequence): String;
+
                 /**
                  * Replaces each substring of this string that matches the given regular expression with the given replacement.
-                 * @param {String} regex -
-                 * @param {String} replacement -
+                 * @param regex {$$rhino.String}
+                 * @param replacement {$$rhino.String}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                replaceAll(regex: String, replacement: String): String;
+                replaceAll(regex: $$rhino.String, replacement: $$rhino.String): String;
+
                 /**
                  * Replaces the first substring of this string that matches the given regular expression with the given replacement.
-                 * @param {String} regex -
-                 * @param {String} replacement -
+                 * @param regex {$$rhino.String}
+                 * @param replacement {$$rhino.String}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                replaceFirst(regex: String, replacement: String): String;
+                replaceFirst(regex: $$rhino.String, replacement: $$rhino.String): String;
+
                 /**
                  * Splits this string around matches of the given regular expression.
-                 * @param {String} regex -
+                 * @param regex {$$rhino.String}
                  * @returns {IJavaArray<String>}
-                 * @memberof {String}
                  */
-                split(regex: String): IJavaArray<String>;
+                split(regex: $$rhino.String): IJavaArray<String>;
+
                 /**
                  * Splits this string around matches of the given regular expression.
-                 * @param {String} regex -
-                 * @param {number} limit -
+                 * @param regex {$$rhino.String}
+                 * @param limit {$$rhino.Number}
                  * @returns {IJavaArray<String>}
-                 * @memberof {String}
                  */
-                split(regex: String, limit: number): IJavaArray<String>;
+                split(regex: $$rhino.String, limit: $$rhino.Number): IJavaArray<String>;
+
                 /**
                  * Tests if this string starts with the specified prefix.
-                 * @param {String} prefix -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param prefix {$$rhino.String}
+                 * @returns {Boolean}
                  */
-                startsWith(prefix: String): boolean;
+                startsWith(prefix: $$rhino.String): Boolean;
+
                 /**
                  * Tests if the substring of this string beginning at the specified index starts with the specified prefix.
-                 * @param {String} prefix -
-                 * @param {number} toffset -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param prefix {$$rhino.String}
+                 * @param toffset {$$rhino.Number}
+                 * @returns {Boolean}
                  */
-                startsWith(prefix: String, toffset: number): boolean;
+                startsWith(prefix: $$rhino.String, toffset: $$rhino.Number): Boolean;
+
+                /**
+                 * Returns a new character sequence that is a subsequence of this sequence.
+                 * @param beginIndex {$$rhino.Number}
+                 * @param endIndex {$$rhino.Number}
+                 * @returns {CharSequence}
+                 */
+                subSequence(beginIndex: $$rhino.Number, endIndex: $$rhino.Number): CharSequence;
+
                 /**
                  * Returns a new string that is a substring of this string.
-                 * @param {number} beginIndex -
+                 * @param beginIndex {$$rhino.Number}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                substring(beginIndex: number): String;
+                substring(beginIndex: $$rhino.Number): String;
+
                 /**
                  * Returns a new string that is a substring of this string.
-                 * @param {number} beginIndex -
-                 * @param {number} endIndex -
+                 * @param beginIndex {$$rhino.Number}
+                 * @param endIndex {$$rhino.Number}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                substring(beginIndex: number, endIndex: number): String;
+                substring(beginIndex: $$rhino.Number, endIndex: $$rhino.Number): String;
+
                 /**
                  * Converts this string to a new character array.
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
+                 * @returns {IJavaArray<Character>}
                  */
-                toCharArray(): IJavaArray<number>;
+                toCharArray(): IJavaArray<Character>;
+
                 /**
                  * Converts all of the characters in this String to lower case using the rules of the default locale.
                  * @returns {String}
-                 * @memberof {String}
                  */
                 toLowerCase(): String;
+
                 /**
-                 * This object (which is already a string!) is itself returned.
+                 * Converts all of the characters in this String to lower case using the rules of the given Locale.
+                 * @param locale {Locale}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                toString(): String;
+                toLowerCase(locale: util.Locale): String;
+
                 /**
                  * Converts all of the characters in this String to upper case using the rules of the default locale.
                  * @returns {String}
-                 * @memberof {String}
                  */
                 toUpperCase(): String;
+
+                /**
+                 * Converts all of the characters in this String to upper case using the rules of the given Locale.
+                 * @param locale {Locale}
+                 * @returns {String}
+                 */
+                toUpperCase(locale: util.Locale): String;
+
                 /**
                  * Returns a copy of the string, with leading and trailing whitespace omitted.
                  * @returns {String}
-                 * @memberof {String}
                  */
                 trim(): String;
-            }
-            /**
-             * Java Character object.
-             * @export
-             * @class Character
-             * @extends {Object}
-             */
-            export class Character extends Object {
-                protected constructor();
-                /**
-                 * Returns the value of this Character object.
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                charValue(): number;
-                /**
-                 * Compares two Character objects numerically.
-                 * @param {Character} anotherCharacter -
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                compareTo(anotherCharacter: Character): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Character}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns a hash code for this Character; equal to the result of invoking charValue().
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns a String object representing this Character's value.
-                 * @returns {String}
-                 * @memberof {Character}
-                 */
-                toString(): String;
             }
             /**
              * Java Number base object.
              * @export
              * @class Object
              */
-            export class Number extends Object { protected constructor(); }
+            export abstract class Number extends Object {
+                protected constructor();
+                /**
+                 * Returns the value of the specified number as a byte.
+                 * @returns {Byte}
+                 */
+                byteValue(): Byte;
+
+                /**
+                 * Returns the value of the specified number as a double.
+                 * @returns {Double}
+                 */
+                doubleValue(): Double;
+
+                /**
+                 * Returns the value of the specified number as a float.
+                 * @returns {Float}
+                 */
+                floatValue(): Float;
+
+                /**
+                 * Returns the value of the specified number as an int.
+                 * @returns {Integer}
+                 */
+                intValue(): Integer;
+
+                /**
+                 * Returns the value of the specified number as a long.
+                 * @returns {Long}
+                 */
+                longValue(): Long;
+
+                /**
+                 * Returns the value of the specified number as a short.
+                 * @returns {Short}
+                 */
+                shortValue(): Short;
+            }
             export class Boolean extends Object {
                 protected constructor();
                 /**
@@ -936,25 +1041,6 @@ declare namespace Packages {
                  * @memberof {Boolean}
                  */
                 compareTo(b: Boolean): number;
-                /**
-                 * Returns true if and only if the argument is not null and is a Boolean object that represents the same boolean value as this object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Boolean}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns a hash code for this Boolean object.
-                 * @returns {number}
-                 * @memberof {Boolean}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns a String object representing this Boolean's value.
-                 * @returns {String}
-                 * @memberof {Boolean}
-                 */
-                toString(): String;
             }
             /**
              * Java Integer object.
@@ -962,70 +1048,15 @@ declare namespace Packages {
              * @class Integer
              * @extends {Object}
              */
-            export class Integer extends Number {
+            export class Integer extends Number implements Comparable<Integer> {
                 protected constructor();
-                /**
-                 * Returns the value of this Integer as a byte.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                byteValue(): number;
+
                 /**
                  * Compares two Integer objects numerically.
-                 * @param {Integer} anotherInteger -
-                 * @returns {number}
-                 * @memberof {Integer}
+                 * @param anotherInteger {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherInteger: Integer): number;
-                /**
-                 * Returns the value of this Integer as a double.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Integer}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the value of this Integer as a float.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Integer.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Integer as an int.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Integer as a long.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Integer as a short.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Integer's value.
-                 * @returns {String}
-                 * @memberof {Integer}
-                 */
-                toString(): String;
+                compareTo(anotherInteger: $$rhino.Number): Integer;
             }
             /**
              * Java Long object.
@@ -1033,70 +1064,15 @@ declare namespace Packages {
              * @class Long
              * @extends {Object}
              */
-            export class Long extends Number {
+            export class Long extends Number implements Comparable<Long> {
                 protected constructor();
-                /**
-                 * Returns the value of this Long as a byte.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                byteValue(): number;
+
                 /**
                  * Compares two Long objects numerically.
-                 * @param {Long} anotherLong -
-                 * @returns {number}
-                 * @memberof {Long}
+                 * @param anotherLong {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherLong: Long): number;
-                /**
-                 * Returns the value of this Long as a double.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Long}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the value of this Long as a float.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Long.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Long as an int.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Long as a long value.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Long as a short.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Long's value.
-                 * @returns {String}
-                 * @memberof {Long}
-                 */
-                toString(): String;
+                compareTo(anotherLong: $$rhino.Number): Integer;
             }
             /**
              * Java Double object.
@@ -1104,82 +1080,27 @@ declare namespace Packages {
              * @class Double
              * @extends {Object}
              */
-            export class Double extends Number {
+            export class Double extends Number implements Comparable<Double> {
                 protected constructor();
-                /**
-                 * Returns the value of this Double as a byte (by casting to a byte).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                byteValue(): number;
+
                 /**
                  * Compares two Double objects numerically.
-                 * @param {Double} anotherDouble -
-                 * @returns {number}
-                 * @memberof {Double}
+                 * @param anotherDouble {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherDouble: Double): number;
-                /**
-                 * Returns the double value of this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Double}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the float value of this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Double as an int (by casting to type int).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                intValue(): number;
+                compareTo(anotherDouble: $$rhino.Number): Integer;
+
                 /**
                  * Returns true if this Double value is infinitely large in magnitude, false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Double}
+                 * @returns {Boolean}
                  */
-                isInfinite(): boolean;
+                isInfinite(): Boolean;
+
                 /**
                  * Returns true if this Double value is a Not-a-Number (NaN), false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Double}
+                 * @returns {Boolean}
                  */
-                isNaN(): boolean;
-                /**
-                 * Returns the value of this Double as a long (by casting to type long).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Double as a short (by casting to a short).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a string representation of this Double object.
-                 * @returns {String}
-                 * @memberof {Double}
-                 */
-                toString(): String;
+                isNaN(): Boolean;
             }
             /**
              * Java Byte object.
@@ -1187,70 +1108,15 @@ declare namespace Packages {
              * @class InteByteger
              * @extends {Object}
              */
-            export class Byte extends Number {
+            export class Byte extends Number implements Comparable<Byte> {
                 protected constructor();
-                /**
-                 * Returns the value of this Byte as a byte.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                byteValue(): number;
+
                 /**
                  * Compares two Byte objects numerically.
-                 * @param {Byte} anotherByte -
-                 * @returns {number}
-                 * @memberof {Byte}
+                 * @param anotherByte {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherByte: Byte): number;
-                /**
-                 * Returns the value of this Byte as a double.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Byte}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the value of this Byte as a float.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Byte; equal to the result of invoking intValue().
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Byte as an int.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Byte as a long.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Byte as a short.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Byte's value.
-                 * @returns {String}
-                 * @memberof {Byte}
-                 */
-                toString(): String;
+                compareTo(anotherByte: $$rhino.Number): Integer;
             }
             /**
              * Java Float object.
@@ -1258,82 +1124,27 @@ declare namespace Packages {
              * @class Float
              * @extends {Object}
              */
-            export class Float extends Number {
+            export class Float extends Number implements Comparable<Float> {
                 protected constructor();
-                /**
-                 * Returns the value of this Float as a byte (by casting to a byte).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                byteValue(): number;
+
                 /**
                  * Compares two Float objects numerically.
-                 * @param {Float} anotherFloat -
-                 * @returns {number}
-                 * @memberof {Float}
+                 * @param anotherFloat {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherFloat: Float): number;
-                /**
-                 * Returns the double value of this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Float}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the float value of this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Float as an int (by casting to type int).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                intValue(): number;
+                compareTo(anotherFloat: $$rhino.Number): Integer;
+
                 /**
                  * Returns true if this Float value is infinitely large in magnitude, false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Float}
+                 * @returns {Boolean}
                  */
-                isInfinite(): boolean;
+                isInfinite(): Boolean;
+
                 /**
                  * Returns true if this Float value is a Not-a-Number (NaN), false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Float}
+                 * @returns {Boolean}
                  */
-                isNaN(): boolean;
-                /**
-                 * Returns value of this Float as a long (by casting to type long).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Float as a short (by casting to a short).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a string representation of this Float object.
-                 * @returns {String}
-                 * @memberof {Float}
-                 */
-                toString(): String;
+                isNaN(): Boolean;
             }
             /**
              * Java Short object.
@@ -1341,159 +1152,644 @@ declare namespace Packages {
              * @class Short
              * @extends {Object}
              */
-            export class Short extends Number {
+            export class Short extends Number implements Comparable<Short> {
                 protected constructor();
-                /**
-                 * Returns the value of this Short as a byte.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                byteValue(): number;
+
                 /**
                  * Compares two Short objects numerically.
-                 * @param {Short} anotherShort -
-                 * @returns {number}
-                 * @memberof {Short}
+                 * @param anotherShort {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherShort: Short): number;
-                /**
-                 * Returns the value of this Short as a double.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Short}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the value of this Short as a float.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Short; equal to the result of invoking intValue().
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Short as an int.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Short as a long.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Short as a short.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Short's value.
-                 * @returns {String}
-                 * @memberof {Short}
-                 */
-                toString(): String;
+                compareTo(anotherShort: $$rhino.Number): Integer;
             }
 
-            export class StringBuffer { }
+            export class StringBuffer extends lang.Object implements CharSequence {
+                protected constructor();
+                /**
+                 * Appends the string representation of the boolean argument to the sequence.
+                 * @param b {$$rhino.Boolean}
+                 * @returns {StringBuffer}
+                 */
+                append(b: $$rhino.Boolean): StringBuffer;
+
+                /**
+                 * Appends the string representation of the char argument to this sequence.
+                 * @param c {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                append(c: $$rhino.String): StringBuffer;
+
+                /**
+                 * Appends the string representation of the char array argument to this sequence.
+                 * @param str {IJavaArray<$$rhino.String>}
+                 * @returns {StringBuffer}
+                 */
+                append(str: IJavaArray<$$rhino.String>): StringBuffer;
+
+                /**
+                 * Appends the string representation of a subarray of the char array argument to this sequence.
+                 * @param str {IJavaArray<$$rhino.String>}
+                 * @param offset {$$rhino.Number}
+                 * @param len {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(str: IJavaArray<$$rhino.String>, offset: $$rhino.Number, len: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the specified CharSequence to this sequence.
+                 * @param s {CharSequence}
+                 * @returns {StringBuffer}
+                 */
+                append(s: CharSequence): StringBuffer;
+
+                /**
+                 * Appends a subsequence of the specified CharSequence to this sequence.
+                 * @param s {CharSequence}
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(s: CharSequence, start: $$rhino.Number, end: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the string representation of the double argument to this sequence.
+                 * @param d {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(d: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the string representation of the float argument to this sequence.
+                 * @param f {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(f: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the string representation of the int argument to this sequence.
+                 * @param i {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(i: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the string representation of the long argument to this sequence.
+                 * @param lng {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(lng: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the string representation of the Object argument.
+                 * @param obj {Object}
+                 * @returns {StringBuffer}
+                 */
+                append(obj: Object): StringBuffer;
+
+                /**
+                 * Appends the specified string to this character sequence.
+                 * @param str {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                append(str: $$rhino.String): StringBuffer;
+
+                /**
+                 * Appends the specified StringBuffer to this sequence.
+                 * @param sb {StringBuffer}
+                 * @returns {StringBuffer}
+                 */
+                append(sb: StringBuffer): StringBuffer;
+
+                /**
+                 * Appends the string representation of the codePoint argument to this sequence.
+                 * @param codePoint {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                appendCodePoint(codePoint: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Returns the current capacity.
+                 * @returns {Integer}
+                 */
+                capacity(): Integer;
+
+                /**
+                 * Returns the char value in this sequence at the specified index.
+                 * @param index {$$rhino.Number}
+                 * @returns {Character}
+                 */
+                charAt(index: $$rhino.Number): Character;
+
+                /**
+                 * Returns the character (Unicode code point) at the specified index.
+                 * @param index {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                codePointAt(index: $$rhino.Number): Integer;
+
+                /**
+                 * Returns the character (Unicode code point) before the specified index.
+                 * @param index {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                codePointBefore(index: $$rhino.Number): Integer;
+
+                /**
+                 * Returns the number of Unicode code points in the specified text range of this sequence.
+                 * @param beginIndex {$$rhino.Number}
+                 * @param endIndex {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                codePointCount(beginIndex: $$rhino.Number, endIndex: $$rhino.Number): Integer;
+
+                /**
+                 * Removes the characters in a substring of this sequence.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                delete(start: $$rhino.Number, end: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Removes the char at the specified position in this sequence.
+                 * @param index {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                deleteCharAt(index: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Ensures that the capacity is at least equal to the specified minimum.
+                 * @param minimumCapacity {$$rhino.Number}
+                 */
+                ensureCapacity(minimumCapacity: $$rhino.Number): void;
+
+                /**
+                 * Characters are copied from this sequence into the destination character array dst.
+                 * @param srcBegin {$$rhino.Number}
+                 * @param srcEnd {$$rhino.Number}
+                 * @param dst {IJavaArray<$$rhino.String>}
+                 * @param dstBegin {$$rhino.Number}
+                 */
+                getChars(srcBegin: $$rhino.Number, srcEnd: $$rhino.Number, dst: IJavaArray<$$rhino.String>, dstBegin: $$rhino.Number): void;
+
+                /**
+                 * Returns the index within this string of the first occurrence of the specified substring.
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
+                 */
+                indexOf(str: $$rhino.String): Integer;
+
+                /**
+                 * Returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
+                 * @param str {$$rhino.String}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                indexOf(str: $$rhino.String, fromIndex: $$rhino.Number): Integer;
+
+                /**
+                 * Inserts the string representation of the boolean argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param b {$$rhino.Boolean}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, b: $$rhino.Boolean): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the char argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param c {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, c: $$rhino.String): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the char array argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param str {IJavaArray<$$rhino.String>}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, str: IJavaArray<$$rhino.String>): StringBuffer;
+
+                /**
+                 * Inserts the string representation of a subarray of the str array argument into this sequence.
+                 * @param index {$$rhino.Number}
+                 * @param str {IJavaArray<$$rhino.String>}
+                 * @param offset {$$rhino.Number}
+                 * @param len {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(index: $$rhino.Number, str: IJavaArray<$$rhino.String>, offset: $$rhino.Number, len: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the specified CharSequence into this sequence.
+                 * @param dstOffset {$$rhino.Number}
+                 * @param s {CharSequence}
+                 * @returns {StringBuffer}
+                 */
+                insert(dstOffset: $$rhino.Number, s: CharSequence): StringBuffer;
+
+                /**
+                 * Inserts a subsequence of the specified CharSequence into this sequence.
+                 * @param dstOffset {$$rhino.Number}
+                 * @param s {CharSequence}
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(dstOffset: $$rhino.Number, s: CharSequence, start: $$rhino.Number, end: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the double argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param d {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, d: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the float argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param f {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, f: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the second int argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param i {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, i: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the long argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param l {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, l: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the Object argument into this character sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param obj {Object}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, obj: Object): StringBuffer;
+
+                /**
+                 * Inserts the string into this character sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param str {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, str: $$rhino.String): StringBuffer;
+
+                /**
+                 * Returns the index within this string of the rightmost occurrence of the specified substring.
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
+                 */
+                lastIndexOf(str: $$rhino.String): Integer;
+
+                /**
+                 * Returns the index within this string of the last occurrence of the specified substring.
+                 * @param str {$$rhino.String}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                lastIndexOf(str: $$rhino.String, fromIndex: $$rhino.Number): Integer;
+
+                /**
+                 * Returns the length (character count).
+                 * @returns {Integer}
+                 */
+                length(): Integer;
+
+                /**
+                 * Returns the index within this sequence that is offset from the given index by codePointOffset code points.
+                 * @param index {$$rhino.Number}
+                 * @param codePointOffset {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                offsetByCodePoints(index: $$rhino.Number, codePointOffset: $$rhino.Number): Integer;
+
+                /**
+                 * Replaces the characters in a substring of this sequence with characters in the specified String.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @param str {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                replace(start: $$rhino.Number, end: $$rhino.Number, str: $$rhino.String): StringBuffer;
+
+                /**
+                 * Causes this character sequence to be replaced by the reverse of the sequence.
+                 * @returns {StringBuffer}
+                 */
+                reverse(): StringBuffer;
+
+                /**
+                 * The character at the specified index is set to ch.
+                 * @param index {$$rhino.Number}
+                 * @param ch {$$rhino.String}
+                 */
+                setCharAt(index: $$rhino.Number, ch: $$rhino.String): void;
+
+                /**
+                 * Sets the length of the character sequence.
+                 * @param newLength {$$rhino.Number}
+                 */
+                setLength(newLength: $$rhino.Number): void;
+
+                /**
+                 * Returns a new character sequence that is a subsequence of this sequence.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {CharSequence}
+                 */
+                subSequence(start: $$rhino.Number, end: $$rhino.Number): CharSequence;
+
+                /**
+                 * Returns a new String that contains a subsequence of characters currently contained in this character sequence.
+                 * @param start {$$rhino.Number}
+                 * @returns {String}
+                 */
+                substring(start: $$rhino.Number): String;
+
+                /**
+                 * Returns a new String that contains a subsequence of characters currently contained in this sequence.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {String}
+                 */
+                substring(start: $$rhino.Number, end: $$rhino.Number): String;
+
+                /**
+                 * Attempts to reduce storage used for the character sequence.
+                 */
+                trimToSize(): void;
+            }
         }
         export namespace util {
-            export interface Iterable<E> {
+            export class Locale extends lang.Object {
+                protected constructor();
                 /**
-                 * Returns an iterator over the elements in this collection in proper sequence.
-                 * @returns {Iterator<E>}
+                 * Overrides Cloneable.
+                 * @returns {lang.Object}
                  */
-                iterator(): Iterator<E>;
-            }
+                clone(): lang.Object;
 
+                /**
+                 * Returns the country/region code for this locale, which should either be the empty string, an uppercase ISO 3166 2-letter code, or a UN M.49 3-digit code.
+                 * @returns {lang.String}
+                 */
+                getCountry(): lang.String;
+
+                /**
+                 * Returns a name for the locale's country that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayCountry(): lang.String;
+
+                /**
+                 * Returns a name for the locale's country that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayCountry(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns a name for the locale's language that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayLanguage(): lang.String;
+
+                /**
+                 * Returns a name for the locale's language that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayLanguage(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns a name for the locale that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayName(): lang.String;
+
+                /**
+                 * Returns a name for the locale that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayName(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns a name for the the locale's script that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayScript(): lang.String;
+
+                /**
+                 * Returns a name for the locale's script that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayScript(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns a name for the locale's variant code that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayVariant(): lang.String;
+
+                /**
+                 * Returns a name for the locale's variant code that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayVariant(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns the extension (or private use) value associated with the specified key, or null if there is no extension associated with the key.
+                 * @param key {$$rhino.String}
+                 * @returns {lang.String}
+                 */
+                getExtension(key: $$rhino.String): lang.String;
+
+                /**
+                 * Returns the set of extension keys associated with this locale, or the empty set if it has no extensions.
+                 * @returns {Set<Character>}
+                 */
+                getExtensionKeys(): Set<lang.Character>;
+
+                /**
+                 * Returns a three-letter abbreviation for this locale's country.
+                 * @returns {lang.String}
+                 */
+                getISO3Country(): lang.String;
+
+                /**
+                 * Returns a three-letter abbreviation of this locale's language.
+                 * @returns {lang.String}
+                 */
+                getISO3Language(): lang.String;
+
+                /**
+                 * Returns the language code of this Locale.
+                 * @returns {lang.String}
+                 */
+                getLanguage(): lang.String;
+
+                /**
+                 * Returns the script for this locale, which should either be the empty string or an ISO 15924 4-letter script code.
+                 * @returns {lang.String}
+                 */
+                getScript(): lang.String;
+
+                /**
+                 * Returns the set of unicode locale attributes associated with this locale, or the empty set if it has no attributes.
+                 * @returns {Set<lang.String>}
+                 */
+                getUnicodeLocaleAttributes(): Set<lang.String>;
+
+                /**
+                 * Returns the set of Unicode locale keys defined by this locale, or the empty set if this locale has none.
+                 * @returns {Set<lang.String>}
+                 */
+                getUnicodeLocaleKeys(): Set<lang.String>;
+
+                /**
+                 * Returns the Unicode locale type associated with the specified Unicode locale key for this locale.
+                 * @param key {$$rhino.String}
+                 * @returns {lang.String}
+                 */
+                getUnicodeLocaleType(key: $$rhino.String): lang.String;
+
+                /**
+                 * Returns the variant code for this locale.
+                 * @returns {lang.String}
+                 */
+                getVariant(): lang.String;
+
+                /**
+                 * Returns a well-formed IETF BCP 47 language tag representing this locale.
+                 * @returns {lang.String}
+                 */
+                toLanguageTag(): lang.String;
+            }
             /**
              * Java Collection interface.
              * @export
              * @interface Collection<T>
              */
-            export interface Collection<E> extends Iterable<E> {
+            export interface Collection<E> extends lang.Iterable<E> {
                 /**
-                 * Ensures that this collection contains the specified element
+                 * Ensures that this collection contains the specified element (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
                  */
-                add(e: E): boolean;
+                add(e: E): lang.Boolean;
+
                 /**
-                 * Adds all of the elements in the specified collection to this collection.
-                 * @returns {boolean}
+                 * Adds all of the elements in the specified collection to this collection (optional operation).
+                 * @param c {util.Collection<E>}
+                 * @returns {lang.Boolean}
                  */
-                addAll(c: Collection<E>): boolean;
+                addAll(c: util.Collection<E>): lang.Boolean;
+
                 /**
-                 * Removes all of the elements from this collection.
+                 * Removes all of the elements from this collection (optional operation).
                  */
                 clear(): void;
+
                 /**
                  * Returns true if this collection contains the specified element.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                contains(o: lang.Object): boolean;
+                contains(o: lang.Object): lang.Boolean;
+
                 /**
-                 * Returns true if this collection contains all of the elements in the specified collection
-                 * @returns {boolean}
+                 * Returns true if this collection contains all of the elements in the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
                  */
-                containsAll(c: Collection<any>): boolean;
+                containsAll(c: util.Collection<any>): lang.Boolean;
+
                 /**
                  * Compares the specified object with this collection for equality.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                contains(o: lang.Object): boolean;
+                equals(o: lang.Object): lang.Boolean;
+
                 /**
                  * Returns the hash code value for this collection.
                  * @returns {lang.Integer}
                  */
                 hashCode(): lang.Integer;
+
                 /**
                  * Returns true if this collection contains no elements.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): lang.Boolean;
+
                 /**
-                 * Removes a single instance of the specified element from this collection, if it is present.
-                 * @returns {boolean}
+                 * Returns an iterator over the elements in this collection.
+                 * @returns {Iterator<E>}
                  */
-                remove(o: lang.Object): boolean;
+                iterator(): Iterator<E>;
+
                 /**
-                 * Removes all of this collection's elements that are also contained in the specified collection.
-                 * @returns {boolean}
+                 * Removes a single instance of the specified element from this collection, if it is present (optional operation).
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                removeAll(c: Collection<any>): boolean;
+                remove(o: lang.Object): lang.Boolean;
+
                 /**
-                 * Retains only the elements in this collection that are contained in the specified collection.
-                 * @returns {boolean}
+                 * Removes all of this collection's elements that are also contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
                  */
-                retainAll(c: Collection<any>): boolean;
-                //Returns the number of elements in this collection.
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
                 /**
-                 * Returns the number of elements in this list.
-                 * @returns {int}
+                 * Retains only the elements in this collection that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Returns the number of elements in this collection.
+                 * @returns {lang.Integer}
                  */
                 size(): lang.Integer;
-                //Returns an array containing all of the elements in this collection.
-                toArray(): IJavaArray<lang.Object>;
-                //Returns an array containing all of the elements in this collection; the runtime type of the returned array is that of the specified array.
-                toArray(a: IJavaArray<E>): IJavaArray<E>;
+
+                /**
+                 * Returns an array containing all of the elements in this collection.
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
+
+                /**
+                 * Returns a string representation of this collection.
+                 * @returns {lang.String}
+                 */
+                toString(): lang.String;
             }
             export interface Iterator<E> {
                 /**
                  * Returns true if the iteration has more elements.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                hasNext(): boolean;
+                hasNext(): lang.Boolean;
                 /**
                  * Returns the next element in the iteration.
                  * @returns {E}
@@ -1506,315 +1802,577 @@ declare namespace Packages {
             }
             export interface ListIterator<E> extends Iterator<E> {
                 /**
-                 * Inserts the specified element into the list.
+                 * Inserts the specified element into the list (optional operation).
+                 * @param e {E}
                  */
                 add(e: E): void;
+
+                /**
+                 * Returns true if this list iterator has more elements when traversing the list in the forward direction.
+                 * @returns {lang.Boolean}
+                 */
+                hasNext(): lang.Boolean;
+
                 /**
                  * Returns true if this list iterator has more elements when traversing the list in the reverse direction.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                hasPrevious(): boolean;
+                hasPrevious(): lang.Boolean;
+
+                /**
+                 * Returns the next element in the list and advances the cursor position.
+                 * @returns {E}
+                 */
+                next(): E;
+
                 /**
                  * Returns the index of the element that would be returned by a subsequent call to next().
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 nextIndex(): lang.Integer;
+
                 /**
                  * Returns the previous element in the list and moves the cursor position backwards.
                  * @returns {E}
                  */
                 previous(): E;
+
                 /**
                  * Returns the index of the element that would be returned by a subsequent call to previous().
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 previousIndex(): lang.Integer;
+
                 /**
-                 * Replaces the last element returned by next() or previous() with the specified element.
+                 * Removes from the list the last element that was returned by next() or previous() (optional operation).
+                 */
+                remove(): void;
+
+                /**
+                 * Replaces the last element returned by next() or previous() with the specified element (optional operation).
+                 * @param e {E}
                  */
                 set(e: E): void;
             }
-            export interface List<E> extends Collection<E> {
+            export interface List<E> extends util.Collection<E> {
                 /**
-                 * Ensures that this collection contains the specified element.
+                 * Appends the specified element to the end of this list (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
                  */
-                add(e: E): boolean;
+                add(e: E): lang.Boolean;
+
                 /**
-                 * Inserts the specified element at the specified position in this list.
+                 * Inserts the specified element at the specified position in this list (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
                  */
-                add(index: lang.Integer, element: E): void;
+                add(index: $$rhino.Number, element: E): void;
+
                 /**
-                 * Inserts the specified element at the specified position in this list.
+                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator (optional operation).
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
                  */
-                add(index: lang.Integer, element: E): void;
+                addAll(c: util.Collection<E>): lang.Boolean;
+
                 /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator.
-                 * @returns {boolean}
+                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
                  */
-                addAll(c: Collection<E>): boolean;
+                addAll(index: $$rhino.Number, c: util.Collection<E>): lang.Boolean;
+
                 /**
-                 * Inserts all of the elements in the specified collection into this list at the specified position.
-                 * @returns {boolean}
-                 */
-                addAll(index: lang.Integer, c: Collection<E>): boolean;
-                ///**
-                // * Removes all of the elements from this list.
-                // */
-                //clear(): void;
-                ///**
-                // * Returns true if this list contains the specified element.
-                // * @returns {boolean}
-                // */
-                //    contains(o: lang.Object): boolean;
-                /**
-                 * Returns true if this list contains all of the elements of the specified collection.
-                 * @returns {boolean}
-                 */
-                containsAll(c: Collection<any>): boolean;
-                /**
-                 * Compares the specified object with this list for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: lang.Object): boolean;
-                /**
-                 * Returns the element at the specified position in this list.
-                 * @returns {E}
-                 */
-                get(index: lang.Integer): E;
-                ///**
-                // * Returns the hash code value for this list.
-                // * @returns {lang.Integer}
-                // */
-                //    hashCode(): lang.Integer;
-                /**
-                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                indexOf(o: lang.Object): lang.Integer;
-                ///**
-                // * Returns true if this list contains no elements.
-                // * @returns {boolean}
-                // */
-                //isEmpty(): boolean;
-                ///**
-                // * Returns an iterator over the elements in this list in proper sequence.
-                // * @returns {Iterator<E>}
-                // */
-                //iterator(): Iterator<E>;
-                /**
-                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                lastIndexOf(o: lang.Object): lang.Integer;
-                /**
-                 * Returns a list iterator over the elements in this list (in proper sequence).
-                 * @returns {ListIterator<E>}
-                 */
-                listIterator(): ListIterator<E>;
-                /**
-                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
-                 * @returns {ListIterator<E>}
-                 */
-                listIterator(index: lang.Integer): ListIterator<E>;
-                /**
-                 * Removes the element at the specified position in this list.
-                 * @returns {E}
-                 */
-                remove(index: lang.Integer): E;
-                /**
-                 * Removes the first occurrence of the specified element from this list, if it is present.
-                 * @returns {boolean}
-                 */
-                remove(o: lang.Object): boolean;
-                ///**
-                // * Removes from this list all of its elements that are contained in the specified collection.
-                // * @returns {boolean}
-                // */
-                //removeAll(Collection < any > c): boolean;
-                ///**
-                // * Retains only the elements in this list that are contained in the specified collection.
-                // * @returns {boolean}
-                // */
-                //retainAll(Collection < any > c): boolean;
-                /**
-                 * Replaces the element at the specified position in this list with the specified element.
-                 * @returns {E}
-                 */
-                set(index: lang.Integer, element: E): E;
-                ///**
-                // * Returns the number of elements in this list.
-                // * @returns {int}
-                // */
-                //    size(): lang.Integer;
-                /**
-                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
-                 * @returns {List<E>}
-                 */
-                subList(fromIndex: lang.Integer, toIndex: lang.Integer): List<E>;
-            }
-            export class AbstractCollection<E> implements Collection<E>  {
-                protected constructor();
-                /**
-                 * Ensures that this collection contains the specified element.
-                 * @returns {boolean}
-                 */
-                add(e: E): boolean;
-                /**
-                 * Adds all of the elements in the specified collection to this collection.
-                 * @returns {boolean}
-                 */
-                addAll(c: Collection<E>): boolean;
-                /**
-                 * Removes all of the elements from this collection.
+                 * Removes all of the elements from this list (optional operation).
                  */
                 clear(): void;
+
                 /**
-                 * Returns true if this collection contains the specified element.
-                 * @returns {boolean}
+                 * Returns true if this list contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                contains(o: lang.Object): boolean;
-                //Returns true if this collection contains all of the elements in the specified collection.
-                containsAll(c: Collection<any>): boolean;
-                //Compares the specified object with this collection for equality.
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this list contains all of the elements of the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                containsAll(c: util.Collection<any>): lang.Boolean;
+
                 /**
                  * Compares the specified object with this list for equality.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                equals(o: lang.Object): boolean;
-                //Returns the hash code value for this collection.
+                equals(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns the element at the specified position in this list.
+                 * @param index {$$rhino.Number}
+                 * @returns {E}
+                 */
+                get(index: $$rhino.Number): E;
+
+                /**
+                 * Returns the hash code value for this list.
+                 * @returns {lang.Integer}
+                 */
                 hashCode(): lang.Integer;
-                //Returns true if this collection contains no elements.
+
+                /**
+                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                indexOf(o: lang.Object): lang.Integer;
+
                 /**
                  * Returns true if this list contains no elements.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): lang.Boolean;
+
                 /**
                  * Returns an iterator over the elements in this list in proper sequence.
                  * @returns {Iterator<E>}
                  */
                 iterator(): Iterator<E>;
-                //Removes a single instance of the specified element from this collection, if it is present.
-                /**
-                 * Removes the first occurrence of the specified element from this list, if it is present.
-                 * @returns {boolean}
-                 */
-                remove(o: Object): boolean;
-                //Removes all of this collection's elements that are also contained in the specified collection.
-                /**
-                 * Removes from this list all of its elements that are contained in the specified collection.
-                 * @returns {boolean}
-                 */
-                removeAll(c: Collection<any>): boolean;
-                //Retains only the elements in this collection that are contained in the specified collection.
-                /**
-                 * Retains only the elements in this list that are contained in the specified collection.
-                 * @returns {boolean}
-                 */
-                retainAll(c: Collection<any>): boolean;
-                //Returns the number of elements in this collection.
-                /**
-                 * Returns the number of elements in this list.
-                 * @returns {int}
-                 */
-                size(): lang.Integer;
-                //Returns an array containing all of the elements in this collection.
-                /**
-                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
-                 * @returns {IJavaArray<lang.Object>}
-                 */
-                toArray(): IJavaArray<lang.Object>;
-                //Returns an array containing all of the elements in this collection; the runtime type of the returned array is that of the specified array.
-                /**
-                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element); the runtime type of the returned array is that of the specified array.
-                 * @returns {IJavaArray<E>}
-                 */
-                toArray(a: IJavaArray<E>): IJavaArray<E>;
-                toString(): lang.String;
-            }
-            export class AbstractList<E> extends AbstractCollection<E> {
-                protected constructor();
-                /**
-                 * Appends the specified element to the end of this list.
-                 * @returns {boolean}
-                 */
-                add(e: E): boolean;
-                /**
-                 * Inserts the specified element at the specified position in this list.
-                 */
-                add(index: lang.Integer, element: E): void;
-                /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
-                 * @returns {boolean}
-                 */
-                addAll(c: Collection<E>): boolean;
-                /**
-                 * Inserts all of the elements in the specified collection into this list at the specified position.
-                 * @returns {boolean}
-                 */
-                addAll(index: lang.Integer, c: Collection<E>): boolean;
-                /**
-                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                indexOf(o: lang.Object): lang.Integer;
+
                 /**
                  * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
                  */
                 lastIndexOf(o: lang.Object): lang.Integer;
+
                 /**
                  * Returns a list iterator over the elements in this list (in proper sequence).
                  * @returns {ListIterator<E>}
                  */
                 listIterator(): ListIterator<E>;
+
                 /**
                  * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
+                 * @param index {$$rhino.Number}
                  * @returns {ListIterator<E>}
                  */
-                listIterator(index: lang.Integer): ListIterator<E>;
+                listIterator(index: $$rhino.Number): ListIterator<E>;
+
                 /**
-                 * Removes the element at the specified position in this list.
+                 * Removes the element at the specified position in this list (optional operation).
+                 * @param index {$$rhino.Number}
                  * @returns {E}
                  */
-                remove(index: lang.Integer): E;
+                remove(index: $$rhino.Number): E;
+
                 /**
-                 * Removes the first occurrence of the specified element from this list, if it is present.
-                 * @returns {boolean}
+                 * Removes the first occurrence of the specified element from this list, if it is present (optional operation).
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                remove(o: Object): boolean;
+                remove(o: lang.Object): lang.Boolean;
+
                 /**
-                 * Replaces the element at the specified position in this list with the specified element.
+                 * Removes from this list all of its elements that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Retains only the elements in this list that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Replaces the element at the specified position in this list with the specified element (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
                  * @returns {E}
                  */
-                set(index: lang.Integer, element: E): E;
+                set(index: $$rhino.Number, element: E): E;
+
+                /**
+                 * Returns the number of elements in this list.
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
                 /**
                  * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+                 * @param fromIndex {$$rhino.Number}
+                 * @param toIndex {$$rhino.Number}
                  * @returns {List<E>}
                  */
-                subList(fromIndex: lang.Integer, toIndex: lang.Integer): List<E>;
+                subList(fromIndex: $$rhino.Number, toIndex: $$rhino.Number): List<E>;
+
+                /**
+                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
             }
-            export class ArrayList<E> extends AbstractList<E> {
+            export abstract class AbstractCollection<E> extends lang.Object implements util.Collection<E>  {
                 protected constructor();
                 /**
-                 * Returns a shallow copy of this ArrayList instance.
-                 * @returns {Object}
+                 * Ensures that this collection contains the specified element (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
                  */
-                clone(): lang.Object;
-                ///**
-                // * Returns true if this list contains the specified element.
-                // * @returns {boolean}
-                // */
-                //contains(o: Object): boolean;
+                add(e: E): lang.Boolean;
+
                 /**
-                 * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
+                 * Adds all of the elements in the specified collection to this collection (optional operation).
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
                  */
-                ensureCapacity(minCapacity: lang.Integer | number): void;
+                addAll(c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this collection (optional operation).
+                 */
+                clear(): void;
+
+                /**
+                 * Returns true if this collection contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this collection contains all of the elements in the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                containsAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Returns true if this collection contains no elements.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns an iterator over the elements contained in this collection.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Removes a single instance of the specified element from this collection, if it is present (optional operation).
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Removes all of this collection's elements that are also contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Retains only the elements in this collection that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Returns the number of elements in this collection.
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
+                /**
+                 * Returns the hash code value for this collection.
+                 * @returns {lang.Integer}
+                 */
+                hashCode(): lang.Integer;
+
+                /**
+                 * Compares the specified object with this collection for equality.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                equals(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns an array containing all of the elements in this collection.
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
+
+                /**
+                 * Returns a string representation of this collection.
+                 * @returns {lang.String}
+                 */
+                toString(): lang.String;
+            }
+            export abstract class AbstractList<E> extends AbstractCollection<E> implements List<E> {
+                protected constructor();
+                /**
+                 * Appends the specified element to the end of this list (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
+                 */
+                add(e: E): lang.Boolean;
+
+                /**
+                 * Inserts the specified element at the specified position in this list (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
+                 */
+                add(index: $$rhino.Number, element: E): void;
+
+                /**
+                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(c: util.Collection<E>): lang.Boolean;
+                addAll(index: $$rhino.Number, c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this list (optional operation).
+                 */
+                clear(): void;
+
                 /**
                  * Returns the element at the specified position in this list.
+                 * @param index {$$rhino.Number}
                  * @returns {E}
                  */
-                get(index: lang.Integer | number): E;
+                get(index: $$rhino.Number): E;
+
+                /**
+                 * Returns the hash code value for this list.
+                 * @returns {lang.Integer}
+                 */
+                hashCode(): lang.Integer;
+
+                /**
+                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                indexOf(o: lang.Object): lang.Integer;
+
+                /**
+                 * Returns an iterator over the elements in this list in proper sequence.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                lastIndexOf(o: lang.Object): lang.Integer;
+
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence).
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(): ListIterator<E>;
+
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
+                 * @param index {$$rhino.Number}
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(index: $$rhino.Number): ListIterator<E>;
+
+                /**
+                 * Removes the element at the specified position in this list (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @returns {E}
+                 */
+                remove(index: $$rhino.Number): E;
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Replaces the element at the specified position in this list with the specified element (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
+                 * @returns {E}
+                 */
+                set(index: $$rhino.Number, element: E): E;
+
+                /**
+                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+                 * @param fromIndex {$$rhino.Number}
+                 * @param toIndex {$$rhino.Number}
+                 * @returns {List<E>}
+                 */
+                subList(fromIndex: $$rhino.Number, toIndex: $$rhino.Number): List<E>;
+            }
+            export class ArrayList<E> extends AbstractList<E> implements List<E> {
+                /**
+                 * Appends the specified element to the end of this list.
+                 * @param e {E}
+                 * @returns {lang.Boolean}
+                 */
+                add(e: E): lang.Boolean;
+
+                /**
+                 * Inserts the specified element at the specified position in this list.
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
+                 */
+                add(index: $$rhino.Number, element: E): void;
+
+                /**
+                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Inserts all of the elements in the specified collection into this list, starting at the specified position.
+                 * @param index {$$rhino.Number}
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(index: $$rhino.Number, c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this list.
+                 */
+                clear(): void;
+
+                /**
+                 * Returns a shallow copy of this ArrayList instance.
+                 * @returns {lang.Object}
+                 */
+                clone(): lang.Object;
+
+                /**
+                 * Returns true if this list contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
+                 * @param minCapacity {$$rhino.Number}
+                 */
+                ensureCapacity(minCapacity: $$rhino.Number): void;
+
+                /**
+                 * Returns the element at the specified position in this list.
+                 * @param index {$$rhino.Number}
+                 * @returns {E}
+                 */
+                get(index: $$rhino.Number): E;
+
+                /**
+                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                indexOf(o: lang.Object): lang.Integer;
+
+                /**
+                 * Returns true if this list contains no elements.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns an iterator over the elements in this list in proper sequence.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                lastIndexOf(o: lang.Object): lang.Integer;
+
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence).
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(): ListIterator<E>;
+
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
+                 * @param index {$$rhino.Number}
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(index: $$rhino.Number): ListIterator<E>;
+
+                /**
+                 * Removes the element at the specified position in this list.
+                 * @param index {$$rhino.Number}
+                 * @returns {E}
+                 */
+                remove(index: $$rhino.Number): E;
+
+                /**
+                 * Removes the first occurrence of the specified element from this list, if it is present.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Removes from this list all of its elements that are contained in the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Retains only the elements in this list that are contained in the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Replaces the element at the specified position in this list with the specified element.
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
+                 * @returns {E}
+                 */
+                set(index: $$rhino.Number, element: E): E;
+
+                /**
+                 * Returns the number of elements in this list.
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
+                /**
+                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+                 * @param fromIndex {$$rhino.Number}
+                 * @param toIndex {$$rhino.Number}
+                 * @returns {List<E>}
+                 */
+                subList(fromIndex: $$rhino.Number, toIndex: $$rhino.Number): List<E>;
+
+                /**
+                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
+
                 /**
                  * Trims the capacity of this ArrayList instance to be the list's current size.
                  */
@@ -1823,193 +2381,432 @@ declare namespace Packages {
             export interface MapEntry<K, V> {
                 /**
                  * Compares the specified object with this entry for equality.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                equals(o: lang.Object): boolean;
+                equals(o: lang.Object): lang.Boolean;
+
                 /**
                  * Returns the key corresponding to this entry.
                  * @returns {K}
                  */
                 getKey(): K;
+
                 /**
                  * Returns the value corresponding to this entry.
                  * @returns {V}
                  */
                 getValue(): V;
+
                 /**
                  * Returns the hash code value for this map entry.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 hashCode(): lang.Integer;
+
                 /**
-                 * Replaces the value corresponding to this entry with the specified value.
+                 * Replaces the value corresponding to this entry with the specified value (optional operation).
+                 * @param value {V}
                  * @returns {V}
                  */
                 setValue(value: V): V;
             }
-            export interface Set<E> extends Collection<E> { }
-            export interface Map<K, V> {
+            export interface Set<E> extends util.Collection<E> {
                 /**
-                 * Removes all of the mappings from this map.
+                 * Adds the specified element to this set if it is not already present (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
+                 */
+                add(e: E): lang.Boolean;
+
+                /**
+                 * Adds all of the elements in the specified collection to this set if they're not already present (optional operation).
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this set (optional operation).
                  */
                 clear(): void;
+
+                /**
+                 * Returns true if this set contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this set contains all of the elements of the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                containsAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Compares the specified object with this set for equality.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                equals(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns the hash code value for this set.
+                 * @returns {lang.Integer}
+                 */
+                hashCode(): lang.Integer;
+
+                /**
+                 * Returns true if this set contains no elements.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns an iterator over the elements in this set.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Removes the specified element from this set if it is present (optional operation).
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Removes from this set all of its elements that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Retains only the elements in this set that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Returns the number of elements in this set (its cardinality).
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
+                /**
+                 * Returns an array containing all of the elements in this set.
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
+            }
+            export interface Map<K, V> {
+                /**
+                 * Removes all of the mappings from this map (optional operation).
+                 */
+                clear(): void;
+
                 /**
                  * Returns true if this map contains a mapping for the specified key.
-                 * @returns {boolean}
+                 * @param key {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                containsKey(key: lang.Object): boolean;
+                containsKey(key: lang.Object): lang.Boolean;
+
                 /**
                  * Returns true if this map maps one or more keys to the specified value.
-                 * @returns {boolean}
+                 * @param value {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                containsValue(value: lang.Object): boolean;
+                containsValue(value: lang.Object): lang.Boolean;
+
                 /**
                  * Returns a Set view of the mappings contained in this map.
-                 * @returns {Set<Map.Entry<K,V>>}
+                 * @returns {util.Set<Map.Entry<K,V>>}
                  */
-                entrySet(): Set<MapEntry<K, V>>;
+                entrySet(): util.Set<MapEntry<K, V>>;
+
                 /**
                  * Compares the specified object with this map for equality.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                equals(o: lang.Object): boolean;
+                equals(o: lang.Object): lang.Boolean;
+
                 /**
                  * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+                 * @param key {lang.Object}
                  * @returns {V}
                  */
                 get(key: lang.Object): V;
+
                 /**
                  * Returns the hash code value for this map.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 hashCode(): lang.Integer;
+
                 /**
                  * Returns true if this map contains no key-value mappings.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): lang.Boolean;
+
                 /**
                  * Returns a Set view of the keys contained in this map.
-                 * @returns {Set<K>}
+                 * @returns {util.Set<K>}
                  */
-                keySet(): Set<K>;
+                keySet(): util.Set<K>;
+
                 /**
-                 * Associates the specified value with the specified key in this map.
+                 * Associates the specified value with the specified key in this map (optional operation).
+                 * @param key {K}
+                 * @param value {V}
                  * @returns {V}
                  */
                 put(key: K, value: V): V;
+
                 /**
-                 * Copies all of the mappings from the specified map to this map.
-                 */
-                putAll(m: Map<K, V>): void;
-                /**
-                 * Removes the mapping for a key from this map if it is present.
+                 * Removes the mapping for a key from this map if it is present (optional operation).
+                 * @param key {lang.Object}
                  * @returns {V}
                  */
                 remove(key: lang.Object): V;
+
                 /**
                  * Returns the number of key-value mappings in this map.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 size(): lang.Integer;
+
                 /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
+                 * Returns a util.Collection view of the values contained in this map.
+                 * @returns {util.Collection<V>}
                  */
-                values(): Collection<V>;
+                values(): util.Collection<V>;
             }
             export class AbstractMap<K, V> extends lang.Object implements Map<K, V> {
                 protected constructor();
                 /**
-                 * Removes all of the mappings from this map.
+                 * Removes all of the mappings from this map (optional operation).
                  */
                 clear(): void;
+
                 /**
                  * Returns true if this map contains a mapping for the specified key.
-                 * @returns {boolean}
+                 * @param key {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                containsKey(key: Object): boolean;
+                containsKey(key: lang.Object): lang.Boolean;
+
                 /**
                  * Returns true if this map maps one or more keys to the specified value.
-                 * @returns {boolean}
+                 * @param value {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                containsValue(value: Object): boolean;
+                containsValue(value: lang.Object): lang.Boolean;
+
                 /**
                  * Returns a Set view of the mappings contained in this map.
-                 * @returns {Set<Map.Entry<K,V>>}
+                 * @returns {util.Set<Map.Entry<K,V>>}
                  */
-                entrySet(): Set<MapEntry<K, V>>;
-                /**
-                 * Compares the specified object with this map for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: lang.Object): boolean;
+                entrySet(): util.Set<MapEntry<K, V>>;
+
                 /**
                  * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+                 * @param key {lang.Object}
                  * @returns {V}
                  */
                 get(key: lang.Object): V;
+
                 /**
                  * Returns the hash code value for this map.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 hashCode(): lang.Integer;
+
                 /**
                  * Returns true if this map contains no key-value mappings.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): lang.Boolean;
+
                 /**
                  * Returns a Set view of the keys contained in this map.
-                 * @returns {Set<K>}
+                 * @returns {util.Set<K>}
                  */
-                keySet(): Set<K>;
+                keySet(): util.Set<K>;
+
                 /**
-                 * Associates the specified value with the specified key in this map.
+                 * Associates the specified value with the specified key in this map (optional operation).
+                 * @param key {K}
+                 * @param value {V}
                  * @returns {V}
                  */
                 put(key: K, value: V): V;
+
                 /**
-                 * Copies all of the mappings from the specified map to this map.
-                 */
-                putAll(m: Map<K, V>): void;
-                /**
-                 * Removes the mapping for a key from this map if it is present.
+                 * Removes the mapping for a key from this map if it is present (optional operation).
+                 * @param key {lang.Object}
                  * @returns {V}
                  */
                 remove(key: lang.Object): V;
+
                 /**
                  * Returns the number of key-value mappings in this map.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 size(): lang.Integer;
+
                 /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
+                 * Returns a util.Collection view of the values contained in this map.
+                 * @returns {util.Collection<V>}
                  */
-                values(): Collection<V>;
+                values(): util.Collection<V>;
             }
-            export class HashMap<K, V> extends AbstractMap<K, V> {
+            export class HashMap<K, V> extends AbstractMap<K, V> implements Map<K, V> {
                 protected constructor();
+                /**
+                 * Removes all of the mappings from this map.
+                 */
+                clear(): void;
+
                 /**
                  * Returns a shallow copy of this HashMap instance: the keys and values themselves are not cloned.
-                 * @returns {Object}
+                 * @returns {lang.Object}
                  */
                 clone(): lang.Object;
+
                 /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
+                 * Returns true if this map contains a mapping for the specified key.
+                 * @param key {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                values(): Collection<V>;
+                containsKey(key: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this map maps one or more keys to the specified value.
+                 * @param value {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                containsValue(value: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns a Set view of the mappings contained in this map.
+                 * @returns {util.Set<Map.Entry<K,V>>}
+                 */
+                entrySet(): util.Set<MapEntry<K, V>>;
+
+                /**
+                 * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+                 * @param key {lang.Object}
+                 * @returns {V}
+                 */
+                get(key: lang.Object): V;
+
+                /**
+                 * Returns true if this map contains no key-value mappings.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns a Set view of the keys contained in this map.
+                 * @returns {util.Set<K>}
+                 */
+                keySet(): util.Set<K>;
+
+                /**
+                 * Associates the specified value with the specified key in this map.
+                 * @param key {K}
+                 * @param value {V}
+                 * @returns {V}
+                 */
+                put(key: K, value: V): V;
+
+                /**
+                 * Removes the mapping for the specified key from this map if present.
+                 * @param key {lang.Object}
+                 * @returns {V}
+                 */
+                remove(key: lang.Object): V;
+
+                /**
+                 * Returns the number of key-value mappings in this map.
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
+                /**
+                 * Returns a util.Collection view of the values contained in this map.
+                 * @returns {util.Collection<V>}
+                 */
+                values(): util.Collection<V>;
             }
-            export class AbstractSet<E> extends AbstractCollection<E> implements Set<E> { protected constructor(); }
-            export class HashSet<E> extends AbstractSet<E> {
+            export class AbstractSet<E> extends AbstractCollection<E> implements util.Set<E> {
+                protected constructor();
+
+                /**
+                 * Removes from this set all of its elements that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+            }
+            export class HashSet<E> extends AbstractSet<E> implements util.Set<E> {
                 protected constructor();
                 /**
+                 * Adds the specified element to this set if it is not already present.
+                 * @param e {E}
+                 * @returns {lang.Boolean}
+                 */
+                add(e: E): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this set.
+                 */
+                clear(): void;
+
+                /**
                  * Returns a shallow copy of this HashSet instance: the elements themselves are not cloned.
-                 * @returns {Object}
+                 * @returns {lang.Object}
                  */
                 clone(): lang.Object;
+
+                /**
+                 * Returns true if this set contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this set contains no elements.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns an iterator over the elements in this set.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Removes the specified element from this set if it is present.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns the number of elements in this set (its cardinality).
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
             }
             /**
              * Java Date object.
@@ -2017,137 +2814,1214 @@ declare namespace Packages {
              * @class Date
              * @extends {Object}
              */
-            export class Date extends Object {
+            export class Date extends lang.Object implements lang.Comparable<Date> {
                 protected constructor();
                 /**
                  * Tests if this date is after the specified date.
-                 * @returns {boolean}
+                 * @param when {Date}
+                 * @returns {lang.Boolean}
                  */
-                after(when: Date): boolean;
+                after(when: Date): lang.Boolean;
+
                 /**
                  * Tests if this date is before the specified date.
-                 * @returns {boolean}
+                 * @param when {Date}
+                 * @returns {lang.Boolean}
                  */
-                before(when: Date): boolean;
+                before(when: Date): lang.Boolean;
+
                 /**
                  * Return a copy of this object.
-                 * @returns {Object}
+                 * @returns {lang.Object}
                  */
                 clone(): lang.Object;
+
                 /**
                  * Compares two Dates for ordering.
-                 * @returns {int}
+                 * @param anotherDate {Date}
+                 * @returns {lang.Integer}
                  */
                 compareTo(anotherDate: Date): lang.Integer;
-                /**
-                 * Compares two dates for equality.
-                 * @returns {boolean}
-                 */
-                equals(obj: lang.Object): boolean;
+
                 /**
                  * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this Date object.
-                 * @returns {long}
+                 * @returns {lang.Long}
                  */
                 getTime(): lang.Long;
-                /**
-                 * Returns a hash code value for this object.
-                 * @returns {int}
-                 */
-                hashCode(): lang.Integer;
+
                 /**
                  * Sets this Date object to represent a point in time that is time milliseconds after January 1, 1970 00:00:00 GMT.
+                 * @param time {$$rhino.Number}
                  */
-                setTime(time: lang.Long): void;
+                setTime(time: $$rhino.Number): void;
+
             }
             /**
              * Represents a time zone offset, and also figures out daylight savings.
              * @class TimeZone
              */
             export class TimeZone {
+                protected constructor();
                 /**
                  * Creates a copy of this TimeZone.
-                 * @returns {TimeZone}
-                 * @memberof TimeZone
+                 * @returns {lang.Object}
                  */
-                clone(): TimeZone;
-
-                /**
-                 * Returns the amount of time to be added to local standard time to get local wall clock time.
-                 * @returns {int}
-                 * @memberof TimeZone
-                 */
-                getDSTSavings(): lang.Integer;
+                clone(): lang.Object;
 
                 /**
                  * Returns a long standard time name of this TimeZone suitable for presentation to the user in the default locale.
-                 * @returns {string}
-                 * @memberof TimeZone
+                 * @returns {lang.String}
                  */
                 getDisplayName(): lang.String;
 
                 /**
-                 * Returns a name in the specified style of this TimeZone suitable for presentation to the user in the default locale. If the specified daylight is true, a Daylight Saving Time name is returned (even if this TimeZone doesn't observe Daylight Saving Time). Otherwise, a Standard Time name is returned.
-                 * @param {boolean} daylight
-                 * @param {int} style
-                 * @memberof TimeZone
+                 * Returns a name in the specified style of this TimeZone suitable for presentation to the user in the default locale.
+                 * @param daylight {$$rhino.Boolean}
+                 * @param style {$$rhino.Number}
+                 * @returns {lang.String}
                  */
-                getDisplayName(daylight: boolean, style: lang.Integer);
+                getDisplayName(daylight: $$rhino.Boolean, style: $$rhino.Number): lang.String;
+
+                /**
+                 * Returns a name in the specified style of this TimeZone suitable for presentation to the user in the specified locale.
+                 * @param daylight {$$rhino.Boolean}
+                 * @param style {$$rhino.Number}
+                 * @param locale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayName(daylight: $$rhino.Boolean, style: $$rhino.Number, locale: Locale): lang.String;
+
+                /**
+                 * Returns a long standard time name of this TimeZone suitable for presentation to the user in the specified locale.
+                 * @param locale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayName(locale: Locale): lang.String;
+
+                /**
+                 * Returns the amount of time to be added to local standard time to get local wall clock time.
+                 * @returns {lang.Integer}
+                 */
+                getDSTSavings(): lang.Integer;
 
                 /**
                  * Gets the ID of this time zone.
-                 * @returns {string}
-                 * @memberof TimeZone
+                 * @returns {lang.String}
                  */
                 getID(): lang.String;
 
                 /**
-                 * Returns the offset of this time zone from UTC at the specified date. If Daylight Saving Time is in effect at the specified date, the offset value is adjusted with the amount of daylight saving.
-                 * @param {long} date
-                 * @returns {int}
-                 * @memberof TimeZone
+                 * Gets the time zone offset, for current date, modified in case of daylight savings.
+                 * @param era {$$rhino.Number}
+                 * @param year {$$rhino.Number}
+                 * @param month {$$rhino.Number}
+                 * @param day {$$rhino.Number}
+                 * @param dayOfWeek {$$rhino.Number}
+                 * @param milliseconds {$$rhino.Number}
+                 * @returns {lang.Integer}
                  */
-                getOffset(date: lang.Long): lang.Integer;
+                getOffset(era: $$rhino.Number, year: $$rhino.Number, month: $$rhino.Number, day: $$rhino.Number, dayOfWeek: $$rhino.Number, milliseconds: $$rhino.Number): lang.Integer;
 
                 /**
-                 * Gets the time zone offset, for current date, modified in case of daylight savings. This is the offset to add to UTC to get local time.
-                 * @param {int} era
-                 * @param {int} year
-                 * @param {int} month
-                 * @param {int} day
-                 * @param {int} dayOfWeek
-                 * @param {int} milliseconds
-                 * @returns {int}
-                 * @memberof TimeZone
+                 * Returns the offset of this time zone from UTC at the specified date.
+                 * @param date {$$rhino.Number}
+                 * @returns {lang.Integer}
                  */
-                getOffset(era: lang.Integer, year: lang.Integer, month: lang.Integer, day: lang.Integer, dayOfWeek: lang.Integer, milliseconds: lang.Integer): lang.Integer;
+                getOffset(date: $$rhino.Number): lang.Integer;
 
                 /**
-                 * Returns true if this zone has the same rule and offset as another zone. That is, if this zone differs only in ID, if at all. Returns false if the other zone is null.
-                 * @param {TimeZone} other
-                 * @memberof TimeZone
+                 * Returns the amount of time in milliseconds to add to UTC to get standard time in this time zone.
+                 * @returns {lang.Integer}
                  */
-                hasSameRules(other: TimeZone): boolean;
+                getRawOffset(): lang.Integer;
+
+                /**
+                 * Returns true if this zone has the same rule and offset as another zone.
+                 * @param other {TimeZone}
+                 * @returns {lang.Boolean}
+                 */
+                hasSameRules(other: TimeZone): lang.Boolean;
+
+                /**
+                 * Queries if the given date is in Daylight Saving Time in this time zone.
+                 * @param date {Date}
+                 * @returns {lang.Boolean}
+                 */
+                inDaylightTime(date: Date): lang.Boolean;
 
                 /**
                  * Returns true if this TimeZone is currently in Daylight Saving Time, or if a transition from Standard Time to Daylight Saving Time occurs at any future time.
-                 * @returns {boolean}
-                 * @memberof TimeZone
+                 * @returns {lang.Boolean}
                  */
-                observesDaylightTime(): boolean;
+                observesDaylightTime(): lang.Boolean;
 
                 /**
-                 * Sets the time zone ID. This does not change any other data in the time zone object.
-                 * @param {string} id
-                 * @memberof TimeZone
+                 * Sets the time zone ID.
+                 * @param ID {$$rhino.String}
                  */
-                setID(id: lang.String);
+                setID(ID: $$rhino.String): void;
 
-                /**S
-                 * Queries if this TimeZone uses Daylight Saving Time.
-                 * @returns {boolean}
-                 * @memberof TimeZone
+                /**
+                 * Sets the base time zone offset to GMT.
+                 * @param offsetMillis {$$rhino.Number}
                  */
-                useDaylightTime(): boolean;
+                setRawOffset(offsetMillis: $$rhino.Number): void;
+
+                /**
+                 * Queries if this TimeZone uses Daylight Saving Time.
+                 * @returns {lang.Boolean}
+                 */
+                useDaylightTime(): lang.Boolean;
+            }
+        }
+    }
+
+    export namespace org {
+        export namespace w3c {
+            export namespace dom {
+                export interface CharacterData extends Node {
+                    /**
+                     * Append the string to the end of the character data of the node.
+                     * @param arg {$$rhino.String}
+                     */
+                    appendData(arg: $$rhino.String): void;
+
+                    /**
+                     * Remove a range of 16-bit units from the node.
+                     * @param offset {$$rhino.Number}
+                     * @param count {$$rhino.Number}
+                     */
+                    deleteData(offset: $$rhino.Number, count: $$rhino.Number): void;
+
+                    /**
+                     * The character data of the node that implements this interface.
+                     * @returns {Packages.java.lang.String}
+                     */
+                    getData(): Packages.java.lang.String;
+
+                    /**
+                     * The number of 16-bit units that are available through data and the substringData method below.
+                     * @returns {Packages.java.lang.Integer}
+                     */
+                    getLength(): Packages.java.lang.Integer;
+
+                    /**
+                     * Insert a string at the specified 16-bit unit offset.
+                     * @param offset {$$rhino.Number}
+                     * @param arg {$$rhino.String}
+                     */
+                    insertData(offset: $$rhino.Number, arg: $$rhino.String): void;
+
+                    /**
+                     * Replace the characters starting at the specified 16-bit unit offset with the specified string.
+                     * @param offset {$$rhino.Number}
+                     * @param count {$$rhino.Number}
+                     * @param arg {$$rhino.String}
+                     */
+                    replaceData(offset: $$rhino.Number, count: $$rhino.Number, arg: $$rhino.String): void;
+
+                    /**
+                     * The character data of the node that implements this interface.
+                     * @param data {$$rhino.String}
+                     */
+                    setData(data: $$rhino.String): void;
+
+                    /**
+                     * Extracts a range of data from the node.
+                     * @param offset {$$rhino.Number}
+                     * @param count {$$rhino.Number}
+                     * @returns {Packages.java.lang.String}
+                     */
+                    substringData(offset: $$rhino.Number, count: $$rhino.Number): Packages.java.lang.String;
+                }
+                export interface Text extends CharacterData {
+                    /**
+                     * Returns all text of Text nodes logically-adjacent text nodes to this node, concatenated in document order.
+                     * @returns {java.lang.String}
+                     */
+                    getWholeText(): java.lang.String;
+
+                    /**
+                     * Returns whether this text node contains element content whitespace, often abusively called "ignorable whitespace".
+                     * @returns {java.lang.Boolean}
+                     */
+                    isElementContentWhitespace(): java.lang.Boolean;
+
+                    /**
+                     * Replaces the text of the current node and all logically-adjacent text nodes with the specified text.
+                     * @param content {$$rhino.String}
+                     * @returns {Text}
+                     */
+                    replaceWholeText(content: $$rhino.String): Text;
+
+                    /**
+                     * Breaks this node into two nodes at the specified offset, keeping both in the tree as siblings.
+                     * @param offset {$$rhino.Number}
+                     * @returns {Text}
+                     */
+                    splitText(offset: $$rhino.Number): Text;
+                }
+                export interface CDATASection extends Text { }
+                export interface Comment extends CharacterData { }
+                export interface DocumentFragment extends Node { }
+                export interface EntityReference extends Node { }
+                export interface ProcessingInstruction extends Node {
+                    /**
+                     * The content of this processing instruction.
+                     * @returns {java.lang.String}
+                     */
+                    getData(): java.lang.String;
+
+                    /**
+                     * The target of this processing instruction.
+                     * @returns {java.lang.String}
+                     */
+                    getTarget(): java.lang.String;
+
+                    /**
+                     * The content of this processing instruction.
+                     * @param data {$$rhino.String}
+                     */
+                    setData(data: $$rhino.String): void;
+                }
+                export interface DocumentType extends Node {
+                    /**
+                     * A NamedNodeMap containing the general entities, both external and internal, declared in the DTD.
+                     * @returns {NamedNodeMap}
+                     */
+                    getEntities(): NamedNodeMap;
+
+                    /**
+                     * The internal subset as a string, or null if there is none.
+                     * @returns {java.lang.String}
+                     */
+                    getInternalSubset(): java.lang.String;
+
+                    /**
+                     * The name of DTD; i.e., the name immediately following the DOCTYPE keyword.
+                     * @returns {java.lang.String}
+                     */
+                    getName(): java.lang.String;
+
+                    /**
+                     * A NamedNodeMap containing the notations declared in the DTD.
+                     * @returns {NamedNodeMap}
+                     */
+                    getNotations(): NamedNodeMap;
+
+                    /**
+                     * The public identifier of the external subset.
+                     * @returns {java.lang.String}
+                     */
+                    getPublicId(): java.lang.String;
+
+                    /**
+                     * The system identifier of the external subset.
+                     * @returns {java.lang.String}
+                     */
+                    getSystemId(): java.lang.String;
+                }
+                export interface DOMStringList {
+                    /**
+                     * Test if a string is part of this DOMStringList.
+                     * @param str {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    contains(str: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * The number of DOMStrings in the list.
+                     * @returns {java.lang.Integer}
+                     */
+                    getLength(): java.lang.Integer;
+
+                    /**
+                     * Returns the indexth item in the collection.
+                     * @param index {$$rhino.Number}
+                     * @returns {java.lang.String}
+                     */
+                    item(index: $$rhino.Number): java.lang.String;
+                }
+                export interface DOMConfiguration {
+                    /**
+                     * Check if setting a parameter to a specific value is supported.
+                     * @param name {$$rhino.String}
+                     * @param value {object}
+                     * @returns {java.lang.Boolean}
+                     */
+                    canSetParameter(name: $$rhino.String, value: object): java.lang.Boolean;
+
+                    /**
+                     * Return the value of a parameter if known.
+                     * @param name {$$rhino.String}
+                     * @returns {java.lang.Object}
+                     */
+                    getParameter(name: $$rhino.String): java.lang.Object;
+
+                    /**
+                     * The list of the parameters supported by this DOMConfiguration object and for which at least one value can be set by the application.
+                     * @returns {DOMStringList}
+                     */
+                    getParameterNames(): DOMStringList;
+
+                    /**
+                     * Set the value of a parameter.
+                     * @param name {$$rhino.String}
+                     * @param value {object}
+                     */
+                    setParameter(name: $$rhino.String, value: object): void;
+                }
+                export interface DOMImplementation {
+                    /**
+                     * Creates a DOM Document object of the specified type with its document element.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @param doctype {DocumentType}
+                     * @returns {Document}
+                     */
+                    createDocument(namespaceURI: $$rhino.String, qualifiedName: $$rhino.String, doctype: DocumentType): Document;
+
+                    /**
+                     * Creates an empty DocumentType node.
+                     * @param qualifiedName {$$rhino.String}
+                     * @param publicId {$$rhino.String}
+                     * @param systemId {$$rhino.String}
+                     * @returns {DocumentType}
+                     */
+                    createDocumentType(qualifiedName: $$rhino.String, publicId: $$rhino.String, systemId: $$rhino.String): DocumentType;
+
+                    /**
+                     * This method returns a specialized object which implements the specialized APIs of the specified feature and version, as specified in DOM Features.
+                     * @param feature {$$rhino.String}
+                     * @param version {$$rhino.String}
+                     * @returns {java.lang.Object}
+                     */
+                    getFeature(feature: $$rhino.String, version: $$rhino.String): java.lang.Object;
+
+                    /**
+                     * Test if the DOM implementation implements a specific feature and version, as specified in DOM Features.
+                     * @param feature {$$rhino.String}
+                     * @param version {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasFeature(feature: $$rhino.String, version: $$rhino.String): java.lang.Boolean;
+                }
+                export interface Document extends Node {
+                    /**
+                     * Attempts to adopt a node from another document to this document.
+                     * @param source {Node}
+                     * @returns {Node}
+                     */
+                    adoptNode(source: Node): Node;
+
+                    /**
+                     * Creates an Attr of the given name.
+                     * @param name {$$rhino.String}
+                     * @returns {Attr}
+                     */
+                    createAttribute(name: $$rhino.String): Attr;
+
+                    /**
+                     * Creates an attribute of the given qualified name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @returns {Attr}
+                     */
+                    createAttributeNS(namespaceURI: $$rhino.String, qualifiedName: $$rhino.String): Attr;
+
+                    /**
+                     * Creates a CDATASection node whose value is the specified string.
+                     * @param data {$$rhino.String}
+                     * @returns {CDATASection}
+                     */
+                    createCDATASection(data: $$rhino.String): CDATASection;
+
+                    /**
+                     * Creates a Comment node given the specified string.
+                     * @param data {$$rhino.String}
+                     * @returns {Comment}
+                     */
+                    createComment(data: $$rhino.String): Comment;
+
+                    /**
+                     * Creates an empty DocumentFragment object.
+                     * @returns {DocumentFragment}
+                     */
+                    createDocumentFragment(): DocumentFragment;
+
+                    /**
+                     * Creates an element of the type specified.
+                     * @param tagName {$$rhino.String}
+                     * @returns {Element}
+                     */
+                    createElement(tagName: $$rhino.String): Element;
+
+                    /**
+                     * Creates an element of the given qualified name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @returns {Element}
+                     */
+                    createElementNS(namespaceURI: $$rhino.String, qualifiedName: $$rhino.String): Element;
+
+                    /**
+                     * Creates an EntityReference object.
+                     * @param name {$$rhino.String}
+                     * @returns {EntityReference}
+                     */
+                    createEntityReference(name: $$rhino.String): EntityReference;
+
+                    /**
+                     * Creates a ProcessingInstruction node given the specified name and data strings.
+                     * @param target {$$rhino.String}
+                     * @param data {$$rhino.String}
+                     * @returns {ProcessingInstruction}
+                     */
+                    createProcessingInstruction(target: $$rhino.String, data: $$rhino.String): ProcessingInstruction;
+
+                    /**
+                     * Creates a Text node given the specified string.
+                     * @param data {$$rhino.String}
+                     * @returns {Text}
+                     */
+                    createTextNode(data: $$rhino.String): Text;
+
+                    /**
+                     * The Document Type Declaration (see DocumentType) associated with this document.
+                     * @returns {DocumentType}
+                     */
+                    getDoctype(): DocumentType;
+
+                    /**
+                     * This is a convenience attribute that allows direct access to the child node that is the document element of the document.
+                     * @returns {Element}
+                     */
+                    getDocumentElement(): Element;
+
+                    /**
+                     * The location of the document or null if undefined or if the Document was created using DOMImplementation.createDocument.
+                     * @returns {java.lang.String}
+                     */
+                    getDocumentURI(): java.lang.String;
+
+                    /**
+                     * The configuration used when Document.normalizeDocument() is invoked.
+                     * @returns {DOMConfiguration}
+                     */
+                    getDomConfig(): DOMConfiguration;
+
+                    /**
+                     * Returns the Element that has an ID attribute with the given value.
+                     * @param elementId {$$rhino.String}
+                     * @returns {Element}
+                     */
+                    getElementById(elementId: $$rhino.String): Element;
+
+                    /**
+                     * Returns a NodeList of all the Elements in document order with a given tag name and are contained in the document.
+                     * @param tagname {$$rhino.String}
+                     * @returns {NodeList}
+                     */
+                    getElementsByTagName(tagname: $$rhino.String): NodeList;
+
+                    /**
+                     * Returns a NodeList of all the Elements with a given local name and namespace URI in document order.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {NodeList}
+                     */
+                    getElementsByTagNameNS(namespaceURI: $$rhino.String, localName: $$rhino.String): NodeList;
+
+                    /**
+                     * The DOMImplementation object that handles this document.
+                     * @returns {DOMImplementation}
+                     */
+                    getImplementation(): DOMImplementation;
+
+                    /**
+                     * An attribute specifying the encoding used for this document at the time of the parsing.
+                     * @returns {java.lang.String}
+                     */
+                    getInputEncoding(): java.lang.String;
+
+                    /**
+                     * An attribute specifying whether error checking is enforced or not.
+                     * @returns {java.lang.Boolean}
+                     */
+                    getStrictErrorChecking(): java.lang.Boolean;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, the encoding of this document.
+                     * @returns {java.lang.String}
+                     */
+                    getXmlEncoding(): java.lang.String;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, whether this document is standalone.
+                     * @returns {java.lang.Boolean}
+                     */
+                    getXmlStandalone(): java.lang.Boolean;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, the version number of this document.
+                     * @returns {java.lang.String}
+                     */
+                    getXmlVersion(): java.lang.String;
+
+                    /**
+                     * Imports a node from another document to this document, without altering or removing the source node from the original document; this method creates a new copy of the source node.
+                     * @param importedNode {Node}
+                     * @param deep {$$rhino.Boolean}
+                     * @returns {Node}
+                     */
+                    importNode(importedNode: Node, deep: $$rhino.Boolean): Node;
+
+                    /**
+                     * This method acts as if the document was going through a save and load cycle, putting the document in a "normal" form.
+                     */
+                    normalizeDocument(): void;
+
+                    /**
+                     * Rename an existing node of type ELEMENT_NODE or ATTRIBUTE_NODE.
+                     * @param n {Node}
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    renameNode(n: Node, namespaceURI: $$rhino.String, qualifiedName: $$rhino.String): Node;
+
+                    /**
+                     * The location of the document or null if undefined or if the Document was created using DOMImplementation.createDocument.
+                     * @param documentURI {$$rhino.String}
+                     */
+                    setDocumentURI(documentURI: $$rhino.String): void;
+
+                    /**
+                     * An attribute specifying whether error checking is enforced or not.
+                     * @param strictErrorChecking {$$rhino.Boolean}
+                     */
+                    setStrictErrorChecking(strictErrorChecking: $$rhino.Boolean): void;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, whether this document is standalone.
+                     * @param xmlStandalone {$$rhino.Boolean}
+                     */
+                    setXmlStandalone(xmlStandalone: $$rhino.Boolean): void;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, the version number of this document.
+                     * @param xmlVersion {$$rhino.String}
+                     */
+                    setXmlVersion(xmlVersion: $$rhino.String): void;
+                }
+                export interface NamedNodeMap {
+                    /**
+                     * The number of nodes in this map.
+                     * @returns {java.lang.Integer}
+                     */
+                    getLength(): java.lang.Integer;
+
+                    /**
+                     * Retrieves a node specified by name.
+                     * @param name {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    getNamedItem(name: $$rhino.String): Node;
+
+                    /**
+                     * Retrieves a node specified by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    getNamedItemNS(namespaceURI: $$rhino.String, localName: $$rhino.String): Node;
+
+                    /**
+                     * Returns the indexth item in the map.
+                     * @param index {$$rhino.Number}
+                     * @returns {Node}
+                     */
+                    item(index: $$rhino.Number): Node;
+
+                    /**
+                     * Removes a node specified by name.
+                     * @param name {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    removeNamedItem(name: $$rhino.String): Node;
+
+                    /**
+                     * Removes a node specified by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    removeNamedItemNS(namespaceURI: $$rhino.String, localName: $$rhino.String): Node;
+
+                    /**
+                     * Adds a node using its nodeName attribute.
+                     * @param arg {Node}
+                     * @returns {Node}
+                     */
+                    setNamedItem(arg: Node): Node;
+
+                    /**
+                     * Adds a node using its namespaceURI and localName.
+                     * @param arg {Node}
+                     * @returns {Node}
+                     */
+                    setNamedItemNS(arg: Node): Node;
+                }
+                export interface Node {
+                    /**
+                     * Adds the node newChild to the end of the list of children of this node.
+                     * @param newChild {Node}
+                     * @returns {Node}
+                     */
+                    appendChild(newChild: Node): Node;
+
+                    /**
+                     * Returns a duplicate of this node, i.e., serves as a generic copy constructor for nodes.
+                     * @param deep {$$rhino.Boolean}
+                     * @returns {Node}
+                     */
+                    cloneNode(deep: $$rhino.Boolean): Node;
+
+                    /**
+                     * Compares the reference node, i.e.
+                     * @param other {Node}
+                     * @returns {java.lang.Short}
+                     */
+                    compareDocumentPosition(other: Node): java.lang.Short;
+
+                    /**
+                     * A NamedNodeMap containing the attributes of this node (if it is an Element) or null otherwise.
+                     * @returns {NamedNodeMap}
+                     */
+                    getAttributes(): NamedNodeMap;
+
+                    /**
+                     * The absolute base URI of this node or null if the implementation wasn't able to obtain an absolute URI.
+                     * @returns {java.lang.String}
+                     */
+                    getBaseURI(): java.lang.String;
+
+                    /**
+                     * A NodeList that contains all children of this node.
+                     * @returns {NodeList}
+                     */
+                    getChildNodes(): NodeList;
+
+                    /**
+                     * This method returns a specialized object which implements the specialized APIs of the specified feature and version, as specified in .
+                     * @param feature {$$rhino.String}
+                     * @param version {$$rhino.String}
+                     * @returns {java.lang.Object}
+                     */
+                    getFeature(feature: $$rhino.String, version: $$rhino.String): java.lang.Object;
+
+                    /**
+                     * The first child of this node.
+                     * @returns {Node}
+                     */
+                    getFirstChild(): Node;
+
+                    /**
+                     * The last child of this node.
+                     * @returns {Node}
+                     */
+                    getLastChild(): Node;
+
+                    /**
+                     * Returns the local part of the qualified name of this node.
+                     * @returns {java.lang.String}
+                     */
+                    getLocalName(): java.lang.String;
+
+                    /**
+                     * The namespace URI of this node, or null if it is unspecified (see ).
+                     * @returns {java.lang.String}
+                     */
+                    getNamespaceURI(): java.lang.String;
+
+                    /**
+                     * The node immediately following this node.
+                     * @returns {Node}
+                     */
+                    getNextSibling(): Node;
+
+                    /**
+                     * The name of this node, depending on its type; see the table above.
+                     * @returns {java.lang.String}
+                     */
+                    getNodeName(): java.lang.String;
+
+                    /**
+                     * A code representing the type of the underlying object, as defined above.
+                     * @returns {java.lang.Short}
+                     */
+                    getNodeType(): java.lang.Short;
+
+                    /**
+                     * The value of this node, depending on its type; see the table above.
+                     * @returns {java.lang.String}
+                     */
+                    getNodeValue(): java.lang.String;
+
+                    /**
+                     * The Document object associated with this node.
+                     * @returns {Document}
+                     */
+                    getOwnerDocument(): Document;
+
+                    /**
+                     * The parent of this node.
+                     * @returns {Node}
+                     */
+                    getParentNode(): Node;
+
+                    /**
+                     * The namespace prefix of this node, or null if it is unspecified.
+                     * @returns {java.lang.String}
+                     */
+                    getPrefix(): java.lang.String;
+
+                    /**
+                     * The node immediately preceding this node.
+                     * @returns {Node}
+                     */
+                    getPreviousSibling(): Node;
+
+                    /**
+                     * This attribute returns the text content of this node and its descendants.
+                     * @returns {java.lang.String}
+                     */
+                    getTextContent(): java.lang.String;
+
+                    /**
+                     * Retrieves the object associated to a key on a this node.
+                     * @param key {$$rhino.String}
+                     * @returns {java.lang.Object}
+                     */
+                    getUserData(key: $$rhino.String): java.lang.Object;
+
+                    /**
+                     * Returns whether this node (if it is an element) has any attributes.
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasAttributes(): java.lang.Boolean;
+
+                    /**
+                     * Returns whether this node has any children.
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasChildNodes(): java.lang.Boolean;
+
+                    /**
+                     * Inserts the node newChild before the existing child node refChild.
+                     * @param newChild {Node}
+                     * @param refChild {Node}
+                     * @returns {Node}
+                     */
+                    insertBefore(newChild: Node, refChild: Node): Node;
+
+                    /**
+                     * This method checks if the specified namespaceURI is the default namespace or not.
+                     * @param namespaceURI {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isDefaultNamespace(namespaceURI: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Tests whether two nodes are equal.
+                     * @param arg {Node}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isEqualNode(arg: Node): java.lang.Boolean;
+
+                    /**
+                     * Returns whether this node is the same node as the given one.
+                     * @param other {Node}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isSameNode(other: Node): java.lang.Boolean;
+
+                    /**
+                     * Tests whether the DOM implementation implements a specific feature and that feature is supported by this node, as specified in .
+                     * @param feature {$$rhino.String}
+                     * @param version {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isSupported(feature: $$rhino.String, version: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Look up the namespace URI associated to the given prefix, starting from this node.
+                     * @param prefix {$$rhino.String}
+                     * @returns {java.lang.String}
+                     */
+                    lookupNamespaceURI(prefix: $$rhino.String): java.lang.String;
+
+                    /**
+                     * Look up the prefix associated to the given namespace URI, starting from this node.
+                     * @param namespaceURI {$$rhino.String}
+                     * @returns {java.lang.String}
+                     */
+                    lookupPrefix(namespaceURI: $$rhino.String): java.lang.String;
+
+                    /**
+                     * Puts all Text nodes in the full depth of the sub-tree underneath this Node.
+                     */
+                    normalize(): void;
+
+                    /**
+                     * Removes the child node indicated by oldChild from the list of children, and returns it.
+                     * @param oldChild {Node}
+                     * @returns {Node}
+                     */
+                    removeChild(oldChild: Node): Node;
+
+                    /**
+                     * Replaces the child node oldChild with newChild in the list of children, and returns the oldChild node.
+                     * @param newChild {Node}
+                     * @param oldChild {Node}
+                     * @returns {Node}
+                     */
+                    replaceChild(newChild: Node, oldChild: Node): Node;
+
+                    /**
+                     * The value of this node, depending on its type; see the table above.
+                     * @param nodeValue {$$rhino.String}
+                     */
+                    setNodeValue(nodeValue: $$rhino.String): void;
+
+                    /**
+                     * The namespace prefix of this node, or null if it is unspecified.
+                     * @param prefix {$$rhino.String}
+                     */
+                    setPrefix(prefix: $$rhino.String): void;
+
+                    /**
+                     * This attribute returns the text content of this node and its descendants.
+                     * @param textContent {$$rhino.String}
+                     */
+                    setTextContent(textContent: $$rhino.String): void;
+                }
+                export interface Attr {
+                    /**
+                     * Returns the name of this attribute.
+                     * @returns {java.lang.String}
+                     */
+                    getName(): java.lang.String;
+
+                    /**
+                     * The Element node this attribute is attached to or null if this attribute is not in use.
+                     * @returns {Element}
+                     */
+                    getOwnerElement(): Element;
+
+                    /**
+                     * The type information associated with this attribute.
+                     * @returns {TypeInfo}
+                     */
+                    getSchemaTypeInfo(): TypeInfo;
+
+                    /**
+                     * True if this attribute was explicitly given a value in the instance document, false otherwise.
+                     * @returns {java.lang.Boolean}
+                     */
+                    getSpecified(): java.lang.Boolean;
+
+                    /**
+                     * On retrieval, the value of the attribute is returned as a string.
+                     * @returns {java.lang.String}
+                     */
+                    getValue(): java.lang.String;
+
+                    /**
+                     * Returns whether this attribute is known to be of type ID (i.e.
+                     * @returns {java.lang.Boolean}
+                     */
+                    isId(): java.lang.Boolean;
+
+                    /**
+                     * On retrieval, the value of the attribute is returned as a string.
+                     * @param value {$$rhino.String}
+                     */
+                    setValue(value: $$rhino.String): void;
+                }
+                export interface NodeList {
+                    /**
+                     * Test if a name is part of this NameList.
+                     * @param str {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    contains(str: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Test if the pair namespaceURI/name is part of this NameList.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param name {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    containsNS(namespaceURI: $$rhino.String, name: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * The number of pairs (name and namespaceURI) in the list.
+                     * @returns {java.lang.Integer}
+                     */
+                    getLength(): java.lang.Integer;
+
+                    /**
+                     * Returns the indexth name item in the collection.
+                     * @param index {$$rhino.Number}
+                     * @returns {java.lang.String}
+                     */
+                    getName(index: $$rhino.Number): java.lang.String;
+
+                    /**
+                     * Returns the indexth namespaceURI item in the collection.
+                     * @param index {$$rhino.Number}
+                     * @returns {java.lang.String}
+                     */
+                    getNamespaceURI(index: $$rhino.Number): java.lang.String;
+                }
+                export interface TypeInfo {
+                    /**
+                     * The name of a type declared for the associated element or attribute, or null if unknown.
+                     * @returns {java.lang.String}
+                     */
+                    getTypeName(): java.lang.String;
+
+                    /**
+                     * The namespace of the type declared for the associated element or attribute or null if the element does not have declaration or if no namespace information is available.
+                     * @returns {java.lang.String}
+                     */
+                    getTypeNamespace(): java.lang.String;
+
+                    /**
+                     * This method returns if there is a derivation between the reference type definition, i.e.
+                     * @param typeNamespaceArg {$$rhino.String}
+                     * @param typeNameArg {$$rhino.String}
+                     * @param derivationMethod {$$rhino.Number}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isDerivedFrom(typeNamespaceArg: $$rhino.String, typeNameArg: $$rhino.String, derivationMethod: $$rhino.Number): java.lang.Boolean;
+                }
+                export interface Element extends Node {
+                    /**
+                     * Retrieves an attribute value by name.
+                     * @param name {$$rhino.String}
+                     * @returns {java.lang.String}
+                     */
+                    getAttribute(name: $$rhino.String): java.lang.String;
+
+                    /**
+                     * Retrieves an attribute node by name.
+                     * @param name {$$rhino.String}
+                     * @returns {Attr}
+                     */
+                    getAttributeNode(name: $$rhino.String): Attr;
+
+                    /**
+                     * Retrieves an Attr node by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {Attr}
+                     */
+                    getAttributeNodeNS(namespaceURI: $$rhino.String, localName: $$rhino.String): Attr;
+
+                    /**
+                     * Retrieves an attribute value by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {java.lang.String}
+                     */
+                    getAttributeNS(namespaceURI: $$rhino.String, localName: $$rhino.String): java.lang.String;
+
+                    /**
+                     * Returns a NodeList of all descendant Elements with a given tag name, in document order.
+                     * @param name {$$rhino.String}
+                     * @returns {NodeList}
+                     */
+                    getElementsByTagName(name: $$rhino.String): NodeList;
+
+                    /**
+                     * Returns a NodeList of all the descendant Elements with a given local name and namespace URI in document order.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {NodeList}
+                     */
+                    getElementsByTagNameNS(namespaceURI: $$rhino.String, localName: $$rhino.String): NodeList;
+
+                    /**
+                     * The type information associated with this element.
+                     * @returns {TypeInfo}
+                     */
+                    getSchemaTypeInfo(): TypeInfo;
+
+                    /**
+                     * The name of the element.
+                     * @returns {java.lang.String}
+                     */
+                    getTagName(): java.lang.String;
+
+                    /**
+                     * Returns true when an attribute with a given name is specified on this element or has a default value, false otherwise.
+                     * @param name {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasAttribute(name: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Returns true when an attribute with a given local name and namespace URI is specified on this element or has a default value, false otherwise.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasAttributeNS(namespaceURI: $$rhino.String, localName: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Removes an attribute by name.
+                     * @param name {$$rhino.String}
+                     */
+                    removeAttribute(name: $$rhino.String): void;
+
+                    /**
+                     * Removes the specified attribute node.
+                     * @param oldAttr {Attr}
+                     * @returns {Attr}
+                     */
+                    removeAttributeNode(oldAttr: Attr): Attr;
+
+                    /**
+                     * Removes an attribute by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     */
+                    removeAttributeNS(namespaceURI: $$rhino.String, localName: $$rhino.String): void;
+
+                    /**
+                     * Adds a new attribute.
+                     * @param name {$$rhino.String}
+                     * @param value {$$rhino.String}
+                     */
+                    setAttribute(name: $$rhino.String, value: $$rhino.String): void;
+
+                    /**
+                     * Adds a new attribute node.
+                     * @param newAttr {Attr}
+                     * @returns {Attr}
+                     */
+                    setAttributeNode(newAttr: Attr): Attr;
+
+                    /**
+                     * Adds a new attribute.
+                     * @param newAttr {Attr}
+                     * @returns {Attr}
+                     */
+                    setAttributeNodeNS(newAttr: Attr): Attr;
+
+                    /**
+                     * Adds a new attribute.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @param value {$$rhino.String}
+                     */
+                    setAttributeNS(namespaceURI: $$rhino.String, qualifiedName: $$rhino.String, value: $$rhino.String): void;
+
+                    /**
+                     * If the parameter isId is true, this method declares the specified attribute to be a user-determined ID attribute .
+                     * @param name {$$rhino.String}
+                     * @param isId {$$rhino.Boolean}
+                     */
+                    setIdAttribute(name: $$rhino.String, isId: $$rhino.Boolean): void;
+
+                    /**
+                     * If the parameter isId is true, this method declares the specified attribute to be a user-determined ID attribute .
+                     * @param idAttr {Attr}
+                     * @param isId {$$rhino.Boolean}
+                     */
+                    setIdAttributeNode(idAttr: Attr, isId: $$rhino.Boolean): void;
+
+                    /**
+                     * If the parameter isId is true, this method declares the specified attribute to be a user-determined ID attribute .
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @param isId {$$rhino.Boolean}
+                     */
+                    setIdAttributeNS(namespaceURI: $$rhino.String, localName: $$rhino.String, isId: $$rhino.Boolean): void;
+                }
+            }
+        }
+    }
+
+    export namespace com {
+        export namespace glide {
+            export namespace choice {
+                export class ChoiceList {
+
+                }
+            }
+            export namespace script {
+                export class GlideElement {
+
+                }
+            }
+            export namespace glideobject {
+                export interface IGlideObject {
+                    handlesChangeDetection(): $$rhino.Boolean;
+                    handlesPreviousValueTracking(): $$rhino.Boolean;
+                    handlesDefaultValue(): $$rhino.Boolean;
+                    getPreviousValue(): java.lang.String;
+                    changes(): $$rhino.Boolean;
+                    wasChangedInStream(): $$rhino.Boolean;
+                    isValid(bln: $$rhino.Boolean): $$rhino.Boolean;
+                    getErrorMsg(): java.lang.String;
+                    hasChoices(): $$rhino.Boolean;
+                    getChoices(cl: choice.ChoiceList): void;
+                    getTableName(): java.lang.String;
+                    setValue(o: java.lang.Object): void;
+                    setDisplayValue(string: java.lang.String): void;
+                    getDisplayValue(): java.lang.String;
+                    getValue(): java.lang.String;
+                    getStorageValue(): java.lang.String;
+                    getInitialValue(): java.lang.String
+                    setInitialValue(string: java.lang.String): void;
+                    setElement(ge: script.GlideElement): void;
+                    getHTMLValue(i?: $$rhino.Number): java.lang.String;
+                    setDefaultValue(o: java.lang.Object): void;
+                }
+                export class AGlideObject implements IGlideObject {
+                    handlesDefaultValue(): $$rhino.Boolean;
+                    handlesChangeDetection(): $$rhino.Boolean;
+                    handlesPreviousValueTracking(): $$rhino.Boolean;
+                    getPreviousValue(): java.lang.String;
+                    changes(): $$rhino.Boolean;
+                    wasChangedInStream(): $$rhino.Boolean;
+                    isValid(mandatoryApplies: $$rhino.Boolean): $$rhino.Boolean;
+                    getErrorMsg(): java.lang.String;
+                    hasChoices(): $$rhino.Boolean;
+                    getChoices(cl: choice.ChoiceList): void;
+                    copyAll(from: choice.ChoiceList, to: choice.ChoiceList): void;
+                    getTableName(): java.lang.String;
+                    setValue(o: java.lang.Object): void;
+                    setDisplayValue(string: java.lang.String): void;
+                    setDefaultValue(o: java.lang.Object): void;
+                    getDisplayValue(): java.lang.String;
+                    getValue(): java.lang.String;
+                    getStorageValue(): java.lang.String;
+                    getInitialValue(): java.lang.String;
+                    setInitialValue(string: java.lang.String): void;
+                    setElement(ge: script.GlideElement): void;
+                    getHTMLValue(i?: $$rhino.Number): java.lang.String;
+                }
+                export class GlideObject extends AGlideObject {
+                    setValue(value: java.lang.Object): void;
+                    setDisplayValue(value: java.lang.String): void;
+                    getDisplayValue(): java.lang.String;
+                    getValue(): java.lang.String;
+                    getInitialValue(): java.lang.String;
+                }
             }
         }
     }
@@ -3774,6 +5648,44 @@ declare class GlideElementDescriptor {
     isVirtual(): boolean;
 }
 
+declare class GlideScriptableInputStream {
+    protected constructor();
+}
+
+declare class XMLNodeIterator {
+    hasNext(): Packages.java.lang.Boolean;
+    next(): XMLNode;
+}
+
+declare class XMLNode {
+    getAttribute(attribute: $$rhino.String): Packages.java.lang.String;
+    getAttributes(): any;
+    getChildNodeIterator(): XMLNodeIterator;
+    getFirstChild(): XMLNode;
+    getLastChild(): XMLNode;
+    getNodeName(): Packages.java.lang.String;
+    getNodeValue(): Packages.java.lang.String | null;
+    getTextContent(): Packages.java.lang.String | null;
+    hasAttribute(attribute: $$rhino.String): Packages.java.lang.Boolean;
+    toString(): Packages.java.lang.String;
+}
+
+declare class XMLDocument2 extends Packages.java.lang.Object {
+    constructor();
+    constructor(inputStream: GlideScriptableInputStream);
+    createElement(name: $$rhino.String, value?: any): XMLNode;
+    createElementWithTextValue(name: $$rhino.String, value?: any): XMLNode;
+    getDocumentElement(): XMLNode;
+    getFirstNode(xpath: $$rhino.String): XMLNode;
+    getNextNode(current: Packages.java.lang.Object): XMLNode;
+    getNode(xpath: $$rhino.String): XMLNode;
+    getNodeText(xpath: $$rhino.String): Packages.java.lang.String;
+    parseXML(xmlDoc: $$rhino.String): Packages.java.lang.Boolean;
+    setCurrent(el: XMLNode): void;
+    setNamespaceAware(el: $$rhino.Boolean): void;
+    toString(): Packages.java.lang.String;
+}
+
 declare class GlideEmail {
     /**
      * Adds the address to either the cc or bcc list.
@@ -5030,8 +6942,36 @@ declare var Class: {
         CustomClassConstructorN<any, ICustomClassPrototypeN<any, any, string>, ICustomClassPrototypeN<any, any, string>>>(): C;
 };
 
-// #endregion
+declare interface ObjectConstructor {
+    extendsObject<B, E extends Omit<ICustomClassPrototype0<any, any, string>, "initialize">, P extends Omit<B, "type"> & E>(base: { new(): B; }, proto: E): P;
+}
 
+declare interface Id {
+    CALLABLE_PREFIX: 'ajaxFunction_';
+    process(): any;
+    newItem(name: string): XMLNode;
+    getParameter(name: string): $$rhino.String;
+    getDocument(): XMLDocument2;
+    getRootElement(): XMLNode;
+    getName(): $$rhino.String;
+    getType(): $$rhino.String;
+    getChars(): $$rhino.String;
+    setAnswer(value: any): void;
+    setError(error: any): void;
+    type: "AbstractAjaxProcessor";
+}
+
+declare interface AbstractAjaxProcessorConstructor {
+    new(value?: any): IAbstractAjaxProcessor;
+    (): any;
+    (value: any): any;
+}
+
+declare interface ScopedAppsGlobal {
+    AbstractAjaxProcessor: AbstractAjaxProcessorConstructor;
+}
+
+// #endregion
 
 /**
  *

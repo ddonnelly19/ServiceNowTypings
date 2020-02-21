@@ -1,12 +1,13 @@
 {
-  "name": "nodejs-console-app1",
-  "version": "0.0.0",
-  "description": "NodejsConsoleApp1",
+  "name": "servicenow-server-global-dts",
+  "version": "0.1.0",
+  "description": "JavaScript Typings for globally-scoped ServiceNow server-side development",
   "main": "app.js",
   "author": {
-    "name": ""
+    "name": "Leonard T. Erwine"
   },
   "devDependencies": {
-    "@types/node": "^8.0.14"
+    "@types/node": "^8.0.14",
+    "typescript": "^3.8.2"
   }
 }

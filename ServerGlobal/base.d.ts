@@ -1,3 +1,7 @@
+/**
+ * Helper types for relating primitive JavaScript and Java/Rhino types.
+ * @namespace $$rhino
+ */
 declare namespace $$rhino {
     /**
      * Utility type to include empty string values as well as well as null and undefined values.
@@ -14,9 +18,9 @@ declare namespace $$rhino {
     export type BooleanString = "true" | "false";
     /**
      * Utility type for javascript primitive string values and Java string-like objects.
-     * @typedef {(string | Packages.java.lang.String | Packages.java.lang.Character)} String
+     * @typedef {(string | Packages.java.lang.CharSequence | Packages.java.lang.Character)} String
      */
-    export type String = string | Packages.java.lang.String | Packages.java.lang.Character;
+    export type String = string | Packages.java.lang.CharSequence | Packages.java.lang.Character;
     /**
      * Utility type for javascript primitive boolean values and Java Boolean objects.
      * @typedef {(boolean | Packages.java.lang.Boolean)} Boolean
@@ -31,19 +35,19 @@ declare namespace $$rhino {
     export type NumberLike<N extends number, S extends ExcludeEmptyString<string>> = N | Packages.java.lang.Number | S;
     /**
      * Utility type for javascript arrays and Java Collection objects.
-     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     * @typedef {(E[] | Packages.java.util.Collection<E>)} EmptyString
      */
     export type Collection<E> = E[] | Packages.java.util.Collection<E>;
     /**
      * Utility type for javascript arrays and Java List objects.
-     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     * @typedef {(E[] | Packages.java.util.List<E)} EmptyString
      */
     export type List<E> = E[] | Packages.java.util.List<E>;
     /**
      * Utility type for javascript primitive string values and Java string-like objects that are empty.
-     * @typedef {(number | Packages.java.lang.Number)} EmptyString
+     * @typedef {("" | (Packages.java.lang.CharSequence & { length(): 0; }))} EmptyString
      */
-    export type EmptyString = "" | (Packages.java.lang.String & { size(): 0; });
+    export type EmptyString = "" | (Packages.java.lang.CharSequence & { length(): 0; });
     /**
      * Utility type to include empty string values.
      * @typedef {(S | "")} IncludeEmptyString
@@ -56,9 +60,13 @@ declare namespace $$rhino {
      * @template S - Type of value that is to exclude empty string values.
      */
     export type ExcludeEmptyString<S> = S extends EmptyString ? never : S;
-    export type StringValue<S extends string> = S | Packages.java.lang.String;
+    export type StringValue<S extends string> = S | Packages.java.lang.CharSequence | Packages.java.lang.Character;
 }
 
+/**
+ * Helper types for GlideElement and GlideRecord objects.
+ * @namespace $$element
+ */
 declare namespace $$element {
     /**
      * Defines members that are common to both GlideRecord and GlideElement objects
@@ -69,50 +77,45 @@ declare namespace $$element {
         /**
          * Determines if the user's role permits the creation of new records in this field.
          * @memberof IDbObject
-         * @returns {boolean} True if the field can be created, false otherwise..
-         * @description 
+         * @returns {boolean} True if the field can be created, false otherwise.
          */
         canCreate(): boolean;
         /**
-         * Determines whether the user's role permits them to read the associated GlideRecord.
+         * Indicates whether the user's role permits them to read the associated GlideRecord.
          * @memberof IDbObject
-         * @returns {boolean} True if the field can be read, false otherwise..
-         * @description 
+         * @returns {boolean} True if the field can be read, false otherwise.
          */
         canRead(): boolean;
         /**
          * Determines whether the user's role permits them to write to the associated GlideRecord.
          * @memberof IDbObject
-         * @returns {boolean} True if the user can write to the field, false otherwise..
-         * @description 
+         * @returns {boolean} True if the user can write to the field, false otherwise.
          */
         canWrite(): boolean;
         /**
-         * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
+         * Returns the value of the specified attribute from the dictionary.
          * @memberof IDbObject
-         * @returns {boolean} True if the field has changed, false otherwise..
-         * @description  
-         */
-        changes(): boolean;
-        /**
-         * Returns an element descriptor.
-         * @memberof IDbObject
-         * @returns {GlideElementDescriptor} Field's element descriptor..
+         * @param {string} attributeName - Attribute name
+         * @returns {string} Attribute value.
          * @description 
+         */
+        getAttribute(attributeName: string): string;
+        /**
+         * Returns the element's descriptor.
+         * @memberof IDbObject
+         * @returns {GlideElementDescriptor} Element's descriptor.
          */
         getED(): GlideElementDescriptor;
         /**
-         * Returns the object's label.
+         * Returns the object label.
          * @memberof IDbObject
-         * @returns {string} Object's label.
-         * @description 
+         * @returns {string} Object label.
          */
         getLabel(): string;
         /**
-         * Returns the name of the field's table.
+         * Returns for Element objects, returns the name of the table on which the field resides; Otherwise, retrieves the name of the table associated with the GlideRecord.
          * @memberof IDbObject
-         * @returns {string} Name of the table. This may be different from the table Class that the record is in. See Tables and Classes in the product documentation..
-         * @description 
+         * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
          */
         getTableName(): string;
     }
@@ -124,310 +127,177 @@ declare namespace $$element {
     export class StringBased<V extends string | number, E extends StringBased<V, E, S>, S extends string> extends Packages.java.lang.String implements IValueSpecific<V, E, S> {
         /**
          * Determines if the user's role permits the creation of new records in this field.
-         * @memberof StringBased
-         * @returns {boolean} True if the field can be created, false otherwise..
-         * @description 
+         * @memberof IDbObject
+         * @returns {boolean} True if the field can be created, false otherwise.
          */
         canCreate(): boolean;
         /**
-         * Determines whether the user's role permits them to read the associated GlideRecord.
-         * @memberof StringBased
-         * @returns {boolean} True if the field can be read, false otherwise..
-         * @description 
+         * Indicates whether the user's role permits them to read the associated GlideRecord.
+         * @memberof IDbObject
+         * @returns {boolean} True if the field can be read, false otherwise.
          */
         canRead(): boolean;
         /**
          * Determines whether the user's role permits them to write to the associated GlideRecord.
-         * @memberof StringBased
-         * @returns {boolean} True if the user can write to the field, false otherwise..
-         * @description 
+         * @memberof IDbObject
+         * @returns {boolean} True if the user can write to the field, false otherwise.
          */
         canWrite(): boolean;
         /**
          * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
-         * @memberof StringBased
-         * @returns {boolean} True if the field has changed, false otherwise..
-         * @description  
+         * @memberof GlideElement
+         * @returns {boolean} True if the fields have been changed, false if the field has not.
+         * @description 
          */
         changes(): boolean;
         /**
-         * Returns an element descriptor.
-         * @memberof StringBased
-         * @returns {GlideElementDescriptor} Field's element descriptor..
-         * @description 
-         */
-        getED(): GlideElementDescriptor;
-        /**
-         * Returns the object's label.
-         * @memberof StringBased
-         * @returns {string} Object's label.
-         * @description 
-         */
-        getLabel(): string;
-        /**
-         * Returns the name of the field's table.
-         * @memberof StringBased
-         * @returns {string} Name of the table. This may be different from the table Class that the record is in. See Tables and Classes in the product documentation..
-         * @description 
-         */
-        getTableName(): string;
-        /**
          * Determines if the previous value of the current field matches the specified object.
-         * @memberof StringBased
-         * @param {V | E | $$rhino.Nilable<S>} value - An object value to check against the previous value of the current field.
-         * @returns {boolean} True if the previous value matches the parameter, false if it does not..
-         * @description  
+         * @memberof GlideElement
+         * @param {V | E | $$property.Nilable<S>} o - An object value to check against the previous value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @description 
          */
-        changesFrom(value: V | E | $$rhino.Nilable<S>): boolean;
+        changesFrom(o: V | E | $$rhino.Nilable<S>): boolean;
         /**
          * Determines if the new value of a field, after a change, matches the specified object.
-         * @memberof StringBased
-         * @param {V | E | $$rhino.Nilable<S>} value - An object value to check against the new value of the current field.
-         * @returns {boolean} True if the new value matches the parameter, false if it does not..
-         * @description  
+         * @memberof GlideElement
+         * @param {V | E | $$property.Nilable<S>} o - An object value to check against the new value of the current field.
+         * @returns {boolean} True if the previous value matches, false if it does not.
+         * @description 
          */
-        changesTo(value: V | E | $$rhino.Nilable<S>): boolean;
+        changesTo(o: V | E | $$rhino.Nilable<S>): boolean;
         /**
          * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
-         * @memberof StringBased
-         * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT..
-         * @description 
+         * @memberof GlideElement
+         * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT.
          */
         dateNumericValue(): number;
         /**
-         * Debugs the object and adds debug messages using setError(String).
-         * @memberof StringBased
-         * @param {*} o - An object to debug.
-         */
-        debug(o: any): void;
-        /**
          * Returns the value of the specified attribute from the dictionary.
-         * @memberof StringBased
+         * @memberof IDbObject
          * @param {string} attributeName - Attribute name
          * @returns {string} Attribute value.
-         * @description  
+         * @description 
          */
         getAttribute(attributeName: string): string;
         /**
-         * Gets the base table of the field.
-         * @memberof StringBased
-         * @returns {string} Name of the base table. This may be different from the table that the field is defined on. See "Tables and Classes" in the product documentation..
-         */
-        getBaseTableName(): string;
-        /**
          * Returns the Boolean value of the specified attribute from the dictionary.
-         * @memberof StringBased
+         * @memberof GlideElement
          * @param {string} attributeName - Attribute name
-         * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist..
-         * @description  
+         * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
+         * @description 
          */
         getBooleanAttribute(attributeName: string): boolean;
         /**
-         * Generates a choice list for a field. Returns the choice values from the base table only, not from the extended table.
-         * @memberof StringBased
-         * @param {string} [value] - A dependent value.
-         * @returns {Packages.java.util.ArrayList<*>} The choice values for the field..
-         * @description 
+         * Generates a choice list for a field.
+         * @memberof GlideElement
+         * @param {string} [dependent] - A dependent value
+         * @returns {Array<*>} An array list of choices.
          */
-        getChoices(value?: string): Packages.java.util.ArrayList<any>;
+        getChoices(dependent?: string): any[];
         /**
-         * Gets the choice label for the current choice value.
-         * @memberof StringBased
-         * @returns {string} The choice label..
+         * Returns the choice label for the current choice.
+         * @memberof GlideElement
+         * @returns {string} The selected choice's label.
          * @description 
          */
         getChoiceValue(): string;
         /**
-         * Gets the number of debug messages logged by debug().
-         * @memberof StringBased
-         * @returns {number} The number of debug messages..
+         * Returns the clear text value for Password (2 way encrypted) fields in scoped applications.
+         * @memberof GlideElement
+         * @returns {string} The clear text password.
          */
-        getDebugCount(): number;
-        /**
-         * Checks whether or not the field is dependent on another field.
-         * @memberof StringBased
-         * @returns {string} Name of the field on which the current field depends..
-         */
-        getDependent(): string;
-        /**
-         * Gets the table that the current table depends on.
-         * @memberof StringBased
-         * @returns {string} The name of the table..
-         */
-        getDependentTable(): string;
+        getDecryptedValue(): string;
         /**
          * Gets the formatted display value of the field.
-         * @memberof StringBased
-         * @param {number} maxChar - Optional, maximum number of characters to return.
-         * @returns {string} Display value of the field..
-         * @description 
+         * @memberof GlideElement
+         * @param {number} [maxCharacters] - Maximum characters desired
+         * @returns {string} The display value of the field.
          */
-        getDisplayValue(maxChar: number): string;
+        getDisplayValue(maxCharacters?: number): string;
         /**
-         * Gets the formatted display value of a field, or a specified substitute value if the display value is null or empty.
-         * @memberof StringBased
-         * @param {number} maxChar - Optional, the maximum number of characters to be returned.
-         * @param {string} nullSub - The value to return if the display value is null or empty.
-         * @returns {string} The formatted display value of the field, or the specified substitute value..
+         * Returns the element's descriptor.
+         * @memberof IDbObject
+         * @returns {GlideElementDescriptor} Element's descriptor.
          */
-        getDisplayValueExt(maxChar: number, nullSub: string): string;
+        getED(): GlideElementDescriptor;
         /**
-         * Gets the value for a given element.
-         * @memberof StringBased
-         * @param {string} value - An element
-         * @returns {string} The value of the element..
+         * Returns the phone number in international format.
+         * @memberof GlideElement
+         * @returns {string} The phone number in international format.
          */
-        getElementValue(value: string): string;
-        /**
-         * Gets error debug messages.
-         * @memberof StringBased
-         * @returns {string} A string of debug messages.
-         */
-        getError(): string;
-        /**
-         * Gets the escaped value for the current element.
-         * @memberof StringBased
-         * @returns {string} The escaped value of the current element..
-         */
-        getEscapedValue(): string;
-        /**
-         * Gets the CSS style for the field.
-         * @memberof StringBased
-         * @returns {string} The CSS style for the field..
-         */
-        getFieldStyle(): string;
-        /**
-         * Gets a glide object.
-         * @memberof StringBased
-         * @returns {*} A Glide object..
-         */
-        getGlideObject(): any;
-        /**
-         * Gets a glide record.
-         * @memberof StringBased
-         * @returns {GlideRecord} A glide record.
-         */
-        getGlideRecord(): GlideRecord;
+        getGlobalDisplayValue(): string;
         /**
          * Returns the HTML value of a field.
-         * @memberof StringBased
+         * @memberof GlideElement
          * @param {number} [maxChars] - Maximum number of characters to return.
-         * @returns {string} HTML value for the field..
-         * @description 
+         * @returns {string} HTML value for the field.
          */
         getHTMLValue(maxChars?: number): string;
         /**
-         * Returns the HTML value of a field, or a specified substitute value if the HTML value is null or empty.
-         * @memberof StringBased
-         * @param {number} maxChar - The maximum number of characters to return.
-         * @param {string} nullSub - The value to return if the HTML value is null or empty.
-         * @returns {string} The HTML value or the specified substitute value..
-         */
-        getHTMLValueExt(maxChar: number, nullSub: string): string;
-        /**
          * Returns either the most recent journal entry or all journal entries.
-         * @memberof StringBased
+         * @memberof GlideElement
          * @param {number} mostRecent - If 1, returns the most recent entry. If -1, returns all journal entries.
-         * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n"..
-         * @description 
+         * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n".
          */
         getJournalEntry(mostRecent: number): string;
         /**
+         * Returns the object label.
+         * @memberof IDbObject
+         * @returns {string} Object label.
+         */
+        getLabel(): string;
+        /**
          * Returns the name of the field.
-         * @memberof StringBased
+         * @memberof GlideElement
          * @returns {string} Field name.
-         * @description 
          */
         getName(): string;
         /**
-         * Get the CSS style for the value.
-         * @memberof StringBased
-         * @returns {string} The CSS style for the value..
+         * Returns the name of the table on which the field resides.
+         * @memberof IDbObject
+         * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
          */
-        getStyle(): string;
+        getTableName(): string;
         /**
-         * Retrieves the value and escapes the HTML.
-         * @memberof StringBased
-         * @returns {string} The escaped HTML.
-         */
-        getTextAreaDisplayValue(): string;
-        /**
-         * Retrieves the XHTML value of a field.
-         * @memberof StringBased
-         * @returns {string} The XHTML value.
-         */
-        getXHTMLValue(): string;
-        /**
-         * Gets the XML value of a field as a string.
-         * @memberof StringBased
-         * @returns {string} The XML value.
-         */
-        getXMLValue(): string;
-        /**
-         * Determines whether a field has a particular attribute.
-         * @memberof StringBased
-         * @param {string} attributeName - The attribute to check for
-         * @returns {boolean} True if the field has the attribute, false otherwise..
-         */
-        hasAttribute(attributeName: string): boolean;
-        /**
-         * Determines if the user has the right to perform a particular operation.
-         * @memberof StringBased
-         * @param {string} operationName - Name of the operation to check for
-         * @returns {boolean} True if the user has permission to perform the operation, false otherwise..
-         */
-        hasRightsTo(operationName: string): boolean;
-        /**
-         * Determines if the field has a value.
-         * @memberof StringBased
-         * @returns {boolean} True if the field has a value, false otherwise..
-         */
-        hasValue(): boolean;
-        /**
-         * Determines whether the field is null.
-         * @memberof StringBased
-         * @returns {boolean} True if the field is null or an empty string, false otherwise..
-         * @description 
+         * Determines if a field is null.
+         * @memberof GlideElement
+         * @returns {boolean} True if the field is null or an empty string, false if not.
          */
         nil(): boolean;
         /**
-         * Sets the duration field to a number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
-         * @memberof StringBased
-         * @param {number} milliseconds - Number of milliseconds spanned by the duration.
+         * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
+         * @memberof GlideElement
+         * @param {number} milliseconds - Number of milliseconds since 1/1/1970
          * @description 
          */
         setDateNumericValue(milliseconds: number): void;
         /**
          * Sets the display value of the field.
-         * @memberof StringBased
-         * @param {*} displayValue - Value to be displayed.
+         * @memberof GlideElement
+         * @param {*} value - The value to set for the field.
+         */
+        setDisplayValue(value: any): void;
+        /**
+         * Adds an error message. Available in Fuji patch 3.
+         * @memberof GlideElement
+         * @param {string} errorMessage - The error message.
+         */
+        setError(errorMessage: string): void;
+        /**
+         * Sets the field to the specified phone number.
+         * @memberof GlideElement
+         * @param {*} phoneNumber - The phone number to set. This can be in either the international or local format.
+         * @param {boolean} strict - When true, specifies that the number specified must match the correct format. When false, the system attempts to correct an improperly formatted phone number.
+         * @returns {boolean} True if the value was set.
          * @description 
          */
-        setDisplayValue(displayValue: any): void;
-        /**
-         * Adds an error message.
-         * @memberof StringBased
-         * @description  
-         */
-        setError(): void;
-        /**
-         * Sets the initial value of a field.
-         * @memberof StringBased
-         * @param {string} value - Initial value for the field.
-         */
-        setInitialValue(value: string): void;
-        /**
-         * Sets the journal entry.
-         * @memberof StringBased
-         * @param {*} value - The value to set the journal entry to.
-         * @param {string} userName - The user to attribute the journal entry to. Does not set the journal entry's created by field.
-         */
-        setJournalEntry(value: any, userName: string): void;
+        setPhoneNumber(phoneNumber: any, strict: boolean): boolean;
         /**
          * Sets the value of a field.
-         * @memberof StringBased
-         * @param {V | E | $$rhino.Nilable<S>} value - The value the field is to be set to.
-         * @description  
+         * @memberof GlideElement
+         * @param {V | E | $$property.Nilable<S>} value - Object value to set the field to.
+         * @description 
          */
         setValue(value: V | E | $$rhino.Nilable<S>): void;
     }
@@ -441,6 +311,7 @@ declare namespace $$element {
     export type Script<S extends string> = IValueSpecific<S, GlideElementScript, S> & GlideElementScript;
     export type UserImage<S extends string> = IValueSpecific<S, GlideElementUserImage, S> & GlideElementUserImage;
     export type Password2<S extends string> = IValueSpecific<S, GlideElementPassword2, S> & GlideElementPassword2;
+    export type Counter<N extends number, S extends string> = IValueSpecific<N, GlideElementNumeric, S> & GlideElementNumeric;
     export interface IReference<P extends IGlideTableProperties, R extends P & GlideRecord> extends IValueSpecific<R, Reference<P, R>, string> {
         changesFrom(o: R | Reference<P, R> | $$rhino.Nilable<string>): boolean;
         changesTo(o: R | Reference<P, R> | $$rhino.Nilable<string>): boolean;
@@ -451,19 +322,46 @@ declare namespace $$element {
     export type Reference<P extends IGlideTableProperties, R extends P & GlideRecord> = IReference<P, R> & GlideElementReference & P;
 }
 
+/**
+ * Helper types for GlideElement and GlideRecord properties.
+ * @namespace $$property
+ */
 declare namespace $$property {
     export type Boolean = GlideElementBoolean | $$rhino.BooleanLike;
+    export type BreakdownElement = GlideElementBreakdownElement | $$rhino.String;
     export type Element = GlideElement | $$rhino.String;
-    export type Numeric = GlideElementNumeric | $$rhino.String;
+    export type Compressed = GlideElementCompressed | $$rhino.String;
+    export type Conditions = GlideElementConditions | $$rhino.String;
+    export type Counter = GlideElementCounter | $$rhino.NumberLike<number, string>;
+    export type Currency = GlideElementCurrency | $$rhino.NumberLike<number, string>;
+    export type DataObject = GlideElementDataObject | $$rhino.String;
+    export type Documentation = GlideElementDocumentation | $$rhino.String;
+    export type DocumentId = GlideElementDocumentId | $$rhino.String;
+    export type DomainId = GlideElementDomainId | $$rhino.String;
+    export type FullUTF8 = GlideElementFullUTF8 | $$rhino.String;
     export type GlideObject = GlideElementGlideObject | $$rhino.String;
+    export type GlideVar = GlideElementGlideVar | $$rhino.String;
+    export type Icon = GlideElementIcon | $$rhino.String;
+    export type InternalType = GlideElementInternalType | $$rhino.String;
+    export type Numeric = GlideElementNumeric | $$rhino.NumberLike<number, string>;
+    export type Password = GlideElementPassword | $$rhino.String;
+    export type Password2 = GlideElementPassword2 | $$rhino.String;
+    export type Price = GlideElementPrice | $$rhino.NumberLike<number, string>;
+    export type Reference = GlideElementReference | $$rhino.String;
+    export type Script = GlideElementScript | $$rhino.String;
+    export type ShortFieldName = GlideElementShortFieldName | $$rhino.String;
+    export type ShortTableName = GlideElementShortTableName | $$rhino.String;
+    export type SourceId = GlideElementSourceId | $$rhino.String;
+    export type SourceName = GlideElementSourceName | $$rhino.String;
+    export type SourceTable = GlideElementSourceTable | $$rhino.String;
     export type SysClassName = GlideElementSysClassName | $$rhino.String;
     export type TranslatedField = GlideElementTranslatedField | $$rhino.String;
-    export type Conditions = GlideElementConditions | $$rhino.String;
-    export type Documentation = GlideElementDocumentation | $$rhino.String;
-    export type Script = GlideElementScript | $$rhino.String;
+    export type TranslatedHTML = GlideElementTranslatedHTML | $$rhino.String;
+    export type TranslatedText = GlideElementTranslatedText | $$rhino.String;
+    export type URL = GlideElementURL | $$rhino.String;
     export type UserImage = GlideElementUserImage | $$rhino.String;
-    export type Password2 = GlideElementPassword2 | $$rhino.String;
-    export type Reference = GlideElementReference | $$rhino.String;
+    export type Variables = GlideElementVariables | { [key: string]: any };
+    export type WikiText = GlideElementWikiText | $$rhino.String;
     export namespace generic {
         export type Element<S extends string> = $$element.Element<S> | S;
         export type Numeric<N extends number, S extends string> = $$element.Numeric<N, S> | number | S;
@@ -480,325 +378,141 @@ declare namespace $$property {
 }
 
 /**
- * The GlideElement API provides a number of convenient script methods for dealing with fields and their values. GlideElement methods are available for the fields of the current GlideRecord.
- * @class interface IGlideElement
+ * The Scoped GlideElement API provides a number of convenient script methods for dealing with fields and their values. Scoped GlideElement methods are available for the fields of the current GlideRecord.
+ * @interface IGlideElement
  */
 declare interface IGlideElement extends $$element.IDbObject {
     /**
+     * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
+     * @memberof GlideElement
+     * @returns {boolean} True if the fields have been changed, false if the field has not.
+     * @description 
+     */
+    changes(): boolean;
+    /**
      * Determines if the previous value of the current field matches the specified object.
      * @memberof GlideElement
-     * @param {*} value - An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches the parameter, false if it does not..
-     * @description  
+     * @param {*} o - An object value to check against the previous value of the current field.
+     * @returns {boolean} True if the previous value matches, false if it does not.
+     * @description 
      */
-    changesFrom(value: any): boolean;
+    changesFrom(o: any): boolean;
     /**
      * Determines if the new value of a field, after a change, matches the specified object.
      * @memberof GlideElement
-     * @param {*} value - An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches the parameter, false if it does not..
-     * @description  
+     * @param {*} o - An object value to check against the new value of the current field.
+     * @returns {boolean} True if the previous value matches, false if it does not.
+     * @description 
      */
-    changesTo(value: any): boolean;
+    changesTo(o: any): boolean;
     /**
      * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
      * @memberof GlideElement
-     * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT..
-     * @description 
+     * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT.
      */
     dateNumericValue(): number;
-    /**
-     * Debugs the object and adds debug messages using setError(String).
-     * @memberof GlideElement
-     * @param {*} o - An object to debug.
-     */
-    debug(o: any): void;
-    /**
-     * Returns the value of the specified attribute from the dictionary.
-     * @memberof GlideElement
-     * @param {string} attributeName - Attribute name
-     * @returns {string} Attribute value.
-     * @description  
-     */
-    getAttribute(attributeName: string): string;
-    /**
-     * Gets the base table of the field.
-     * @memberof GlideElement
-     * @returns {string} Name of the base table. This may be different from the table that the field is defined on. See "Tables and Classes" in the product documentation..
-     */
-    getBaseTableName(): string;
     /**
      * Returns the Boolean value of the specified attribute from the dictionary.
      * @memberof GlideElement
      * @param {string} attributeName - Attribute name
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist..
-     * @description  
+     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
+     * @description 
      */
     getBooleanAttribute(attributeName: string): boolean;
     /**
-     * Generates a choice list for a field. Returns the choice values from the base table only, not from the extended table.
+     * Generates a choice list for a field.
      * @memberof GlideElement
-     * @param {string} [value] - A dependent value.
-     * @returns {Packages.java.util.ArrayList<*>} The choice values for the field..
-     * @description 
+     * @param {string} [dependent] - A dependent value
+     * @returns {Array<*>} An array list of choices.
      */
-    getChoices(value?: string): Packages.java.util.ArrayList<any>;
+    getChoices(dependent?: string): any[];
     /**
-     * Gets the choice label for the current choice value.
+     * Returns the choice label for the current choice.
      * @memberof GlideElement
-     * @returns {string} The choice label..
+     * @returns {string} The selected choice's label.
      * @description 
      */
     getChoiceValue(): string;
     /**
-     * Gets the number of debug messages logged by debug().
+     * Returns the clear text value for Password (2 way encrypted) fields in scoped applications.
      * @memberof GlideElement
-     * @returns {number} The number of debug messages..
+     * @returns {string} The clear text password.
      */
-    getDebugCount(): number;
-    /**
-     * Checks whether or not the field is dependent on another field.
-     * @memberof GlideElement
-     * @returns {string} Name of the field on which the current field depends..
-     */
-    getDependent(): string;
-    /**
-     * Gets the table that the current table depends on.
-     * @memberof GlideElement
-     * @returns {string} The name of the table..
-     */
-    getDependentTable(): string;
+    getDecryptedValue(): string;
     /**
      * Gets the formatted display value of the field.
      * @memberof GlideElement
-     * @param {number} maxChar - Optional, maximum number of characters to return.
-     * @returns {string} Display value of the field..
-     * @description 
+     * @param {number} [maxCharacters] - Maximum characters desired
+     * @returns {string} The display value of the field.
      */
-    getDisplayValue(maxChar: number): string;
+    getDisplayValue(maxCharacters?: number): string;
     /**
-     * Gets the formatted display value of a field, or a specified substitute value if the display value is null or empty.
+     * Returns the phone number in international format.
      * @memberof GlideElement
-     * @param {number} maxChar - Optional, the maximum number of characters to be returned.
-     * @param {string} nullSub - The value to return if the display value is null or empty.
-     * @returns {string} The formatted display value of the field, or the specified substitute value..
+     * @returns {string} The phone number in international format.
      */
-    getDisplayValueExt(maxChar: number, nullSub: string): string;
-    /**
-     * Gets the value for a given element.
-     * @memberof GlideElement
-     * @param {string} value - An element
-     * @returns {string} The value of the element..
-     */
-    getElementValue(value: string): string;
-    /**
-     * Gets error debug messages.
-     * @memberof GlideElement
-     * @returns {string} A string of debug messages.
-     */
-    getError(): string;
-    /**
-     * Gets the escaped value for the current element.
-     * @memberof GlideElement
-     * @returns {string} The escaped value of the current element..
-     */
-    getEscapedValue(): string;
-    /**
-     * Gets the CSS style for the field.
-     * @memberof GlideElement
-     * @returns {string} The CSS style for the field..
-     */
-    getFieldStyle(): string;
-    /**
-     * Gets a glide object.
-     * @memberof GlideElement
-     * @returns {*} A Glide object..
-     */
-    getGlideObject(): any;
-    /**
-     * Gets a glide record.
-     * @memberof GlideElement
-     * @returns {GlideRecord} A glide record.
-     */
-    getGlideRecord(): GlideRecord;
+    getGlobalDisplayValue(): string;
     /**
      * Returns the HTML value of a field.
      * @memberof GlideElement
      * @param {number} [maxChars] - Maximum number of characters to return.
-     * @returns {string} HTML value for the field..
-     * @description 
+     * @returns {string} HTML value for the field.
      */
     getHTMLValue(maxChars?: number): string;
-    /**
-     * Returns the HTML value of a field, or a specified substitute value if the HTML value is null or empty.
-     * @memberof GlideElement
-     * @param {number} maxChar - The maximum number of characters to return.
-     * @param {string} nullSub - The value to return if the HTML value is null or empty.
-     * @returns {string} The HTML value or the specified substitute value..
-     */
-    getHTMLValueExt(maxChar: number, nullSub: string): string;
     /**
      * Returns either the most recent journal entry or all journal entries.
      * @memberof GlideElement
      * @param {number} mostRecent - If 1, returns the most recent entry. If -1, returns all journal entries.
-     * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n"..
-     * @description 
+     * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n".
      */
     getJournalEntry(mostRecent: number): string;
     /**
      * Returns the name of the field.
      * @memberof GlideElement
      * @returns {string} Field name.
-     * @description 
      */
     getName(): string;
     /**
-     * Get the CSS style for the value.
+     * Determines if a field is null.
      * @memberof GlideElement
-     * @returns {string} The CSS style for the value..
-     */
-    getStyle(): string;
-    /**
-     * Retrieves the value and escapes the HTML.
-     * @memberof GlideElement
-     * @returns {string} The escaped HTML.
-     */
-    getTextAreaDisplayValue(): string;
-    /**
-     * Retrieves the XHTML value of a field.
-     * @memberof GlideElement
-     * @returns {string} The XHTML value.
-     */
-    getXHTMLValue(): string;
-    /**
-     * Gets the XML value of a field as a string.
-     * @memberof GlideElement
-     * @returns {string} The XML value.
-     */
-    getXMLValue(): string;
-    /**
-     * Determines whether a field has a particular attribute.
-     * @memberof GlideElement
-     * @param {string} attributeName - The attribute to check for
-     * @returns {boolean} True if the field has the attribute, false otherwise..
-     */
-    hasAttribute(attributeName: string): boolean;
-    /**
-     * Determines if the user has the right to perform a particular operation.
-     * @memberof GlideElement
-     * @param {string} operationName - Name of the operation to check for
-     * @returns {boolean} True if the user has permission to perform the operation, false otherwise..
-     */
-    hasRightsTo(operationName: string): boolean;
-    /**
-     * Determines if the field has a value.
-     * @memberof GlideElement
-     * @returns {boolean} True if the field has a value, false otherwise..
-     */
-    hasValue(): boolean;
-    /**
-     * Determines whether the field is null.
-     * @memberof GlideElement
-     * @returns {boolean} True if the field is null or an empty string, false otherwise..
-     * @description 
+     * @returns {boolean} True if the field is null or an empty string, false if not.
      */
     nil(): boolean;
     /**
-     * Sets the duration field to a number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
      * @memberof GlideElement
-     * @param {number} milliseconds - Number of milliseconds spanned by the duration.
+     * @param {number} milliseconds - Number of milliseconds since 1/1/1970
      * @description 
      */
     setDateNumericValue(milliseconds: number): void;
     /**
      * Sets the display value of the field.
      * @memberof GlideElement
-     * @param {*} displayValue - Value to be displayed.
+     * @param {*} value - The value to set for the field.
+     */
+    setDisplayValue(value: any): void;
+    /**
+     * Adds an error message. Available in Fuji patch 3.
+     * @memberof GlideElement
+     * @param {string} errorMessage - The error message.
+     */
+    setError(errorMessage: string): void;
+    /**
+     * Sets the field to the specified phone number.
+     * @memberof GlideElement
+     * @param {*} phoneNumber - The phone number to set. This can be in either the international or local format.
+     * @param {boolean} strict - When true, specifies that the number specified must match the correct format. When false, the system attempts to correct an improperly formatted phone number.
+     * @returns {boolean} True if the value was set.
      * @description 
      */
-    setDisplayValue(displayValue: any): void;
-    /**
-     * Adds an error message.
-     * @memberof GlideElement
-     * @description  
-     */
-    setError(): void;
-    /**
-     * Sets the initial value of a field.
-     * @memberof GlideElement
-     * @param {string} value - Initial value for the field.
-     */
-    setInitialValue(value: string): void;
-    /**
-     * Sets the journal entry.
-     * @memberof GlideElement
-     * @param {*} value - The value to set the journal entry to.
-     * @param {string} userName - The user to attribute the journal entry to. Does not set the journal entry's created by field.
-     */
-    setJournalEntry(value: any, userName: string): void;
+    setPhoneNumber(phoneNumber: any, strict: boolean): boolean;
     /**
      * Sets the value of a field.
      * @memberof GlideElement
-     * @param {*} value - The value the field is to be set to.
-     * @description  
+     * @param {*} value - Object value to set the field to.
+     * @description 
      */
     setValue(value: any): void;
-}
-
-declare interface IGlideTableProperties {
-    /**
-     * Created by
-     * @type {$$property.Element}
-     * @memberof IGlideTableProperties
-     */
-    sys_created_by: $$property.Element;
-
-    /**
-     * Created
-     * @type {$$property.GlideObject}
-     * @memberof IGlideTableProperties
-     * @description Internal type is "glide_date_time"
-     */
-    sys_created_on: $$property.GlideObject;
-
-    /**
-     * Sys ID
-     * @type {$$property.Element}
-     * @memberof IGlideTableProperties
-     * @description Internal type is "GUID"
-     */
-    sys_id: $$property.Element;
-
-    /**
-     * Updates
-     * @type {$$property.Numeric}
-     * @memberof IGlideTableProperties
-     */
-    sys_mod_count: $$property.Numeric;
-
-    /**
-     * Updated by
-     * @type {$$property.Element}
-     * @memberof IGlideTableProperties
-     */
-    sys_updated_by: $$property.Element;
-
-    /**
-     * Updated
-     * @type {$$property.GlideObject}
-     * @memberof IGlideTableProperties
-     * @description Internal type is "glide_date_time"
-     */
-    sys_updated_on: $$property.GlideObject;
-}
-
-declare interface IExtendedGlideTableProperties extends IGlideTableProperties {
-    /**
-     * Updated
-     * @type {GLIDE.SysClassNameProperty}
-     * @memberof IExtendedGlideTableProperties
-     */
-    sys_class_name: $$property.SysClassName;
 }
 
 /**
@@ -816,30 +530,12 @@ declare type NumberQueryOperator = "=" | "!=" | ">" | ">=" | "<" | "<=";
  */
 declare type QueryOperator = StringQueryOperator | NumberQueryOperator;
 
-declare interface IJavaArray<E> extends Packages.java.util.List<E> {
+declare interface IJavaArray<E> {
     /**
-     * Returns a shallow copy of this ArrayList instance.
-     * @returns {Object}
+     * Gets the length of the array.
      */
-    clone(): Packages.java.lang.Object;
-    ///**
-    // * Returns true if this list contains the specified element.
-    // * @returns {boolean}
-    // */
-    //contains(o: Object): boolean;
-    /**
-     * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
-     */
-    ensureCapacity(minCapacity: Packages.java.lang.Integer): void;
-    /**
-     * Returns the element at the specified position in this list.
-     * @returns {E}
-     */
-    get(index: Packages.java.lang.Integer): E;
-    /**
-     * Trims the capacity of this ArrayList instance to be the list's current size.
-     */
-    trimToSize(): void;
+    readonly length: Packages.java.lang.Integer;
+    [n: number]: E;
 }
 
 declare namespace Packages {
@@ -851,7 +547,89 @@ declare namespace Packages {
              * @class Object
              */
             export class Object {
-                constructor();
+                protected constructor();
+                /**
+                 * Indicates whether some other object is "equal to" this one.
+                 * @param obj {object}
+                 * @returns {Boolean}
+                 */
+                equals(obj: object): Boolean;
+
+                /**
+                 * Returns a hash code value for the object.
+                 * @returns {Integer}
+                 */
+                hashCode(): Integer;
+
+                /**
+                 * Returns a string representation of the object.
+                 * @returns {String}
+                 */
+                toString(): String;
+            }
+            export interface Comparable<T> {
+                /**
+                 * Compares this object with the specified object for order.
+                 * @param o {T}
+                 * @returns {Integer}
+                 */
+                compareTo(o: T): Integer;
+
+                /**
+                 * Converts this Date object to a String of the form:
+                 * @returns {lang.String}
+                 */
+                toString(): lang.String;
+            }
+            export interface CharSequence {
+                /**
+                 * Returns the char value at the specified index.
+                 * @param index {$$rhino.Number}
+                 * @returns {Character}
+                 */
+                charAt(index: $$rhino.Number): Character;
+
+                /**
+                 * Returns the length of this character sequence.
+                 * @returns {Integer}
+                 */
+                length(): Integer;
+
+                /**
+                 * Returns a new CharSequence that is a subsequence of this sequence.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {CharSequence}
+                 */
+                subSequence(start: $$rhino.Number, end: $$rhino.Number): CharSequence;
+
+                /**
+                 * Returns a string containing the characters in this sequence in the same order as this sequence.
+                 * @returns {String}
+                 */
+                toString(): String;
+            }
+            export interface Iterable<T> {
+                /**
+                 * Returns an iterator over the elements in this collection in proper sequence.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): util.Iterator<T>;
+            }
+            export class Character extends Object implements Comparable<Character> {
+                protected constructor();
+                /**
+                 * Returns the value of this Character object.
+                 * @returns {Character}
+                 */
+                charValue(): Character;
+
+                /**
+                 * Compares two Character objects numerically.
+                 * @param anotherCharacter {$$rhino.String}
+                 * @returns {Integer}
+                 */
+                compareTo(anotherCharacter: $$rhino.String): Integer;
             }
             /**
              * Java String object.
@@ -859,375 +637,397 @@ declare namespace Packages {
              * @class String
              * @extends {Object}
              */
-            export class String extends Object {
-                constructor();
-                constructor(original: string);
+            export class String extends Object implements Comparable<String>, CharSequence {
+                protected constructor();
                 /**
                  * Returns the char value at the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param index {$$rhino.Number}
+                 * @returns {Character}
                  */
-                charAt(index: Integer): number;
+                charAt(index: $$rhino.Number): Character;
+
                 /**
                  * Returns the character (Unicode code point) at the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param index {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                codePointAt(index: Integer): number;
+                codePointAt(index: $$rhino.Number): Integer;
+
                 /**
                  * Returns the character (Unicode code point) before the specified index.
-                 * @param {number} index -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param index {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                codePointBefore(index: Integer): number;
+                codePointBefore(index: $$rhino.Number): Integer;
+
                 /**
                  * Returns the number of Unicode code points in the specified text range of this String.
-                 * @param {number} beginIndex -
-                 * @param {number} endIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param beginIndex {$$rhino.Number}
+                 * @param endIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                codePointCount(beginIndex: number, endIndex: number): number;
+                codePointCount(beginIndex: $$rhino.Number, endIndex: $$rhino.Number): Integer;
+
                 /**
                  * Compares two strings lexicographically.
-                 * @param {String} anotherString -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param anotherString {$$rhino.String}
+                 * @returns {Integer}
                  */
-                compareTo(anotherString: String): number;
+                compareTo(anotherString: $$rhino.String): Integer;
+
                 /**
                  * Compares two strings lexicographically, ignoring case differences.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
                  */
-                compareToIgnoreCase(str: String): number;
+                compareToIgnoreCase(str: $$rhino.String): Integer;
+
                 /**
                  * Concatenates the specified string to the end of this string.
-                 * @param {String} str -
+                 * @param str {$$rhino.String}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                concat(str: String): String;
+                concat(str: $$rhino.String): String;
+
+                /**
+                 * Returns true if and only if this string contains the specified sequence of char values.
+                 * @param s {CharSequence}
+                 * @returns {Boolean}
+                 */
+                contains(s: CharSequence): Boolean;
+
+                /**
+                 * Compares this string to the specified CharSequence.
+                 * @param cs {CharSequence}
+                 * @returns {Boolean}
+                 */
+                contentEquals(cs: CharSequence): Boolean;
+
+                /**
+                 * Compares this string to the specified StringBuffer.
+                 * @param sb {StringBuffer}
+                 * @returns {Boolean}
+                 */
+                contentEquals(sb: StringBuffer): Boolean;
+
                 /**
                  * Tests if this string ends with the specified suffix.
-                 * @param {String} suffix -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param suffix {$$rhino.String}
+                 * @returns {Boolean}
                  */
-                endsWith(suffix: String): boolean;
-                /**
-                 * Compares this string to the specified object.
-                 * @param {Object} anObject -
-                 * @returns {boolean}
-                 * @memberof {String}
-                 */
-                equals(anObject: Object): boolean;
+                endsWith(suffix: $$rhino.String): Boolean;
+
                 /**
                  * Compares this String to another String, ignoring case considerations.
-                 * @param {String} anotherString -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param anotherString {$$rhino.String}
+                 * @returns {Boolean}
                  */
-                equalsIgnoreCase(anotherString: String): boolean;
+                equalsIgnoreCase(anotherString: $$rhino.String): Boolean;
+
                 /**
                  * Encodes this String into a sequence of bytes using the platform's default charset, storing the result into a new byte array.
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
+                 * @returns {IJavaArray<Byte>}
                  */
-                getBytes(): IJavaArray<number>;
+                getBytes(): IJavaArray<Byte>;
+
                 /**
                  * Encodes this String into a sequence of bytes using the named charset, storing the result into a new byte array.
-                 * @param {String} charsetName -
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
+                 * @param charsetName {$$rhino.String}
+                 * @returns {IJavaArray<Byte>}
                  */
-                getBytes(charsetName: String): IJavaArray<number>;
+                getBytes(charsetName: $$rhino.String): IJavaArray<Byte>;
+
                 /**
                  * Copies characters from this string into the destination character array.
-                 * @param {number} srcBegin -
-                 * @param {number} srcEnd -
-                 * @param {IJavaArray<number>} dst -
-                 * @param {number} dstBegin -
-                 * @memberof {String}
+                 * @param srcBegin {$$rhino.Number}
+                 * @param srcEnd {$$rhino.Number}
+                 * @param dst {IJavaArray<$$rhino.String>}
+                 * @param dstBegin {$$rhino.Number}
                  */
-                getChars(srcBegin: number, srcEnd: number, dst: IJavaArray<number>, dstBegin: number): void;
-                /**
-                 * Returns a hash code for this string.
-                 * @returns {number}
-                 * @memberof {String}
-                 */
-                hashCode(): number;
+                getChars(srcBegin: $$rhino.Number, srcEnd: $$rhino.Number, dst: IJavaArray<$$rhino.String>, dstBegin: $$rhino.Number): void;
+
                 /**
                  * Returns the index within this string of the first occurrence of the specified character.
-                 * @param {number} ch -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param ch {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                indexOf(ch: number): number;
+                indexOf(ch: $$rhino.Number): Integer;
+
                 /**
                  * Returns the index within this string of the first occurrence of the specified character, starting the search at the specified index.
-                 * @param {number} ch -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param ch {$$rhino.Number}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                indexOf(ch: number, fromIndex: number): number;
+                indexOf(ch: $$rhino.Number, fromIndex: $$rhino.Number): Integer;
+
                 /**
                  * Returns the index within this string of the first occurrence of the specified substring.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
                  */
-                indexOf(str: String): number;
+                indexOf(str: $$rhino.String): Integer;
+
                 /**
                  * Returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
-                 * @param {String} str -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                indexOf(str: String, fromIndex: number): number;
+                indexOf(str: $$rhino.String, fromIndex: $$rhino.Number): Integer;
+
                 /**
                  * Returns a canonical representation for the string object.
                  * @returns {String}
-                 * @memberof {String}
                  */
                 intern(): String;
+
                 /**
                  * Returns true if, and only if, length() is 0.
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @returns {Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): Boolean;
+
                 /**
                  * Returns the index within this string of the last occurrence of the specified character.
-                 * @param {number} ch -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param ch {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                lastIndexOf(ch: number): number;
+                lastIndexOf(ch: $$rhino.Number): Integer;
+
                 /**
                  * Returns the index within this string of the last occurrence of the specified character, searching backward starting at the specified index.
-                 * @param {number} ch -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param ch {$$rhino.Number}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                lastIndexOf(ch: number, fromIndex: number): number;
+                lastIndexOf(ch: $$rhino.Number, fromIndex: $$rhino.Number): Integer;
+
                 /**
                  * Returns the index within this string of the last occurrence of the specified substring.
-                 * @param {String} str -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
                  */
-                lastIndexOf(str: String): number;
+                lastIndexOf(str: $$rhino.String): Integer;
+
                 /**
                  * Returns the index within this string of the last occurrence of the specified substring, searching backward starting at the specified index.
-                 * @param {String} str -
-                 * @param {number} fromIndex -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param str {$$rhino.String}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                lastIndexOf(str: String, fromIndex: number): number;
+                lastIndexOf(str: $$rhino.String, fromIndex: $$rhino.Number): Integer;
+
                 /**
                  * Returns the length of this string.
-                 * @returns {number}
-                 * @memberof {String}
+                 * @returns {Integer}
                  */
-                length(): number;
+                length(): Integer;
+
                 /**
                  * Tells whether or not this string matches the given regular expression.
-                 * @param {String} regex -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param regex {$$rhino.String}
+                 * @returns {Boolean}
                  */
-                matches(regex: String): boolean;
+                matches(regex: $$rhino.String): Boolean;
+
                 /**
                  * Returns the index within this String that is offset from the given index by codePointOffset code points.
-                 * @param {number} index -
-                 * @param {number} codePointOffset -
-                 * @returns {number}
-                 * @memberof {String}
+                 * @param index {$$rhino.Number}
+                 * @param codePointOffset {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                offsetByCodePoints(index: Integer, codePointOffset: number): number;
+                offsetByCodePoints(index: $$rhino.Number, codePointOffset: $$rhino.Number): Integer;
+
                 /**
                  * Tests if two string regions are equal.
-                 * @param {boolean} ignoreCase -
-                 * @param {number} toffset -
-                 * @param {String} other -
-                 * @param {number} ooffset -
-                 * @param {number} len -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param ignoreCase {$$rhino.Boolean}
+                 * @param toffset {$$rhino.Number}
+                 * @param other {$$rhino.String}
+                 * @param ooffset {$$rhino.Number}
+                 * @param len {$$rhino.Number}
+                 * @returns {Boolean}
                  */
-                regionMatches(ignoreCase: boolean, toffset: number, other: String, ooffset: number, len: number): boolean;
+                regionMatches(ignoreCase: $$rhino.Boolean, toffset: $$rhino.Number, other: $$rhino.String, ooffset: $$rhino.Number, len: $$rhino.Number): Boolean;
+
                 /**
                  * Tests if two string regions are equal.
-                 * @param {number} toffset -
-                 * @param {String} other -
-                 * @param {number} ooffset -
-                 * @param {number} len -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param toffset {$$rhino.Number}
+                 * @param other {$$rhino.String}
+                 * @param ooffset {$$rhino.Number}
+                 * @param len {$$rhino.Number}
+                 * @returns {Boolean}
                  */
-                regionMatches(toffset: number, other: String, ooffset: number, len: number): boolean;
+                regionMatches(toffset: $$rhino.Number, other: $$rhino.String, ooffset: $$rhino.Number, len: $$rhino.Number): Boolean;
+
                 /**
                  * Returns a new string resulting from replacing all occurrences of oldChar in this string with newChar.
-                 * @param {number} oldChar -
-                 * @param {number} newChar -
+                 * @param oldChar {$$rhino.String}
+                 * @param newChar {$$rhino.String}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                replace(oldChar: number, newChar: number): String;
+                replace(oldChar: $$rhino.String, newChar: $$rhino.String): String;
+
+                /**
+                 * Replaces each substring of this string that matches the literal target sequence with the specified literal replacement sequence.
+                 * @param target {CharSequence}
+                 * @param replacement {CharSequence}
+                 * @returns {String}
+                 */
+                replace(target: CharSequence, replacement: CharSequence): String;
+
                 /**
                  * Replaces each substring of this string that matches the given regular expression with the given replacement.
-                 * @param {String} regex -
-                 * @param {String} replacement -
+                 * @param regex {$$rhino.String}
+                 * @param replacement {$$rhino.String}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                replaceAll(regex: String, replacement: String): String;
+                replaceAll(regex: $$rhino.String, replacement: $$rhino.String): String;
+
                 /**
                  * Replaces the first substring of this string that matches the given regular expression with the given replacement.
-                 * @param {String} regex -
-                 * @param {String} replacement -
+                 * @param regex {$$rhino.String}
+                 * @param replacement {$$rhino.String}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                replaceFirst(regex: String, replacement: String): String;
+                replaceFirst(regex: $$rhino.String, replacement: $$rhino.String): String;
+
                 /**
                  * Splits this string around matches of the given regular expression.
-                 * @param {String} regex -
+                 * @param regex {$$rhino.String}
                  * @returns {IJavaArray<String>}
-                 * @memberof {String}
                  */
-                split(regex: String): IJavaArray<String>;
+                split(regex: $$rhino.String): IJavaArray<String>;
+
                 /**
                  * Splits this string around matches of the given regular expression.
-                 * @param {String} regex -
-                 * @param {number} limit -
+                 * @param regex {$$rhino.String}
+                 * @param limit {$$rhino.Number}
                  * @returns {IJavaArray<String>}
-                 * @memberof {String}
                  */
-                split(regex: String, limit: number): IJavaArray<String>;
+                split(regex: $$rhino.String, limit: $$rhino.Number): IJavaArray<String>;
+
                 /**
                  * Tests if this string starts with the specified prefix.
-                 * @param {String} prefix -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param prefix {$$rhino.String}
+                 * @returns {Boolean}
                  */
-                startsWith(prefix: String): boolean;
+                startsWith(prefix: $$rhino.String): Boolean;
+
                 /**
                  * Tests if the substring of this string beginning at the specified index starts with the specified prefix.
-                 * @param {String} prefix -
-                 * @param {number} toffset -
-                 * @returns {boolean}
-                 * @memberof {String}
+                 * @param prefix {$$rhino.String}
+                 * @param toffset {$$rhino.Number}
+                 * @returns {Boolean}
                  */
-                startsWith(prefix: String, toffset: number): boolean;
+                startsWith(prefix: $$rhino.String, toffset: $$rhino.Number): Boolean;
+
+                /**
+                 * Returns a new character sequence that is a subsequence of this sequence.
+                 * @param beginIndex {$$rhino.Number}
+                 * @param endIndex {$$rhino.Number}
+                 * @returns {CharSequence}
+                 */
+                subSequence(beginIndex: $$rhino.Number, endIndex: $$rhino.Number): CharSequence;
+
                 /**
                  * Returns a new string that is a substring of this string.
-                 * @param {number} beginIndex -
+                 * @param beginIndex {$$rhino.Number}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                substring(beginIndex: number): String;
+                substring(beginIndex: $$rhino.Number): String;
+
                 /**
                  * Returns a new string that is a substring of this string.
-                 * @param {number} beginIndex -
-                 * @param {number} endIndex -
+                 * @param beginIndex {$$rhino.Number}
+                 * @param endIndex {$$rhino.Number}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                substring(beginIndex: number, endIndex: number): String;
+                substring(beginIndex: $$rhino.Number, endIndex: $$rhino.Number): String;
+
                 /**
                  * Converts this string to a new character array.
-                 * @returns {IJavaArray<number>}
-                 * @memberof {String}
+                 * @returns {IJavaArray<Character>}
                  */
-                toCharArray(): IJavaArray<number>;
+                toCharArray(): IJavaArray<Character>;
+
                 /**
                  * Converts all of the characters in this String to lower case using the rules of the default locale.
                  * @returns {String}
-                 * @memberof {String}
                  */
                 toLowerCase(): String;
+
                 /**
-                 * This object (which is already a string!) is itself returned.
+                 * Converts all of the characters in this String to lower case using the rules of the given Locale.
+                 * @param locale {Locale}
                  * @returns {String}
-                 * @memberof {String}
                  */
-                toString(): String;
+                toLowerCase(locale: util.Locale): String;
+
                 /**
                  * Converts all of the characters in this String to upper case using the rules of the default locale.
                  * @returns {String}
-                 * @memberof {String}
                  */
                 toUpperCase(): String;
+
+                /**
+                 * Converts all of the characters in this String to upper case using the rules of the given Locale.
+                 * @param locale {Locale}
+                 * @returns {String}
+                 */
+                toUpperCase(locale: util.Locale): String;
+
                 /**
                  * Returns a copy of the string, with leading and trailing whitespace omitted.
                  * @returns {String}
-                 * @memberof {String}
                  */
                 trim(): String;
-            }
-            /**
-             * Java Character object.
-             * @export
-             * @class Character
-             * @extends {Object}
-             */
-            export class Character extends Object {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Character object.
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                charValue(): number;
-                /**
-                 * Compares two Character objects numerically.
-                 * @param {Character} anotherCharacter -
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                compareTo(anotherCharacter: Character): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Character}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns a hash code for this Character; equal to the result of invoking charValue().
-                 * @returns {number}
-                 * @memberof {Character}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns a String object representing this Character's value.
-                 * @returns {String}
-                 * @memberof {Character}
-                 */
-                toString(): String;
             }
             /**
              * Java Number base object.
              * @export
              * @class Object
              */
-            export class Number extends Object {
-                constructor();
+            export abstract class Number extends Object {
+                protected constructor();
+                /**
+                 * Returns the value of the specified number as a byte.
+                 * @returns {Byte}
+                 */
+                byteValue(): Byte;
+
+                /**
+                 * Returns the value of the specified number as a double.
+                 * @returns {Double}
+                 */
+                doubleValue(): Double;
+
+                /**
+                 * Returns the value of the specified number as a float.
+                 * @returns {Float}
+                 */
+                floatValue(): Float;
+
+                /**
+                 * Returns the value of the specified number as an int.
+                 * @returns {Integer}
+                 */
+                intValue(): Integer;
+
+                /**
+                 * Returns the value of the specified number as a long.
+                 * @returns {Long}
+                 */
+                longValue(): Long;
+
+                /**
+                 * Returns the value of the specified number as a short.
+                 * @returns {Short}
+                 */
+                shortValue(): Short;
             }
             export class Boolean extends Object {
-                constructor(value: boolean);
-                constructor(s: string);
+                protected constructor();
                 /**
                  * Returns the value of this Boolean object as a boolean primitive.
                  * @returns {boolean}
@@ -1241,25 +1041,6 @@ declare namespace Packages {
                  * @memberof {Boolean}
                  */
                 compareTo(b: Boolean): number;
-                /**
-                 * Returns true if and only if the argument is not null and is a Boolean object that represents the same boolean value as this object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Boolean}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns a hash code for this Boolean object.
-                 * @returns {number}
-                 * @memberof {Boolean}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns a String object representing this Boolean's value.
-                 * @returns {String}
-                 * @memberof {Boolean}
-                 */
-                toString(): String;
             }
             /**
              * Java Integer object.
@@ -1267,71 +1048,15 @@ declare namespace Packages {
              * @class Integer
              * @extends {Object}
              */
-            export class Integer extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Integer as a byte.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                byteValue(): number;
+            export class Integer extends Number implements Comparable<Integer> {
+                protected constructor();
+
                 /**
                  * Compares two Integer objects numerically.
-                 * @param {Integer} anotherInteger -
-                 * @returns {number}
-                 * @memberof {Integer}
+                 * @param anotherInteger {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherInteger: Integer): number;
-                /**
-                 * Returns the value of this Integer as a double.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Integer}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the value of this Integer as a float.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Integer.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Integer as an int.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Integer as a long.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Integer as a short.
-                 * @returns {number}
-                 * @memberof {Integer}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Integer's value.
-                 * @returns {String}
-                 * @memberof {Integer}
-                 */
-                toString(): String;
+                compareTo(anotherInteger: $$rhino.Number): Integer;
             }
             /**
              * Java Long object.
@@ -1339,71 +1064,15 @@ declare namespace Packages {
              * @class Long
              * @extends {Object}
              */
-            export class Long extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Long as a byte.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                byteValue(): number;
+            export class Long extends Number implements Comparable<Long> {
+                protected constructor();
+
                 /**
                  * Compares two Long objects numerically.
-                 * @param {Long} anotherLong -
-                 * @returns {number}
-                 * @memberof {Long}
+                 * @param anotherLong {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherLong: Long): number;
-                /**
-                 * Returns the value of this Long as a double.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Long}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the value of this Long as a float.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Long.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Long as an int.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Long as a long value.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Long as a short.
-                 * @returns {number}
-                 * @memberof {Long}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Long's value.
-                 * @returns {String}
-                 * @memberof {Long}
-                 */
-                toString(): String;
+                compareTo(anotherLong: $$rhino.Number): Integer;
             }
             /**
              * Java Double object.
@@ -1411,83 +1080,27 @@ declare namespace Packages {
              * @class Double
              * @extends {Object}
              */
-            export class Double extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Double as a byte (by casting to a byte).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                byteValue(): number;
+            export class Double extends Number implements Comparable<Double> {
+                protected constructor();
+
                 /**
                  * Compares two Double objects numerically.
-                 * @param {Double} anotherDouble -
-                 * @returns {number}
-                 * @memberof {Double}
+                 * @param anotherDouble {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherDouble: Double): number;
-                /**
-                 * Returns the double value of this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Double}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the float value of this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Double object.
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Double as an int (by casting to type int).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                intValue(): number;
+                compareTo(anotherDouble: $$rhino.Number): Integer;
+
                 /**
                  * Returns true if this Double value is infinitely large in magnitude, false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Double}
+                 * @returns {Boolean}
                  */
-                isInfinite(): boolean;
+                isInfinite(): Boolean;
+
                 /**
                  * Returns true if this Double value is a Not-a-Number (NaN), false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Double}
+                 * @returns {Boolean}
                  */
-                isNaN(): boolean;
-                /**
-                 * Returns the value of this Double as a long (by casting to type long).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Double as a short (by casting to a short).
-                 * @returns {number}
-                 * @memberof {Double}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a string representation of this Double object.
-                 * @returns {String}
-                 * @memberof {Double}
-                 */
-                toString(): String;
+                isNaN(): Boolean;
             }
             /**
              * Java Byte object.
@@ -1495,71 +1108,15 @@ declare namespace Packages {
              * @class InteByteger
              * @extends {Object}
              */
-            export class Byte extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Byte as a byte.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                byteValue(): number;
+            export class Byte extends Number implements Comparable<Byte> {
+                protected constructor();
+
                 /**
                  * Compares two Byte objects numerically.
-                 * @param {Byte} anotherByte -
-                 * @returns {number}
-                 * @memberof {Byte}
+                 * @param anotherByte {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherByte: Byte): number;
-                /**
-                 * Returns the value of this Byte as a double.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object to the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Byte}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the value of this Byte as a float.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Byte; equal to the result of invoking intValue().
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Byte as an int.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                intValue(): number;
-                /**
-                 * Returns the value of this Byte as a long.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Byte as a short.
-                 * @returns {number}
-                 * @memberof {Byte}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a String object representing this Byte's value.
-                 * @returns {String}
-                 * @memberof {Byte}
-                 */
-                toString(): String;
+                compareTo(anotherByte: $$rhino.Number): Integer;
             }
             /**
              * Java Float object.
@@ -1567,83 +1124,27 @@ declare namespace Packages {
              * @class Float
              * @extends {Object}
              */
-            export class Float extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Float as a byte (by casting to a byte).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                byteValue(): number;
+            export class Float extends Number implements Comparable<Float> {
+                protected constructor();
+
                 /**
                  * Compares two Float objects numerically.
-                 * @param {Float} anotherFloat -
-                 * @returns {number}
-                 * @memberof {Float}
+                 * @param anotherFloat {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherFloat: Float): number;
-                /**
-                 * Returns the double value of this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                doubleValue(): number;
-                /**
-                 * Compares this object against the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Float}
-                 */
-                equals(obj: Object): boolean;
-                /**
-                 * Returns the float value of this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                floatValue(): number;
-                /**
-                 * Returns a hash code for this Float object.
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                hashCode(): number;
-                /**
-                 * Returns the value of this Float as an int (by casting to type int).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                intValue(): number;
+                compareTo(anotherFloat: $$rhino.Number): Integer;
+
                 /**
                  * Returns true if this Float value is infinitely large in magnitude, false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Float}
+                 * @returns {Boolean}
                  */
-                isInfinite(): boolean;
+                isInfinite(): Boolean;
+
                 /**
                  * Returns true if this Float value is a Not-a-Number (NaN), false otherwise.
-                 * @returns {boolean}
-                 * @memberof {Float}
+                 * @returns {Boolean}
                  */
-                isNaN(): boolean;
-                /**
-                 * Returns value of this Float as a long (by casting to type long).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                longValue(): number;
-                /**
-                 * Returns the value of this Float as a short (by casting to a short).
-                 * @returns {number}
-                 * @memberof {Float}
-                 */
-                shortValue(): number;
-                /**
-                 * Returns a string representation of this Float object.
-                 * @returns {String}
-                 * @memberof {Float}
-                 */
-                toString(): String;
+                isNaN(): Boolean;
             }
             /**
              * Java Short object.
@@ -1651,494 +1152,1227 @@ declare namespace Packages {
              * @class Short
              * @extends {Object}
              */
-            export class Short extends Number {
-                constructor(value: number);
-                constructor(s: string);
-                /**
-                 * Returns the value of this Short as a byte.
-                 * @returns {number}
-                 * @memberof {Short}
-                 */
-                byteValue(): number;
+            export class Short extends Number implements Comparable<Short> {
+                protected constructor();
+
                 /**
                  * Compares two Short objects numerically.
-                 * @param {Short} anotherShort -
-                 * @returns {number}
-                 * @memberof {Short}
+                 * @param anotherShort {$$rhino.Number}
+                 * @returns {Integer}
                  */
-                compareTo(anotherShort: Short): number;
+                compareTo(anotherShort: $$rhino.Number): Integer;
+            }
+
+            export class StringBuffer extends lang.Object implements CharSequence {
+                protected constructor();
                 /**
-                 * Returns the value of this Short as a double.
-                 * @returns {number}
-                 * @memberof {Short}
+                 * Appends the string representation of the boolean argument to the sequence.
+                 * @param b {$$rhino.Boolean}
+                 * @returns {StringBuffer}
                  */
-                doubleValue(): number;
+                append(b: $$rhino.Boolean): StringBuffer;
+
                 /**
-                 * Compares this object to the specified object.
-                 * @param {Object} obj -
-                 * @returns {boolean}
-                 * @memberof {Short}
+                 * Appends the string representation of the char argument to this sequence.
+                 * @param c {$$rhino.String}
+                 * @returns {StringBuffer}
                  */
-                equals(obj: Object): boolean;
+                append(c: $$rhino.String): StringBuffer;
+
                 /**
-                 * Returns the value of this Short as a float.
-                 * @returns {number}
-                 * @memberof {Short}
+                 * Appends the string representation of the char array argument to this sequence.
+                 * @param str {IJavaArray<$$rhino.String>}
+                 * @returns {StringBuffer}
                  */
-                floatValue(): number;
+                append(str: IJavaArray<$$rhino.String>): StringBuffer;
+
                 /**
-                 * Returns a hash code for this Short; equal to the result of invoking intValue().
-                 * @returns {number}
-                 * @memberof {Short}
+                 * Appends the string representation of a subarray of the char array argument to this sequence.
+                 * @param str {IJavaArray<$$rhino.String>}
+                 * @param offset {$$rhino.Number}
+                 * @param len {$$rhino.Number}
+                 * @returns {StringBuffer}
                  */
-                hashCode(): number;
+                append(str: IJavaArray<$$rhino.String>, offset: $$rhino.Number, len: $$rhino.Number): StringBuffer;
+
                 /**
-                 * Returns the value of this Short as an int.
-                 * @returns {number}
-                 * @memberof {Short}
+                 * Appends the specified CharSequence to this sequence.
+                 * @param s {CharSequence}
+                 * @returns {StringBuffer}
                  */
-                intValue(): number;
+                append(s: CharSequence): StringBuffer;
+
                 /**
-                 * Returns the value of this Short as a long.
-                 * @returns {number}
-                 * @memberof {Short}
+                 * Appends a subsequence of the specified CharSequence to this sequence.
+                 * @param s {CharSequence}
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {StringBuffer}
                  */
-                longValue(): number;
+                append(s: CharSequence, start: $$rhino.Number, end: $$rhino.Number): StringBuffer;
+
                 /**
-                 * Returns the value of this Short as a short.
-                 * @returns {number}
-                 * @memberof {Short}
+                 * Appends the string representation of the double argument to this sequence.
+                 * @param d {$$rhino.Number}
+                 * @returns {StringBuffer}
                  */
-                shortValue(): number;
+                append(d: $$rhino.Number): StringBuffer;
+
                 /**
-                 * Returns a String object representing this Short's value.
+                 * Appends the string representation of the float argument to this sequence.
+                 * @param f {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(f: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the string representation of the int argument to this sequence.
+                 * @param i {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(i: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the string representation of the long argument to this sequence.
+                 * @param lng {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                append(lng: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Appends the string representation of the Object argument.
+                 * @param obj {Object}
+                 * @returns {StringBuffer}
+                 */
+                append(obj: Object): StringBuffer;
+
+                /**
+                 * Appends the specified string to this character sequence.
+                 * @param str {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                append(str: $$rhino.String): StringBuffer;
+
+                /**
+                 * Appends the specified StringBuffer to this sequence.
+                 * @param sb {StringBuffer}
+                 * @returns {StringBuffer}
+                 */
+                append(sb: StringBuffer): StringBuffer;
+
+                /**
+                 * Appends the string representation of the codePoint argument to this sequence.
+                 * @param codePoint {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                appendCodePoint(codePoint: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Returns the current capacity.
+                 * @returns {Integer}
+                 */
+                capacity(): Integer;
+
+                /**
+                 * Returns the char value in this sequence at the specified index.
+                 * @param index {$$rhino.Number}
+                 * @returns {Character}
+                 */
+                charAt(index: $$rhino.Number): Character;
+
+                /**
+                 * Returns the character (Unicode code point) at the specified index.
+                 * @param index {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                codePointAt(index: $$rhino.Number): Integer;
+
+                /**
+                 * Returns the character (Unicode code point) before the specified index.
+                 * @param index {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                codePointBefore(index: $$rhino.Number): Integer;
+
+                /**
+                 * Returns the number of Unicode code points in the specified text range of this sequence.
+                 * @param beginIndex {$$rhino.Number}
+                 * @param endIndex {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                codePointCount(beginIndex: $$rhino.Number, endIndex: $$rhino.Number): Integer;
+
+                /**
+                 * Removes the characters in a substring of this sequence.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                delete(start: $$rhino.Number, end: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Removes the char at the specified position in this sequence.
+                 * @param index {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                deleteCharAt(index: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Ensures that the capacity is at least equal to the specified minimum.
+                 * @param minimumCapacity {$$rhino.Number}
+                 */
+                ensureCapacity(minimumCapacity: $$rhino.Number): void;
+
+                /**
+                 * Characters are copied from this sequence into the destination character array dst.
+                 * @param srcBegin {$$rhino.Number}
+                 * @param srcEnd {$$rhino.Number}
+                 * @param dst {IJavaArray<$$rhino.String>}
+                 * @param dstBegin {$$rhino.Number}
+                 */
+                getChars(srcBegin: $$rhino.Number, srcEnd: $$rhino.Number, dst: IJavaArray<$$rhino.String>, dstBegin: $$rhino.Number): void;
+
+                /**
+                 * Returns the index within this string of the first occurrence of the specified substring.
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
+                 */
+                indexOf(str: $$rhino.String): Integer;
+
+                /**
+                 * Returns the index within this string of the first occurrence of the specified substring, starting at the specified index.
+                 * @param str {$$rhino.String}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                indexOf(str: $$rhino.String, fromIndex: $$rhino.Number): Integer;
+
+                /**
+                 * Inserts the string representation of the boolean argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param b {$$rhino.Boolean}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, b: $$rhino.Boolean): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the char argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param c {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, c: $$rhino.String): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the char array argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param str {IJavaArray<$$rhino.String>}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, str: IJavaArray<$$rhino.String>): StringBuffer;
+
+                /**
+                 * Inserts the string representation of a subarray of the str array argument into this sequence.
+                 * @param index {$$rhino.Number}
+                 * @param str {IJavaArray<$$rhino.String>}
+                 * @param offset {$$rhino.Number}
+                 * @param len {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(index: $$rhino.Number, str: IJavaArray<$$rhino.String>, offset: $$rhino.Number, len: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the specified CharSequence into this sequence.
+                 * @param dstOffset {$$rhino.Number}
+                 * @param s {CharSequence}
+                 * @returns {StringBuffer}
+                 */
+                insert(dstOffset: $$rhino.Number, s: CharSequence): StringBuffer;
+
+                /**
+                 * Inserts a subsequence of the specified CharSequence into this sequence.
+                 * @param dstOffset {$$rhino.Number}
+                 * @param s {CharSequence}
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(dstOffset: $$rhino.Number, s: CharSequence, start: $$rhino.Number, end: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the double argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param d {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, d: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the float argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param f {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, f: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the second int argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param i {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, i: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the long argument into this sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param l {$$rhino.Number}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, l: $$rhino.Number): StringBuffer;
+
+                /**
+                 * Inserts the string representation of the Object argument into this character sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param obj {Object}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, obj: Object): StringBuffer;
+
+                /**
+                 * Inserts the string into this character sequence.
+                 * @param offset {$$rhino.Number}
+                 * @param str {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                insert(offset: $$rhino.Number, str: $$rhino.String): StringBuffer;
+
+                /**
+                 * Returns the index within this string of the rightmost occurrence of the specified substring.
+                 * @param str {$$rhino.String}
+                 * @returns {Integer}
+                 */
+                lastIndexOf(str: $$rhino.String): Integer;
+
+                /**
+                 * Returns the index within this string of the last occurrence of the specified substring.
+                 * @param str {$$rhino.String}
+                 * @param fromIndex {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                lastIndexOf(str: $$rhino.String, fromIndex: $$rhino.Number): Integer;
+
+                /**
+                 * Returns the length (character count).
+                 * @returns {Integer}
+                 */
+                length(): Integer;
+
+                /**
+                 * Returns the index within this sequence that is offset from the given index by codePointOffset code points.
+                 * @param index {$$rhino.Number}
+                 * @param codePointOffset {$$rhino.Number}
+                 * @returns {Integer}
+                 */
+                offsetByCodePoints(index: $$rhino.Number, codePointOffset: $$rhino.Number): Integer;
+
+                /**
+                 * Replaces the characters in a substring of this sequence with characters in the specified String.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @param str {$$rhino.String}
+                 * @returns {StringBuffer}
+                 */
+                replace(start: $$rhino.Number, end: $$rhino.Number, str: $$rhino.String): StringBuffer;
+
+                /**
+                 * Causes this character sequence to be replaced by the reverse of the sequence.
+                 * @returns {StringBuffer}
+                 */
+                reverse(): StringBuffer;
+
+                /**
+                 * The character at the specified index is set to ch.
+                 * @param index {$$rhino.Number}
+                 * @param ch {$$rhino.String}
+                 */
+                setCharAt(index: $$rhino.Number, ch: $$rhino.String): void;
+
+                /**
+                 * Sets the length of the character sequence.
+                 * @param newLength {$$rhino.Number}
+                 */
+                setLength(newLength: $$rhino.Number): void;
+
+                /**
+                 * Returns a new character sequence that is a subsequence of this sequence.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {CharSequence}
+                 */
+                subSequence(start: $$rhino.Number, end: $$rhino.Number): CharSequence;
+
+                /**
+                 * Returns a new String that contains a subsequence of characters currently contained in this character sequence.
+                 * @param start {$$rhino.Number}
                  * @returns {String}
-                 * @memberof {Short}
                  */
-                toString(): String;
+                substring(start: $$rhino.Number): String;
+
+                /**
+                 * Returns a new String that contains a subsequence of characters currently contained in this sequence.
+                 * @param start {$$rhino.Number}
+                 * @param end {$$rhino.Number}
+                 * @returns {String}
+                 */
+                substring(start: $$rhino.Number, end: $$rhino.Number): String;
+
+                /**
+                 * Attempts to reduce storage used for the character sequence.
+                 */
+                trimToSize(): void;
             }
         }
         export namespace util {
-            export interface Iterable<E> {
+            export class Locale extends lang.Object {
+                protected constructor();
                 /**
-                 * Returns an iterator over the elements in this collection in proper sequence.
-                 * @returns {Iterator<E>}
+                 * Overrides Cloneable.
+                 * @returns {lang.Object}
                  */
-                iterator(): Iterator<E>;
-            }
+                clone(): lang.Object;
 
+                /**
+                 * Returns the country/region code for this locale, which should either be the empty string, an uppercase ISO 3166 2-letter code, or a UN M.49 3-digit code.
+                 * @returns {lang.String}
+                 */
+                getCountry(): lang.String;
+
+                /**
+                 * Returns a name for the locale's country that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayCountry(): lang.String;
+
+                /**
+                 * Returns a name for the locale's country that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayCountry(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns a name for the locale's language that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayLanguage(): lang.String;
+
+                /**
+                 * Returns a name for the locale's language that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayLanguage(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns a name for the locale that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayName(): lang.String;
+
+                /**
+                 * Returns a name for the locale that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayName(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns a name for the the locale's script that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayScript(): lang.String;
+
+                /**
+                 * Returns a name for the locale's script that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayScript(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns a name for the locale's variant code that is appropriate for display to the user.
+                 * @returns {lang.String}
+                 */
+                getDisplayVariant(): lang.String;
+
+                /**
+                 * Returns a name for the locale's variant code that is appropriate for display to the user.
+                 * @param inLocale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayVariant(inLocale: Locale): lang.String;
+
+                /**
+                 * Returns the extension (or private use) value associated with the specified key, or null if there is no extension associated with the key.
+                 * @param key {$$rhino.String}
+                 * @returns {lang.String}
+                 */
+                getExtension(key: $$rhino.String): lang.String;
+
+                /**
+                 * Returns the set of extension keys associated with this locale, or the empty set if it has no extensions.
+                 * @returns {Set<Character>}
+                 */
+                getExtensionKeys(): Set<lang.Character>;
+
+                /**
+                 * Returns a three-letter abbreviation for this locale's country.
+                 * @returns {lang.String}
+                 */
+                getISO3Country(): lang.String;
+
+                /**
+                 * Returns a three-letter abbreviation of this locale's language.
+                 * @returns {lang.String}
+                 */
+                getISO3Language(): lang.String;
+
+                /**
+                 * Returns the language code of this Locale.
+                 * @returns {lang.String}
+                 */
+                getLanguage(): lang.String;
+
+                /**
+                 * Returns the script for this locale, which should either be the empty string or an ISO 15924 4-letter script code.
+                 * @returns {lang.String}
+                 */
+                getScript(): lang.String;
+
+                /**
+                 * Returns the set of unicode locale attributes associated with this locale, or the empty set if it has no attributes.
+                 * @returns {Set<lang.String>}
+                 */
+                getUnicodeLocaleAttributes(): Set<lang.String>;
+
+                /**
+                 * Returns the set of Unicode locale keys defined by this locale, or the empty set if this locale has none.
+                 * @returns {Set<lang.String>}
+                 */
+                getUnicodeLocaleKeys(): Set<lang.String>;
+
+                /**
+                 * Returns the Unicode locale type associated with the specified Unicode locale key for this locale.
+                 * @param key {$$rhino.String}
+                 * @returns {lang.String}
+                 */
+                getUnicodeLocaleType(key: $$rhino.String): lang.String;
+
+                /**
+                 * Returns the variant code for this locale.
+                 * @returns {lang.String}
+                 */
+                getVariant(): lang.String;
+
+                /**
+                 * Returns a well-formed IETF BCP 47 language tag representing this locale.
+                 * @returns {lang.String}
+                 */
+                toLanguageTag(): lang.String;
+            }
             /**
              * Java Collection interface.
              * @export
              * @interface Collection<T>
              */
-            export interface Collection<E> extends Iterable<E> {
+            export interface Collection<E> extends lang.Iterable<E> {
                 /**
-                 * Ensures that this collection contains the specified element(optional operation).
+                 * Ensures that this collection contains the specified element (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
                  */
-                add(e: E): boolean;
-                //Adds all of the elements in the specified collection to this collection(optional operation).
+                add(e: E): lang.Boolean;
+
                 /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator (optional operation).
-                 * @returns {boolean}
+                 * Adds all of the elements in the specified collection to this collection (optional operation).
+                 * @param c {util.Collection<E>}
+                 * @returns {lang.Boolean}
                  */
-                addAll(c: Collection<E>): boolean;
-                //Removes all of the elements from this collection(optional operation).
+                addAll(c: util.Collection<E>): lang.Boolean;
+
                 /**
-                 * Removes all of the elements from this list (optional operation).
+                 * Removes all of the elements from this collection (optional operation).
                  */
                 clear(): void;
-                //Returns true if this collection contains the specified element.
+
                 /**
-                 * Returns true if this set contains the specified element.
-                 * @returns {boolean}
+                 * Returns true if this collection contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                contains(o: lang.Object): boolean;
-                //Returns true if this collection contains all of the elements in the specified collection.
+                contains(o: lang.Object): lang.Boolean;
+
                 /**
-                 * Returns true if this set contains all of the elements of the specified collection.
-                 * @returns {boolean}
+                 * Returns true if this collection contains all of the elements in the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
                  */
-                containsAll(c: Collection<any>): boolean;
-                //Compares the specified object with this collection for equality.
+                containsAll(c: util.Collection<any>): lang.Boolean;
+
                 /**
-                 * Returns true if this list contains the specified element.
-                 * @returns {boolean}
+                 * Compares the specified object with this collection for equality.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                contains(o: lang.Object): boolean;
-                //Returns the hash code value for this collection.
+                equals(o: lang.Object): lang.Boolean;
+
                 /**
-                 * Returns the hash code value for this list.
+                 * Returns the hash code value for this collection.
                  * @returns {lang.Integer}
                  */
                 hashCode(): lang.Integer;
-                //Returns true if this collection contains no elements.
+
                 /**
-                 * Returns true if this list contains no elements.
-                 * @returns {boolean}
+                 * Returns true if this collection contains no elements.
+                 * @returns {lang.Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): lang.Boolean;
+
                 /**
-                 * Removes a single instance of the specified element from this collection, if it is present(optional operation).
-                 * @returns {boolean}
+                 * Returns an iterator over the elements in this collection.
+                 * @returns {Iterator<E>}
                  */
-                remove(o: lang.Object): boolean;
-                //Removes all of this collection's elements that are also contained in the specified collection (optional operation).
+                iterator(): Iterator<E>;
+
                 /**
-                 * Removes from this list all of its elements that are contained in the specified collection (optional operation).
-                 * @returns {boolean}
+                 * Removes a single instance of the specified element from this collection, if it is present (optional operation).
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                removeAll(c: Collection<any>): boolean;
-                //Retains only the elements in this collection that are contained in the specified collection(optional operation).
+                remove(o: lang.Object): lang.Boolean;
+
                 /**
-                 * Retains only the elements in this list that are contained in the specified collection (optional operation).
-                 * @returns {boolean}
+                 * Removes all of this collection's elements that are also contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
                  */
-                retainAll(c: Collection<any>): boolean;
-                //Returns the number of elements in this collection.
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
                 /**
-                 * Returns the number of elements in this list.
-                 * @returns {int}
+                 * Retains only the elements in this collection that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Returns the number of elements in this collection.
+                 * @returns {lang.Integer}
                  */
                 size(): lang.Integer;
-                //Returns an array containing all of the elements in this collection.
-                toArray(): IJavaArray<lang.Object>;
-                //Returns an array containing all of the elements in this collection; the runtime type of the returned array is that of the specified array.
-                toArray(a: IJavaArray<E>): IJavaArray<E>;
+
+                /**
+                 * Returns an array containing all of the elements in this collection.
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
+
+                /**
+                 * Returns a string representation of this collection.
+                 * @returns {lang.String}
+                 */
+                toString(): lang.String;
             }
             export interface Iterator<E> {
                 /**
                  * Returns true if the iteration has more elements.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                hasNext(): boolean;
+                hasNext(): lang.Boolean;
                 /**
                  * Returns the next element in the iteration.
                  * @returns {E}
                  */
                 next(): E;
                 /**
-                 * Removes from the underlying collection the last element returned by this iterator (optional operation).
+                 * Removes from the underlying collection the last element returned by this iterator .
                  */
                 remove(): void;
             }
             export interface ListIterator<E> extends Iterator<E> {
                 /**
                  * Inserts the specified element into the list (optional operation).
+                 * @param e {E}
                  */
                 add(e: E): void;
+
+                /**
+                 * Returns true if this list iterator has more elements when traversing the list in the forward direction.
+                 * @returns {lang.Boolean}
+                 */
+                hasNext(): lang.Boolean;
+
                 /**
                  * Returns true if this list iterator has more elements when traversing the list in the reverse direction.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                hasPrevious(): boolean;
+                hasPrevious(): lang.Boolean;
+
+                /**
+                 * Returns the next element in the list and advances the cursor position.
+                 * @returns {E}
+                 */
+                next(): E;
+
                 /**
                  * Returns the index of the element that would be returned by a subsequent call to next().
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 nextIndex(): lang.Integer;
+
                 /**
                  * Returns the previous element in the list and moves the cursor position backwards.
                  * @returns {E}
                  */
                 previous(): E;
+
                 /**
                  * Returns the index of the element that would be returned by a subsequent call to previous().
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 previousIndex(): lang.Integer;
+
+                /**
+                 * Removes from the list the last element that was returned by next() or previous() (optional operation).
+                 */
+                remove(): void;
+
                 /**
                  * Replaces the last element returned by next() or previous() with the specified element (optional operation).
+                 * @param e {E}
                  */
                 set(e: E): void;
             }
-            export interface List<E> extends Collection<E> {
-                /**
-                 * Ensures that this collection contains the specified element(optional operation).
-                 */
-                add(e: E): boolean;
-                /**
-                 * Inserts the specified element at the specified position in this list (optional operation).
-                 */
-                add(index: lang.Integer, element: E): void;
-                /**
-                 * Inserts the specified element at the specified position in this list (optional operation).
-                 */
-                add(index: lang.Integer, element: E): void;
-                /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator (optional operation).
-                 * @returns {boolean}
-                 */
-                addAll(c: Collection<E>): boolean;
-                /**
-                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
-                 * @returns {boolean}
-                 */
-                addAll(index: lang.Integer, c: Collection<E>): boolean;
-                ///**
-                // * Removes all of the elements from this list (optional operation).
-                // */
-                //clear(): void;
-                ///**
-                // * Returns true if this list contains the specified element.
-                // * @returns {boolean}
-                // */
-                //    contains(o: lang.Object): boolean;
-                /**
-                 * Returns true if this list contains all of the elements of the specified collection.
-                 * @returns {boolean}
-                 */
-                containsAll(c: Collection<any>): boolean;
-                /**
-                 * Compares the specified object with this list for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: lang.Object): boolean;
-                /**
-                 * Returns the element at the specified position in this list.
-                 * @returns {E}
-                 */
-                get(index: lang.Integer): E;
-                ///**
-                // * Returns the hash code value for this list.
-                // * @returns {lang.Integer}
-                // */
-                //    hashCode(): lang.Integer;
-                /**
-                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                indexOf(o: lang.Object): lang.Integer;
-                ///**
-                // * Returns true if this list contains no elements.
-                // * @returns {boolean}
-                // */
-                //isEmpty(): boolean;
-                ///**
-                // * Returns an iterator over the elements in this list in proper sequence.
-                // * @returns {Iterator<E>}
-                // */
-                //iterator(): Iterator<E>;
-                /**
-                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                lastIndexOf(o: lang.Object): lang.Integer;
-                /**
-                 * Returns a list iterator over the elements in this list (in proper sequence).
-                 * @returns {ListIterator<E>}
-                 */
-                listIterator(): ListIterator<E>;
-                /**
-                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
-                 * @returns {ListIterator<E>}
-                 */
-                listIterator(index: lang.Integer): ListIterator<E>;
-                /**
-                 * Removes the element at the specified position in this list (optional operation).
-                 * @returns {E}
-                 */
-                remove(index: lang.Integer): E;
-                /**
-                 * Removes the first occurrence of the specified element from this list, if it is present (optional operation).
-                 * @returns {boolean}
-                 */
-                remove(o: lang.Object): boolean;
-                ///**
-                // * Removes from this list all of its elements that are contained in the specified collection (optional operation).
-                // * @returns {boolean}
-                // */
-                //removeAll(Collection < any > c): boolean;
-                ///**
-                // * Retains only the elements in this list that are contained in the specified collection (optional operation).
-                // * @returns {boolean}
-                // */
-                //retainAll(Collection < any > c): boolean;
-                /**
-                 * Replaces the element at the specified position in this list with the specified element (optional operation).
-                 * @returns {E}
-                 */
-                set(index: lang.Integer, element: E): E;
-                ///**
-                // * Returns the number of elements in this list.
-                // * @returns {int}
-                // */
-                //    size(): lang.Integer;
-                /**
-                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
-                 * @returns {List<E>}
-                 */
-                subList(fromIndex: lang.Integer, toIndex: lang.Integer): List<E>;
-            }
-            export class AbstractCollection<E> implements Collection<E>  {
-                protected constructor();
-                //Ensures that this collection contains the specified element(optional operation).
+            export interface List<E> extends util.Collection<E> {
                 /**
                  * Appends the specified element to the end of this list (optional operation).
-                 * @returns {boolean}
+                 * @param e {E}
+                 * @returns {lang.Boolean}
                  */
-                add(e: E): boolean;
-                //Adds all of the elements in the specified collection to this collection(optional operation).
+                add(e: E): lang.Boolean;
+
                 /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
-                 * @returns {boolean}
+                 * Inserts the specified element at the specified position in this list (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
                  */
-                addAll(c: Collection<E>): boolean;
-                //Removes all of the elements from this collection(optional operation).
+                add(index: $$rhino.Number, element: E): void;
+
+                /**
+                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's iterator (optional operation).
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(index: $$rhino.Number, c: util.Collection<E>): lang.Boolean;
+
                 /**
                  * Removes all of the elements from this list (optional operation).
                  */
                 clear(): void;
-                //Returns true if this collection contains the specified element.
+
                 /**
                  * Returns true if this list contains the specified element.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                contains(o: lang.Object): boolean;
-                //Returns true if this collection contains all of the elements in the specified collection.
-                containsAll(c: Collection<any>): boolean;
-                //Compares the specified object with this collection for equality.
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this list contains all of the elements of the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                containsAll(c: util.Collection<any>): lang.Boolean;
+
                 /**
                  * Compares the specified object with this list for equality.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                equals(o: lang.Object): boolean;
-                //Returns the hash code value for this collection.
+                equals(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns the element at the specified position in this list.
+                 * @param index {$$rhino.Number}
+                 * @returns {E}
+                 */
+                get(index: $$rhino.Number): E;
+
+                /**
+                 * Returns the hash code value for this list.
+                 * @returns {lang.Integer}
+                 */
                 hashCode(): lang.Integer;
-                //Returns true if this collection contains no elements.
+
+                /**
+                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                indexOf(o: lang.Object): lang.Integer;
+
                 /**
                  * Returns true if this list contains no elements.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): lang.Boolean;
+
                 /**
                  * Returns an iterator over the elements in this list in proper sequence.
                  * @returns {Iterator<E>}
                  */
                 iterator(): Iterator<E>;
-                //Removes a single instance of the specified element from this collection, if it is present(optional operation).
-                /**
-                 * Removes the first occurrence of the specified element from this list, if it is present.
-                 * @returns {boolean}
-                 */
-                remove(o: Object): boolean;
-                //Removes all of this collection's elements that are also contained in the specified collection (optional operation).
-                /**
-                 * Removes from this list all of its elements that are contained in the specified collection.
-                 * @returns {boolean}
-                 */
-                removeAll(c: Collection<any>): boolean;
-                //Retains only the elements in this collection that are contained in the specified collection(optional operation).
-                /**
-                 * Retains only the elements in this list that are contained in the specified collection.
-                 * @returns {boolean}
-                 */
-                retainAll(c: Collection<any>): boolean;
-                //Returns the number of elements in this collection.
-                /**
-                 * Returns the number of elements in this list.
-                 * @returns {int}
-                 */
-                size(): lang.Integer;
-                //Returns an array containing all of the elements in this collection.
-                /**
-                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
-                 * @returns {IJavaArray<lang.Object>}
-                 */
-                toArray(): IJavaArray<lang.Object>;
-                //Returns an array containing all of the elements in this collection; the runtime type of the returned array is that of the specified array.
-                /**
-                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element); the runtime type of the returned array is that of the specified array.
-                 * @returns {IJavaArray<E>}
-                 */
-                toArray(a: IJavaArray<E>): IJavaArray<E>;
-                toString(): lang.String;
-            }
-            export class AbstractList<E> extends AbstractCollection<E> {
-                protected constructor();
-                /**
-                 * Appends the specified element to the end of this list (optional operation).
-                 * @returns {boolean}
-                 */
-                add(e: E): boolean;
-                /**
-                 * Inserts the specified element at the specified position in this list (optional operation).
-                 */
-                add(index: lang.Integer, element: E): void;
-                /**
-                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
-                 * @returns {boolean}
-                 */
-                addAll(c: Collection<E>): boolean;
-                /**
-                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
-                 * @returns {boolean}
-                 */
-                addAll(index: lang.Integer, c: Collection<E>): boolean;
-                /**
-                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
-                 */
-                indexOf(o: lang.Object): lang.Integer;
+
                 /**
                  * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
-                 * @returns {int}
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
                  */
                 lastIndexOf(o: lang.Object): lang.Integer;
+
                 /**
                  * Returns a list iterator over the elements in this list (in proper sequence).
                  * @returns {ListIterator<E>}
                  */
                 listIterator(): ListIterator<E>;
+
                 /**
                  * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
+                 * @param index {$$rhino.Number}
                  * @returns {ListIterator<E>}
                  */
-                listIterator(index: lang.Integer): ListIterator<E>;
+                listIterator(index: $$rhino.Number): ListIterator<E>;
+
                 /**
                  * Removes the element at the specified position in this list (optional operation).
+                 * @param index {$$rhino.Number}
                  * @returns {E}
                  */
-                remove(index: lang.Integer): E;
+                remove(index: $$rhino.Number): E;
+
                 /**
-                 * Removes the first occurrence of the specified element from this list, if it is present.
-                 * @returns {boolean}
+                 * Removes the first occurrence of the specified element from this list, if it is present (optional operation).
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                remove(o: Object): boolean;
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Removes from this list all of its elements that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Retains only the elements in this list that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
                 /**
                  * Replaces the element at the specified position in this list with the specified element (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
                  * @returns {E}
                  */
-                set(index: lang.Integer, element: E): E;
+                set(index: $$rhino.Number, element: E): E;
+
+                /**
+                 * Returns the number of elements in this list.
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
                 /**
                  * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+                 * @param fromIndex {$$rhino.Number}
+                 * @param toIndex {$$rhino.Number}
                  * @returns {List<E>}
                  */
-                subList(fromIndex: lang.Integer, toIndex: lang.Integer): List<E>;
+                subList(fromIndex: $$rhino.Number, toIndex: $$rhino.Number): List<E>;
+
+                /**
+                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
             }
-            export class ArrayList<E> extends AbstractList<E> {
-                constructor();
-                constructor(initialCapacity: number);
-                constructor(c: Collection<E>);
+            export abstract class AbstractCollection<E> extends lang.Object implements util.Collection<E>  {
+                protected constructor();
                 /**
-                 * Returns a shallow copy of this ArrayList instance.
-                 * @returns {Object}
+                 * Ensures that this collection contains the specified element (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
                  */
-                clone(): lang.Object;
-                ///**
-                // * Returns true if this list contains the specified element.
-                // * @returns {boolean}
-                // */
-                //contains(o: Object): boolean;
+                add(e: E): lang.Boolean;
+
                 /**
-                 * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
+                 * Adds all of the elements in the specified collection to this collection (optional operation).
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
                  */
-                ensureCapacity(minCapacity: lang.Integer | number): void;
+                addAll(c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this collection (optional operation).
+                 */
+                clear(): void;
+
+                /**
+                 * Returns true if this collection contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this collection contains all of the elements in the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                containsAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Returns true if this collection contains no elements.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns an iterator over the elements contained in this collection.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Removes a single instance of the specified element from this collection, if it is present (optional operation).
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Removes all of this collection's elements that are also contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Retains only the elements in this collection that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Returns the number of elements in this collection.
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
+                /**
+                 * Returns the hash code value for this collection.
+                 * @returns {lang.Integer}
+                 */
+                hashCode(): lang.Integer;
+
+                /**
+                 * Compares the specified object with this collection for equality.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                equals(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns an array containing all of the elements in this collection.
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
+
+                /**
+                 * Returns a string representation of this collection.
+                 * @returns {lang.String}
+                 */
+                toString(): lang.String;
+            }
+            export abstract class AbstractList<E> extends AbstractCollection<E> implements List<E> {
+                protected constructor();
+                /**
+                 * Appends the specified element to the end of this list (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
+                 */
+                add(e: E): lang.Boolean;
+
+                /**
+                 * Inserts the specified element at the specified position in this list (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
+                 */
+                add(index: $$rhino.Number, element: E): void;
+
+                /**
+                 * Inserts all of the elements in the specified collection into this list at the specified position (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(c: util.Collection<E>): lang.Boolean;
+                addAll(index: $$rhino.Number, c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this list (optional operation).
+                 */
+                clear(): void;
+
                 /**
                  * Returns the element at the specified position in this list.
+                 * @param index {$$rhino.Number}
                  * @returns {E}
                  */
-                get(index: lang.Integer | number): E;
+                get(index: $$rhino.Number): E;
+
+                /**
+                 * Returns the hash code value for this list.
+                 * @returns {lang.Integer}
+                 */
+                hashCode(): lang.Integer;
+
+                /**
+                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                indexOf(o: lang.Object): lang.Integer;
+
+                /**
+                 * Returns an iterator over the elements in this list in proper sequence.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                lastIndexOf(o: lang.Object): lang.Integer;
+
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence).
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(): ListIterator<E>;
+
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
+                 * @param index {$$rhino.Number}
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(index: $$rhino.Number): ListIterator<E>;
+
+                /**
+                 * Removes the element at the specified position in this list (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @returns {E}
+                 */
+                remove(index: $$rhino.Number): E;
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Replaces the element at the specified position in this list with the specified element (optional operation).
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
+                 * @returns {E}
+                 */
+                set(index: $$rhino.Number, element: E): E;
+
+                /**
+                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+                 * @param fromIndex {$$rhino.Number}
+                 * @param toIndex {$$rhino.Number}
+                 * @returns {List<E>}
+                 */
+                subList(fromIndex: $$rhino.Number, toIndex: $$rhino.Number): List<E>;
+            }
+            export class ArrayList<E> extends AbstractList<E> implements List<E> {
+                /**
+                 * Appends the specified element to the end of this list.
+                 * @param e {E}
+                 * @returns {lang.Boolean}
+                 */
+                add(e: E): lang.Boolean;
+
+                /**
+                 * Inserts the specified element at the specified position in this list.
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
+                 */
+                add(index: $$rhino.Number, element: E): void;
+
+                /**
+                 * Appends all of the elements in the specified collection to the end of this list, in the order that they are returned by the specified collection's Iterator.
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Inserts all of the elements in the specified collection into this list, starting at the specified position.
+                 * @param index {$$rhino.Number}
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(index: $$rhino.Number, c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this list.
+                 */
+                clear(): void;
+
+                /**
+                 * Returns a shallow copy of this ArrayList instance.
+                 * @returns {lang.Object}
+                 */
+                clone(): lang.Object;
+
+                /**
+                 * Returns true if this list contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Increases the capacity of this ArrayList instance, if necessary, to ensure that it can hold at least the number of elements specified by the minimum capacity argument.
+                 * @param minCapacity {$$rhino.Number}
+                 */
+                ensureCapacity(minCapacity: $$rhino.Number): void;
+
+                /**
+                 * Returns the element at the specified position in this list.
+                 * @param index {$$rhino.Number}
+                 * @returns {E}
+                 */
+                get(index: $$rhino.Number): E;
+
+                /**
+                 * Returns the index of the first occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                indexOf(o: lang.Object): lang.Integer;
+
+                /**
+                 * Returns true if this list contains no elements.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns an iterator over the elements in this list in proper sequence.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Integer}
+                 */
+                lastIndexOf(o: lang.Object): lang.Integer;
+
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence).
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(): ListIterator<E>;
+
+                /**
+                 * Returns a list iterator over the elements in this list (in proper sequence), starting at the specified position in the list.
+                 * @param index {$$rhino.Number}
+                 * @returns {ListIterator<E>}
+                 */
+                listIterator(index: $$rhino.Number): ListIterator<E>;
+
+                /**
+                 * Removes the element at the specified position in this list.
+                 * @param index {$$rhino.Number}
+                 * @returns {E}
+                 */
+                remove(index: $$rhino.Number): E;
+
+                /**
+                 * Removes the first occurrence of the specified element from this list, if it is present.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Removes from this list all of its elements that are contained in the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Retains only the elements in this list that are contained in the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Replaces the element at the specified position in this list with the specified element.
+                 * @param index {$$rhino.Number}
+                 * @param element {E}
+                 * @returns {E}
+                 */
+                set(index: $$rhino.Number, element: E): E;
+
+                /**
+                 * Returns the number of elements in this list.
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
+                /**
+                 * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+                 * @param fromIndex {$$rhino.Number}
+                 * @param toIndex {$$rhino.Number}
+                 * @returns {List<E>}
+                 */
+                subList(fromIndex: $$rhino.Number, toIndex: $$rhino.Number): List<E>;
+
+                /**
+                 * Returns an array containing all of the elements in this list in proper sequence (from first to last element).
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
+
                 /**
                  * Trims the capacity of this ArrayList instance to be the list's current size.
                  */
@@ -2147,100 +2381,212 @@ declare namespace Packages {
             export interface MapEntry<K, V> {
                 /**
                  * Compares the specified object with this entry for equality.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                equals(o: lang.Object): boolean;
+                equals(o: lang.Object): lang.Boolean;
+
                 /**
                  * Returns the key corresponding to this entry.
                  * @returns {K}
                  */
                 getKey(): K;
+
                 /**
                  * Returns the value corresponding to this entry.
                  * @returns {V}
                  */
                 getValue(): V;
+
                 /**
                  * Returns the hash code value for this map entry.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 hashCode(): lang.Integer;
+
                 /**
                  * Replaces the value corresponding to this entry with the specified value (optional operation).
+                 * @param value {V}
                  * @returns {V}
                  */
                 setValue(value: V): V;
             }
-            export interface Set<E> extends Collection<E> { }
+            export interface Set<E> extends util.Collection<E> {
+                /**
+                 * Adds the specified element to this set if it is not already present (optional operation).
+                 * @param e {E}
+                 * @returns {lang.Boolean}
+                 */
+                add(e: E): lang.Boolean;
+
+                /**
+                 * Adds all of the elements in the specified collection to this set if they're not already present (optional operation).
+                 * @param c {util.Collection< E>}
+                 * @returns {lang.Boolean}
+                 */
+                addAll(c: util.Collection<E>): lang.Boolean;
+
+                /**
+                 * Removes all of the elements from this set (optional operation).
+                 */
+                clear(): void;
+
+                /**
+                 * Returns true if this set contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this set contains all of the elements of the specified collection.
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                containsAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Compares the specified object with this set for equality.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                equals(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns the hash code value for this set.
+                 * @returns {lang.Integer}
+                 */
+                hashCode(): lang.Integer;
+
+                /**
+                 * Returns true if this set contains no elements.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns an iterator over the elements in this set.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Removes the specified element from this set if it is present (optional operation).
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Removes from this set all of its elements that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                removeAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Retains only the elements in this set that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
+                 */
+                retainAll(c: util.Collection<any>): lang.Boolean;
+
+                /**
+                 * Returns the number of elements in this set (its cardinality).
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
+                /**
+                 * Returns an array containing all of the elements in this set.
+                 * @returns {lang.Object}
+                 */
+                toArray(): lang.Object;
+            }
             export interface Map<K, V> {
                 /**
                  * Removes all of the mappings from this map (optional operation).
                  */
                 clear(): void;
+
                 /**
                  * Returns true if this map contains a mapping for the specified key.
-                 * @returns {boolean}
+                 * @param key {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                containsKey(key: lang.Object): boolean;
+                containsKey(key: lang.Object): lang.Boolean;
+
                 /**
                  * Returns true if this map maps one or more keys to the specified value.
-                 * @returns {boolean}
+                 * @param value {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                containsValue(value: lang.Object): boolean;
+                containsValue(value: lang.Object): lang.Boolean;
+
                 /**
                  * Returns a Set view of the mappings contained in this map.
-                 * @returns {Set<Map.Entry<K,V>>}
+                 * @returns {util.Set<Map.Entry<K,V>>}
                  */
-                entrySet(): Set<MapEntry<K, V>>;
+                entrySet(): util.Set<MapEntry<K, V>>;
+
                 /**
                  * Compares the specified object with this map for equality.
-                 * @returns {boolean}
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                equals(o: lang.Object): boolean;
+                equals(o: lang.Object): lang.Boolean;
+
                 /**
                  * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+                 * @param key {lang.Object}
                  * @returns {V}
                  */
                 get(key: lang.Object): V;
+
                 /**
                  * Returns the hash code value for this map.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 hashCode(): lang.Integer;
+
                 /**
                  * Returns true if this map contains no key-value mappings.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): lang.Boolean;
+
                 /**
                  * Returns a Set view of the keys contained in this map.
-                 * @returns {Set<K>}
+                 * @returns {util.Set<K>}
                  */
-                keySet(): Set<K>;
+                keySet(): util.Set<K>;
+
                 /**
                  * Associates the specified value with the specified key in this map (optional operation).
+                 * @param key {K}
+                 * @param value {V}
                  * @returns {V}
                  */
                 put(key: K, value: V): V;
-                /**
-                 * Copies all of the mappings from the specified map to this map (optional operation).
-                 */
-                putAll(m: Map<K, V>): void;
+
                 /**
                  * Removes the mapping for a key from this map if it is present (optional operation).
+                 * @param key {lang.Object}
                  * @returns {V}
                  */
                 remove(key: lang.Object): V;
+
                 /**
                  * Returns the number of key-value mappings in this map.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 size(): lang.Integer;
+
                 /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
+                 * Returns a util.Collection view of the values contained in this map.
+                 * @returns {util.Collection<V>}
                  */
-                values(): Collection<V>;
+                values(): util.Collection<V>;
             }
             export class AbstractMap<K, V> extends lang.Object implements Map<K, V> {
                 protected constructor();
@@ -2248,130 +2594,219 @@ declare namespace Packages {
                  * Removes all of the mappings from this map (optional operation).
                  */
                 clear(): void;
+
                 /**
                  * Returns true if this map contains a mapping for the specified key.
-                 * @returns {boolean}
+                 * @param key {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                containsKey(key: Object): boolean;
+                containsKey(key: lang.Object): lang.Boolean;
+
                 /**
                  * Returns true if this map maps one or more keys to the specified value.
-                 * @returns {boolean}
+                 * @param value {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                containsValue(value: Object): boolean;
+                containsValue(value: lang.Object): lang.Boolean;
+
                 /**
                  * Returns a Set view of the mappings contained in this map.
-                 * @returns {Set<Map.Entry<K,V>>}
+                 * @returns {util.Set<Map.Entry<K,V>>}
                  */
-                entrySet(): Set<MapEntry<K, V>>;
-                /**
-                 * Compares the specified object with this map for equality.
-                 * @returns {boolean}
-                 */
-                equals(o: lang.Object): boolean;
+                entrySet(): util.Set<MapEntry<K, V>>;
+
                 /**
                  * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+                 * @param key {lang.Object}
                  * @returns {V}
                  */
                 get(key: lang.Object): V;
+
                 /**
                  * Returns the hash code value for this map.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 hashCode(): lang.Integer;
+
                 /**
                  * Returns true if this map contains no key-value mappings.
-                 * @returns {boolean}
+                 * @returns {lang.Boolean}
                  */
-                isEmpty(): boolean;
+                isEmpty(): lang.Boolean;
+
                 /**
                  * Returns a Set view of the keys contained in this map.
-                 * @returns {Set<K>}
+                 * @returns {util.Set<K>}
                  */
-                keySet(): Set<K>;
+                keySet(): util.Set<K>;
+
                 /**
                  * Associates the specified value with the specified key in this map (optional operation).
+                 * @param key {K}
+                 * @param value {V}
                  * @returns {V}
                  */
                 put(key: K, value: V): V;
-                /**
-                 * Copies all of the mappings from the specified map to this map (optional operation).
-                 */
-                putAll(m: Map<K, V>): void;
+
                 /**
                  * Removes the mapping for a key from this map if it is present (optional operation).
+                 * @param key {lang.Object}
                  * @returns {V}
                  */
                 remove(key: lang.Object): V;
+
                 /**
                  * Returns the number of key-value mappings in this map.
-                 * @returns {int}
+                 * @returns {lang.Integer}
                  */
                 size(): lang.Integer;
+
                 /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
+                 * Returns a util.Collection view of the values contained in this map.
+                 * @returns {util.Collection<V>}
                  */
-                values(): Collection<V>;
+                values(): util.Collection<V>;
             }
-            export class HashMap<K, V> extends AbstractMap<K, V> {
+            export class HashMap<K, V> extends AbstractMap<K, V> implements Map<K, V> {
+                protected constructor();
                 /**
-                 * Constructs an empty HashMap with the default initial capacity (16) and the default load factor (0.75).
-                 * @constructor
+                 * Removes all of the mappings from this map.
                  */
-                constructor();
-                /**
-                 * Constructs an empty HashMap with the specified initial capacity and the default load factor (0.75).
-                 * @returns {constructor}
-                 */
-                constructor(initialCapacity: lang.Integer);
-                /**
-                 * Constructs an empty HashMap with the specified initial capacity and load factor.
-                 * @returns {constructor}
-                 */
-                constructor(initialCapacity: lang.Integer, loadFactor: lang.Float);
-                /**
-                 * Constructs a new HashMap with the same mappings as the specified Map.
-                 * @returns {constructor}
-                 */
-                constructor(m: Map<K, V>);
+                clear(): void;
+
                 /**
                  * Returns a shallow copy of this HashMap instance: the keys and values themselves are not cloned.
-                 * @returns {Object}
+                 * @returns {lang.Object}
                  */
                 clone(): lang.Object;
+
                 /**
-                 * Returns a Collection view of the values contained in this map.
-                 * @returns {Collection<V>}
+                 * Returns true if this map contains a mapping for the specified key.
+                 * @param key {lang.Object}
+                 * @returns {lang.Boolean}
                  */
-                values(): Collection<V>;
+                containsKey(key: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this map maps one or more keys to the specified value.
+                 * @param value {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                containsValue(value: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns a Set view of the mappings contained in this map.
+                 * @returns {util.Set<Map.Entry<K,V>>}
+                 */
+                entrySet(): util.Set<MapEntry<K, V>>;
+
+                /**
+                 * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
+                 * @param key {lang.Object}
+                 * @returns {V}
+                 */
+                get(key: lang.Object): V;
+
+                /**
+                 * Returns true if this map contains no key-value mappings.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns a Set view of the keys contained in this map.
+                 * @returns {util.Set<K>}
+                 */
+                keySet(): util.Set<K>;
+
+                /**
+                 * Associates the specified value with the specified key in this map.
+                 * @param key {K}
+                 * @param value {V}
+                 * @returns {V}
+                 */
+                put(key: K, value: V): V;
+
+                /**
+                 * Removes the mapping for the specified key from this map if present.
+                 * @param key {lang.Object}
+                 * @returns {V}
+                 */
+                remove(key: lang.Object): V;
+
+                /**
+                 * Returns the number of key-value mappings in this map.
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
+
+                /**
+                 * Returns a util.Collection view of the values contained in this map.
+                 * @returns {util.Collection<V>}
+                 */
+                values(): util.Collection<V>;
             }
-            export class AbstractSet<E> extends AbstractCollection<E> implements Set<E> { protected constructor(); }
-            export class HashSet<E> extends AbstractSet<E> {
+            export class AbstractSet<E> extends AbstractCollection<E> implements util.Set<E> {
+                protected constructor();
+
                 /**
-                 * Constructs a new, empty set; the backing HashMap instance has default initial capacity (16) and load factor (0.75).
-                 * @constructor
+                 * Removes from this set all of its elements that are contained in the specified collection (optional operation).
+                 * @param c {util.Collection<any>}
+                 * @returns {lang.Boolean}
                  */
-                constructor();
+                removeAll(c: util.Collection<any>): lang.Boolean;
+            }
+            export class HashSet<E> extends AbstractSet<E> implements util.Set<E> {
+                protected constructor();
                 /**
-                 * Constructs a new set containing the elements in the specified collection.
-                 * @constructor
+                 * Adds the specified element to this set if it is not already present.
+                 * @param e {E}
+                 * @returns {lang.Boolean}
                  */
-                constructor(c: Collection<E>);
+                add(e: E): lang.Boolean;
+
                 /**
-                 * Constructs a new, empty set; the backing HashMap instance has the specified initial capacity and default load factor (0.75).
-                 * @constructor
+                 * Removes all of the elements from this set.
                  */
-                constructor(initialCapacity: lang.Integer);
-                /**
-                 * Constructs a new, empty set; the backing HashMap instance has the specified initial capacity and the specified load factor.
-                 * @constructor
-                 */
-                constructor(initialCapacity: lang.Integer, loadFactor: lang.Float);
+                clear(): void;
+
                 /**
                  * Returns a shallow copy of this HashSet instance: the elements themselves are not cloned.
-                 * @returns {Object}
+                 * @returns {lang.Object}
                  */
                 clone(): lang.Object;
+
+                /**
+                 * Returns true if this set contains the specified element.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                contains(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns true if this set contains no elements.
+                 * @returns {lang.Boolean}
+                 */
+                isEmpty(): lang.Boolean;
+
+                /**
+                 * Returns an iterator over the elements in this set.
+                 * @returns {Iterator<E>}
+                 */
+                iterator(): Iterator<E>;
+
+                /**
+                 * Removes the specified element from this set if it is present.
+                 * @param o {lang.Object}
+                 * @returns {lang.Boolean}
+                 */
+                remove(o: lang.Object): lang.Boolean;
+
+                /**
+                 * Returns the number of elements in this set (its cardinality).
+                 * @returns {lang.Integer}
+                 */
+                size(): lang.Integer;
             }
             /**
              * Java Date object.
@@ -2379,5391 +2814,4356 @@ declare namespace Packages {
              * @class Date
              * @extends {Object}
              */
-            export class Date extends Object {
-                /**
-                 * Allocates a Date object and initializes it so that it represents the time at which it was allocated, measured to the nearest millisecond.
-                 * @constructor
-                 */
-                constructor();
-                /**
-                 * Allocates a Date object and initializes it to represent the specified number of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
-                 * @constructor
-                 */
-                constructor(date: lang.Long);
+            export class Date extends lang.Object implements lang.Comparable<Date> {
+                protected constructor();
                 /**
                  * Tests if this date is after the specified date.
-                 * @returns {boolean}
+                 * @param when {Date}
+                 * @returns {lang.Boolean}
                  */
-                after(when: Date): boolean;
+                after(when: Date): lang.Boolean;
+
                 /**
                  * Tests if this date is before the specified date.
-                 * @returns {boolean}
+                 * @param when {Date}
+                 * @returns {lang.Boolean}
                  */
-                before(when: Date): boolean;
+                before(when: Date): lang.Boolean;
+
                 /**
                  * Return a copy of this object.
-                 * @returns {Object}
+                 * @returns {lang.Object}
                  */
                 clone(): lang.Object;
+
                 /**
                  * Compares two Dates for ordering.
-                 * @returns {int}
+                 * @param anotherDate {Date}
+                 * @returns {lang.Integer}
                  */
                 compareTo(anotherDate: Date): lang.Integer;
-                /**
-                 * Compares two dates for equality.
-                 * @returns {boolean}
-                 */
-                equals(obj: lang.Object): boolean;
+
                 /**
                  * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this Date object.
-                 * @returns {long}
+                 * @returns {lang.Long}
                  */
                 getTime(): lang.Long;
-                /**
-                 * Returns a hash code value for this object.
-                 * @returns {int}
-                 */
-                hashCode(): lang.Integer;
+
                 /**
                  * Sets this Date object to represent a point in time that is time milliseconds after January 1, 1970 00:00:00 GMT.
+                 * @param time {$$rhino.Number}
                  */
-                setTime(time: lang.Long): void;
+                setTime(time: $$rhino.Number): void;
+
             }
             /**
              * Represents a time zone offset, and also figures out daylight savings.
              * @class TimeZone
              */
             export class TimeZone {
+                protected constructor();
                 /**
                  * Creates a copy of this TimeZone.
-                 * @returns {TimeZone}
-                 * @memberof TimeZone
+                 * @returns {lang.Object}
                  */
-                clone(): TimeZone;
-
-                /**
-                 * Returns the amount of time to be added to local standard time to get local wall clock time.
-                 * @returns {int}
-                 * @memberof TimeZone
-                 */
-                getDSTSavings(): lang.Integer;
+                clone(): lang.Object;
 
                 /**
                  * Returns a long standard time name of this TimeZone suitable for presentation to the user in the default locale.
-                 * @returns {string}
-                 * @memberof TimeZone
+                 * @returns {lang.String}
                  */
                 getDisplayName(): lang.String;
 
                 /**
-                 * Returns a name in the specified style of this TimeZone suitable for presentation to the user in the default locale. If the specified daylight is true, a Daylight Saving Time name is returned (even if this TimeZone doesn't observe Daylight Saving Time). Otherwise, a Standard Time name is returned.
-                 * @param {boolean} daylight
-                 * @param {int} style
-                 * @memberof TimeZone
+                 * Returns a name in the specified style of this TimeZone suitable for presentation to the user in the default locale.
+                 * @param daylight {$$rhino.Boolean}
+                 * @param style {$$rhino.Number}
+                 * @returns {lang.String}
                  */
-                getDisplayName(daylight: boolean, style: lang.Integer);
+                getDisplayName(daylight: $$rhino.Boolean, style: $$rhino.Number): lang.String;
+
+                /**
+                 * Returns a name in the specified style of this TimeZone suitable for presentation to the user in the specified locale.
+                 * @param daylight {$$rhino.Boolean}
+                 * @param style {$$rhino.Number}
+                 * @param locale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayName(daylight: $$rhino.Boolean, style: $$rhino.Number, locale: Locale): lang.String;
+
+                /**
+                 * Returns a long standard time name of this TimeZone suitable for presentation to the user in the specified locale.
+                 * @param locale {Locale}
+                 * @returns {lang.String}
+                 */
+                getDisplayName(locale: Locale): lang.String;
+
+                /**
+                 * Returns the amount of time to be added to local standard time to get local wall clock time.
+                 * @returns {lang.Integer}
+                 */
+                getDSTSavings(): lang.Integer;
 
                 /**
                  * Gets the ID of this time zone.
-                 * @returns {string}
-                 * @memberof TimeZone
+                 * @returns {lang.String}
                  */
                 getID(): lang.String;
 
                 /**
-                 * Returns the offset of this time zone from UTC at the specified date. If Daylight Saving Time is in effect at the specified date, the offset value is adjusted with the amount of daylight saving.
-                 * @param {long} date
-                 * @returns {int}
-                 * @memberof TimeZone
+                 * Gets the time zone offset, for current date, modified in case of daylight savings.
+                 * @param era {$$rhino.Number}
+                 * @param year {$$rhino.Number}
+                 * @param month {$$rhino.Number}
+                 * @param day {$$rhino.Number}
+                 * @param dayOfWeek {$$rhino.Number}
+                 * @param milliseconds {$$rhino.Number}
+                 * @returns {lang.Integer}
                  */
-                getOffset(date: lang.Long): lang.Integer;
+                getOffset(era: $$rhino.Number, year: $$rhino.Number, month: $$rhino.Number, day: $$rhino.Number, dayOfWeek: $$rhino.Number, milliseconds: $$rhino.Number): lang.Integer;
 
                 /**
-                 * Gets the time zone offset, for current date, modified in case of daylight savings. This is the offset to add to UTC to get local time.
-                 * @param {int} era
-                 * @param {int} year
-                 * @param {int} month
-                 * @param {int} day
-                 * @param {int} dayOfWeek
-                 * @param {int} milliseconds
-                 * @returns {int}
-                 * @memberof TimeZone
+                 * Returns the offset of this time zone from UTC at the specified date.
+                 * @param date {$$rhino.Number}
+                 * @returns {lang.Integer}
                  */
-                getOffset(era: lang.Integer, year: lang.Integer, month: lang.Integer, day: lang.Integer, dayOfWeek: lang.Integer, milliseconds: lang.Integer): lang.Integer;
+                getOffset(date: $$rhino.Number): lang.Integer;
 
                 /**
-                 * Returns true if this zone has the same rule and offset as another zone. That is, if this zone differs only in ID, if at all. Returns false if the other zone is null.
-                 * @param {TimeZone} other
-                 * @memberof TimeZone
+                 * Returns the amount of time in milliseconds to add to UTC to get standard time in this time zone.
+                 * @returns {lang.Integer}
                  */
-                hasSameRules(other: TimeZone): boolean;
+                getRawOffset(): lang.Integer;
+
+                /**
+                 * Returns true if this zone has the same rule and offset as another zone.
+                 * @param other {TimeZone}
+                 * @returns {lang.Boolean}
+                 */
+                hasSameRules(other: TimeZone): lang.Boolean;
+
+                /**
+                 * Queries if the given date is in Daylight Saving Time in this time zone.
+                 * @param date {Date}
+                 * @returns {lang.Boolean}
+                 */
+                inDaylightTime(date: Date): lang.Boolean;
 
                 /**
                  * Returns true if this TimeZone is currently in Daylight Saving Time, or if a transition from Standard Time to Daylight Saving Time occurs at any future time.
-                 * @returns {boolean}
-                 * @memberof TimeZone
+                 * @returns {lang.Boolean}
                  */
-                observesDaylightTime(): boolean;
+                observesDaylightTime(): lang.Boolean;
 
                 /**
-                 * Sets the time zone ID. This does not change any other data in the time zone object.
-                 * @param {string} id
-                 * @memberof TimeZone
+                 * Sets the time zone ID.
+                 * @param ID {$$rhino.String}
                  */
-                setID(id: lang.String);
+                setID(ID: $$rhino.String): void;
 
-                /**S
-                 * Queries if this TimeZone uses Daylight Saving Time.
-                 * @returns {boolean}
-                 * @memberof TimeZone
+                /**
+                 * Sets the base time zone offset to GMT.
+                 * @param offsetMillis {$$rhino.Number}
                  */
-                useDaylightTime(): boolean;
+                setRawOffset(offsetMillis: $$rhino.Number): void;
+
+                /**
+                 * Queries if this TimeZone uses Daylight Saving Time.
+                 * @returns {lang.Boolean}
+                 */
+                useDaylightTime(): lang.Boolean;
             }
         }
     }
+
+    export namespace org {
+        export namespace w3c {
+            export namespace dom {
+                export interface CharacterData extends Node {
+                    /**
+                     * Append the string to the end of the character data of the node.
+                     * @param arg {$$rhino.String}
+                     */
+                    appendData(arg: $$rhino.String): void;
+
+                    /**
+                     * Remove a range of 16-bit units from the node.
+                     * @param offset {$$rhino.Number}
+                     * @param count {$$rhino.Number}
+                     */
+                    deleteData(offset: $$rhino.Number, count: $$rhino.Number): void;
+
+                    /**
+                     * The character data of the node that implements this interface.
+                     * @returns {Packages.java.lang.String}
+                     */
+                    getData(): Packages.java.lang.String;
+
+                    /**
+                     * The number of 16-bit units that are available through data and the substringData method below.
+                     * @returns {Packages.java.lang.Integer}
+                     */
+                    getLength(): Packages.java.lang.Integer;
+
+                    /**
+                     * Insert a string at the specified 16-bit unit offset.
+                     * @param offset {$$rhino.Number}
+                     * @param arg {$$rhino.String}
+                     */
+                    insertData(offset: $$rhino.Number, arg: $$rhino.String): void;
+
+                    /**
+                     * Replace the characters starting at the specified 16-bit unit offset with the specified string.
+                     * @param offset {$$rhino.Number}
+                     * @param count {$$rhino.Number}
+                     * @param arg {$$rhino.String}
+                     */
+                    replaceData(offset: $$rhino.Number, count: $$rhino.Number, arg: $$rhino.String): void;
+
+                    /**
+                     * The character data of the node that implements this interface.
+                     * @param data {$$rhino.String}
+                     */
+                    setData(data: $$rhino.String): void;
+
+                    /**
+                     * Extracts a range of data from the node.
+                     * @param offset {$$rhino.Number}
+                     * @param count {$$rhino.Number}
+                     * @returns {Packages.java.lang.String}
+                     */
+                    substringData(offset: $$rhino.Number, count: $$rhino.Number): Packages.java.lang.String;
+                }
+                export interface Text extends CharacterData {
+                    /**
+                     * Returns all text of Text nodes logically-adjacent text nodes to this node, concatenated in document order.
+                     * @returns {java.lang.String}
+                     */
+                    getWholeText(): java.lang.String;
+
+                    /**
+                     * Returns whether this text node contains element content whitespace, often abusively called "ignorable whitespace".
+                     * @returns {java.lang.Boolean}
+                     */
+                    isElementContentWhitespace(): java.lang.Boolean;
+
+                    /**
+                     * Replaces the text of the current node and all logically-adjacent text nodes with the specified text.
+                     * @param content {$$rhino.String}
+                     * @returns {Text}
+                     */
+                    replaceWholeText(content: $$rhino.String): Text;
+
+                    /**
+                     * Breaks this node into two nodes at the specified offset, keeping both in the tree as siblings.
+                     * @param offset {$$rhino.Number}
+                     * @returns {Text}
+                     */
+                    splitText(offset: $$rhino.Number): Text;
+                }
+                export interface CDATASection extends Text { }
+                export interface Comment extends CharacterData { }
+                export interface DocumentFragment extends Node { }
+                export interface EntityReference extends Node { }
+                export interface ProcessingInstruction extends Node {
+                    /**
+                     * The content of this processing instruction.
+                     * @returns {java.lang.String}
+                     */
+                    getData(): java.lang.String;
+
+                    /**
+                     * The target of this processing instruction.
+                     * @returns {java.lang.String}
+                     */
+                    getTarget(): java.lang.String;
+
+                    /**
+                     * The content of this processing instruction.
+                     * @param data {$$rhino.String}
+                     */
+                    setData(data: $$rhino.String): void;
+                }
+                export interface DocumentType extends Node {
+                    /**
+                     * A NamedNodeMap containing the general entities, both external and internal, declared in the DTD.
+                     * @returns {NamedNodeMap}
+                     */
+                    getEntities(): NamedNodeMap;
+
+                    /**
+                     * The internal subset as a string, or null if there is none.
+                     * @returns {java.lang.String}
+                     */
+                    getInternalSubset(): java.lang.String;
+
+                    /**
+                     * The name of DTD; i.e., the name immediately following the DOCTYPE keyword.
+                     * @returns {java.lang.String}
+                     */
+                    getName(): java.lang.String;
+
+                    /**
+                     * A NamedNodeMap containing the notations declared in the DTD.
+                     * @returns {NamedNodeMap}
+                     */
+                    getNotations(): NamedNodeMap;
+
+                    /**
+                     * The public identifier of the external subset.
+                     * @returns {java.lang.String}
+                     */
+                    getPublicId(): java.lang.String;
+
+                    /**
+                     * The system identifier of the external subset.
+                     * @returns {java.lang.String}
+                     */
+                    getSystemId(): java.lang.String;
+                }
+                export interface DOMStringList {
+                    /**
+                     * Test if a string is part of this DOMStringList.
+                     * @param str {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    contains(str: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * The number of DOMStrings in the list.
+                     * @returns {java.lang.Integer}
+                     */
+                    getLength(): java.lang.Integer;
+
+                    /**
+                     * Returns the indexth item in the collection.
+                     * @param index {$$rhino.Number}
+                     * @returns {java.lang.String}
+                     */
+                    item(index: $$rhino.Number): java.lang.String;
+                }
+                export interface DOMConfiguration {
+                    /**
+                     * Check if setting a parameter to a specific value is supported.
+                     * @param name {$$rhino.String}
+                     * @param value {object}
+                     * @returns {java.lang.Boolean}
+                     */
+                    canSetParameter(name: $$rhino.String, value: object): java.lang.Boolean;
+
+                    /**
+                     * Return the value of a parameter if known.
+                     * @param name {$$rhino.String}
+                     * @returns {java.lang.Object}
+                     */
+                    getParameter(name: $$rhino.String): java.lang.Object;
+
+                    /**
+                     * The list of the parameters supported by this DOMConfiguration object and for which at least one value can be set by the application.
+                     * @returns {DOMStringList}
+                     */
+                    getParameterNames(): DOMStringList;
+
+                    /**
+                     * Set the value of a parameter.
+                     * @param name {$$rhino.String}
+                     * @param value {object}
+                     */
+                    setParameter(name: $$rhino.String, value: object): void;
+                }
+                export interface DOMImplementation {
+                    /**
+                     * Creates a DOM Document object of the specified type with its document element.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @param doctype {DocumentType}
+                     * @returns {Document}
+                     */
+                    createDocument(namespaceURI: $$rhino.String, qualifiedName: $$rhino.String, doctype: DocumentType): Document;
+
+                    /**
+                     * Creates an empty DocumentType node.
+                     * @param qualifiedName {$$rhino.String}
+                     * @param publicId {$$rhino.String}
+                     * @param systemId {$$rhino.String}
+                     * @returns {DocumentType}
+                     */
+                    createDocumentType(qualifiedName: $$rhino.String, publicId: $$rhino.String, systemId: $$rhino.String): DocumentType;
+
+                    /**
+                     * This method returns a specialized object which implements the specialized APIs of the specified feature and version, as specified in DOM Features.
+                     * @param feature {$$rhino.String}
+                     * @param version {$$rhino.String}
+                     * @returns {java.lang.Object}
+                     */
+                    getFeature(feature: $$rhino.String, version: $$rhino.String): java.lang.Object;
+
+                    /**
+                     * Test if the DOM implementation implements a specific feature and version, as specified in DOM Features.
+                     * @param feature {$$rhino.String}
+                     * @param version {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasFeature(feature: $$rhino.String, version: $$rhino.String): java.lang.Boolean;
+                }
+                export interface Document extends Node {
+                    /**
+                     * Attempts to adopt a node from another document to this document.
+                     * @param source {Node}
+                     * @returns {Node}
+                     */
+                    adoptNode(source: Node): Node;
+
+                    /**
+                     * Creates an Attr of the given name.
+                     * @param name {$$rhino.String}
+                     * @returns {Attr}
+                     */
+                    createAttribute(name: $$rhino.String): Attr;
+
+                    /**
+                     * Creates an attribute of the given qualified name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @returns {Attr}
+                     */
+                    createAttributeNS(namespaceURI: $$rhino.String, qualifiedName: $$rhino.String): Attr;
+
+                    /**
+                     * Creates a CDATASection node whose value is the specified string.
+                     * @param data {$$rhino.String}
+                     * @returns {CDATASection}
+                     */
+                    createCDATASection(data: $$rhino.String): CDATASection;
+
+                    /**
+                     * Creates a Comment node given the specified string.
+                     * @param data {$$rhino.String}
+                     * @returns {Comment}
+                     */
+                    createComment(data: $$rhino.String): Comment;
+
+                    /**
+                     * Creates an empty DocumentFragment object.
+                     * @returns {DocumentFragment}
+                     */
+                    createDocumentFragment(): DocumentFragment;
+
+                    /**
+                     * Creates an element of the type specified.
+                     * @param tagName {$$rhino.String}
+                     * @returns {Element}
+                     */
+                    createElement(tagName: $$rhino.String): Element;
+
+                    /**
+                     * Creates an element of the given qualified name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @returns {Element}
+                     */
+                    createElementNS(namespaceURI: $$rhino.String, qualifiedName: $$rhino.String): Element;
+
+                    /**
+                     * Creates an EntityReference object.
+                     * @param name {$$rhino.String}
+                     * @returns {EntityReference}
+                     */
+                    createEntityReference(name: $$rhino.String): EntityReference;
+
+                    /**
+                     * Creates a ProcessingInstruction node given the specified name and data strings.
+                     * @param target {$$rhino.String}
+                     * @param data {$$rhino.String}
+                     * @returns {ProcessingInstruction}
+                     */
+                    createProcessingInstruction(target: $$rhino.String, data: $$rhino.String): ProcessingInstruction;
+
+                    /**
+                     * Creates a Text node given the specified string.
+                     * @param data {$$rhino.String}
+                     * @returns {Text}
+                     */
+                    createTextNode(data: $$rhino.String): Text;
+
+                    /**
+                     * The Document Type Declaration (see DocumentType) associated with this document.
+                     * @returns {DocumentType}
+                     */
+                    getDoctype(): DocumentType;
+
+                    /**
+                     * This is a convenience attribute that allows direct access to the child node that is the document element of the document.
+                     * @returns {Element}
+                     */
+                    getDocumentElement(): Element;
+
+                    /**
+                     * The location of the document or null if undefined or if the Document was created using DOMImplementation.createDocument.
+                     * @returns {java.lang.String}
+                     */
+                    getDocumentURI(): java.lang.String;
+
+                    /**
+                     * The configuration used when Document.normalizeDocument() is invoked.
+                     * @returns {DOMConfiguration}
+                     */
+                    getDomConfig(): DOMConfiguration;
+
+                    /**
+                     * Returns the Element that has an ID attribute with the given value.
+                     * @param elementId {$$rhino.String}
+                     * @returns {Element}
+                     */
+                    getElementById(elementId: $$rhino.String): Element;
+
+                    /**
+                     * Returns a NodeList of all the Elements in document order with a given tag name and are contained in the document.
+                     * @param tagname {$$rhino.String}
+                     * @returns {NodeList}
+                     */
+                    getElementsByTagName(tagname: $$rhino.String): NodeList;
+
+                    /**
+                     * Returns a NodeList of all the Elements with a given local name and namespace URI in document order.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {NodeList}
+                     */
+                    getElementsByTagNameNS(namespaceURI: $$rhino.String, localName: $$rhino.String): NodeList;
+
+                    /**
+                     * The DOMImplementation object that handles this document.
+                     * @returns {DOMImplementation}
+                     */
+                    getImplementation(): DOMImplementation;
+
+                    /**
+                     * An attribute specifying the encoding used for this document at the time of the parsing.
+                     * @returns {java.lang.String}
+                     */
+                    getInputEncoding(): java.lang.String;
+
+                    /**
+                     * An attribute specifying whether error checking is enforced or not.
+                     * @returns {java.lang.Boolean}
+                     */
+                    getStrictErrorChecking(): java.lang.Boolean;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, the encoding of this document.
+                     * @returns {java.lang.String}
+                     */
+                    getXmlEncoding(): java.lang.String;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, whether this document is standalone.
+                     * @returns {java.lang.Boolean}
+                     */
+                    getXmlStandalone(): java.lang.Boolean;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, the version number of this document.
+                     * @returns {java.lang.String}
+                     */
+                    getXmlVersion(): java.lang.String;
+
+                    /**
+                     * Imports a node from another document to this document, without altering or removing the source node from the original document; this method creates a new copy of the source node.
+                     * @param importedNode {Node}
+                     * @param deep {$$rhino.Boolean}
+                     * @returns {Node}
+                     */
+                    importNode(importedNode: Node, deep: $$rhino.Boolean): Node;
+
+                    /**
+                     * This method acts as if the document was going through a save and load cycle, putting the document in a "normal" form.
+                     */
+                    normalizeDocument(): void;
+
+                    /**
+                     * Rename an existing node of type ELEMENT_NODE or ATTRIBUTE_NODE.
+                     * @param n {Node}
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    renameNode(n: Node, namespaceURI: $$rhino.String, qualifiedName: $$rhino.String): Node;
+
+                    /**
+                     * The location of the document or null if undefined or if the Document was created using DOMImplementation.createDocument.
+                     * @param documentURI {$$rhino.String}
+                     */
+                    setDocumentURI(documentURI: $$rhino.String): void;
+
+                    /**
+                     * An attribute specifying whether error checking is enforced or not.
+                     * @param strictErrorChecking {$$rhino.Boolean}
+                     */
+                    setStrictErrorChecking(strictErrorChecking: $$rhino.Boolean): void;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, whether this document is standalone.
+                     * @param xmlStandalone {$$rhino.Boolean}
+                     */
+                    setXmlStandalone(xmlStandalone: $$rhino.Boolean): void;
+
+                    /**
+                     * An attribute specifying, as part of the XML declaration, the version number of this document.
+                     * @param xmlVersion {$$rhino.String}
+                     */
+                    setXmlVersion(xmlVersion: $$rhino.String): void;
+                }
+                export interface NamedNodeMap {
+                    /**
+                     * The number of nodes in this map.
+                     * @returns {java.lang.Integer}
+                     */
+                    getLength(): java.lang.Integer;
+
+                    /**
+                     * Retrieves a node specified by name.
+                     * @param name {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    getNamedItem(name: $$rhino.String): Node;
+
+                    /**
+                     * Retrieves a node specified by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    getNamedItemNS(namespaceURI: $$rhino.String, localName: $$rhino.String): Node;
+
+                    /**
+                     * Returns the indexth item in the map.
+                     * @param index {$$rhino.Number}
+                     * @returns {Node}
+                     */
+                    item(index: $$rhino.Number): Node;
+
+                    /**
+                     * Removes a node specified by name.
+                     * @param name {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    removeNamedItem(name: $$rhino.String): Node;
+
+                    /**
+                     * Removes a node specified by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {Node}
+                     */
+                    removeNamedItemNS(namespaceURI: $$rhino.String, localName: $$rhino.String): Node;
+
+                    /**
+                     * Adds a node using its nodeName attribute.
+                     * @param arg {Node}
+                     * @returns {Node}
+                     */
+                    setNamedItem(arg: Node): Node;
+
+                    /**
+                     * Adds a node using its namespaceURI and localName.
+                     * @param arg {Node}
+                     * @returns {Node}
+                     */
+                    setNamedItemNS(arg: Node): Node;
+                }
+                export interface Node {
+                    /**
+                     * Adds the node newChild to the end of the list of children of this node.
+                     * @param newChild {Node}
+                     * @returns {Node}
+                     */
+                    appendChild(newChild: Node): Node;
+
+                    /**
+                     * Returns a duplicate of this node, i.e., serves as a generic copy constructor for nodes.
+                     * @param deep {$$rhino.Boolean}
+                     * @returns {Node}
+                     */
+                    cloneNode(deep: $$rhino.Boolean): Node;
+
+                    /**
+                     * Compares the reference node, i.e.
+                     * @param other {Node}
+                     * @returns {java.lang.Short}
+                     */
+                    compareDocumentPosition(other: Node): java.lang.Short;
+
+                    /**
+                     * A NamedNodeMap containing the attributes of this node (if it is an Element) or null otherwise.
+                     * @returns {NamedNodeMap}
+                     */
+                    getAttributes(): NamedNodeMap;
+
+                    /**
+                     * The absolute base URI of this node or null if the implementation wasn't able to obtain an absolute URI.
+                     * @returns {java.lang.String}
+                     */
+                    getBaseURI(): java.lang.String;
+
+                    /**
+                     * A NodeList that contains all children of this node.
+                     * @returns {NodeList}
+                     */
+                    getChildNodes(): NodeList;
+
+                    /**
+                     * This method returns a specialized object which implements the specialized APIs of the specified feature and version, as specified in .
+                     * @param feature {$$rhino.String}
+                     * @param version {$$rhino.String}
+                     * @returns {java.lang.Object}
+                     */
+                    getFeature(feature: $$rhino.String, version: $$rhino.String): java.lang.Object;
+
+                    /**
+                     * The first child of this node.
+                     * @returns {Node}
+                     */
+                    getFirstChild(): Node;
+
+                    /**
+                     * The last child of this node.
+                     * @returns {Node}
+                     */
+                    getLastChild(): Node;
+
+                    /**
+                     * Returns the local part of the qualified name of this node.
+                     * @returns {java.lang.String}
+                     */
+                    getLocalName(): java.lang.String;
+
+                    /**
+                     * The namespace URI of this node, or null if it is unspecified (see ).
+                     * @returns {java.lang.String}
+                     */
+                    getNamespaceURI(): java.lang.String;
+
+                    /**
+                     * The node immediately following this node.
+                     * @returns {Node}
+                     */
+                    getNextSibling(): Node;
+
+                    /**
+                     * The name of this node, depending on its type; see the table above.
+                     * @returns {java.lang.String}
+                     */
+                    getNodeName(): java.lang.String;
+
+                    /**
+                     * A code representing the type of the underlying object, as defined above.
+                     * @returns {java.lang.Short}
+                     */
+                    getNodeType(): java.lang.Short;
+
+                    /**
+                     * The value of this node, depending on its type; see the table above.
+                     * @returns {java.lang.String}
+                     */
+                    getNodeValue(): java.lang.String;
+
+                    /**
+                     * The Document object associated with this node.
+                     * @returns {Document}
+                     */
+                    getOwnerDocument(): Document;
+
+                    /**
+                     * The parent of this node.
+                     * @returns {Node}
+                     */
+                    getParentNode(): Node;
+
+                    /**
+                     * The namespace prefix of this node, or null if it is unspecified.
+                     * @returns {java.lang.String}
+                     */
+                    getPrefix(): java.lang.String;
+
+                    /**
+                     * The node immediately preceding this node.
+                     * @returns {Node}
+                     */
+                    getPreviousSibling(): Node;
+
+                    /**
+                     * This attribute returns the text content of this node and its descendants.
+                     * @returns {java.lang.String}
+                     */
+                    getTextContent(): java.lang.String;
+
+                    /**
+                     * Retrieves the object associated to a key on a this node.
+                     * @param key {$$rhino.String}
+                     * @returns {java.lang.Object}
+                     */
+                    getUserData(key: $$rhino.String): java.lang.Object;
+
+                    /**
+                     * Returns whether this node (if it is an element) has any attributes.
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasAttributes(): java.lang.Boolean;
+
+                    /**
+                     * Returns whether this node has any children.
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasChildNodes(): java.lang.Boolean;
+
+                    /**
+                     * Inserts the node newChild before the existing child node refChild.
+                     * @param newChild {Node}
+                     * @param refChild {Node}
+                     * @returns {Node}
+                     */
+                    insertBefore(newChild: Node, refChild: Node): Node;
+
+                    /**
+                     * This method checks if the specified namespaceURI is the default namespace or not.
+                     * @param namespaceURI {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isDefaultNamespace(namespaceURI: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Tests whether two nodes are equal.
+                     * @param arg {Node}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isEqualNode(arg: Node): java.lang.Boolean;
+
+                    /**
+                     * Returns whether this node is the same node as the given one.
+                     * @param other {Node}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isSameNode(other: Node): java.lang.Boolean;
+
+                    /**
+                     * Tests whether the DOM implementation implements a specific feature and that feature is supported by this node, as specified in .
+                     * @param feature {$$rhino.String}
+                     * @param version {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isSupported(feature: $$rhino.String, version: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Look up the namespace URI associated to the given prefix, starting from this node.
+                     * @param prefix {$$rhino.String}
+                     * @returns {java.lang.String}
+                     */
+                    lookupNamespaceURI(prefix: $$rhino.String): java.lang.String;
+
+                    /**
+                     * Look up the prefix associated to the given namespace URI, starting from this node.
+                     * @param namespaceURI {$$rhino.String}
+                     * @returns {java.lang.String}
+                     */
+                    lookupPrefix(namespaceURI: $$rhino.String): java.lang.String;
+
+                    /**
+                     * Puts all Text nodes in the full depth of the sub-tree underneath this Node.
+                     */
+                    normalize(): void;
+
+                    /**
+                     * Removes the child node indicated by oldChild from the list of children, and returns it.
+                     * @param oldChild {Node}
+                     * @returns {Node}
+                     */
+                    removeChild(oldChild: Node): Node;
+
+                    /**
+                     * Replaces the child node oldChild with newChild in the list of children, and returns the oldChild node.
+                     * @param newChild {Node}
+                     * @param oldChild {Node}
+                     * @returns {Node}
+                     */
+                    replaceChild(newChild: Node, oldChild: Node): Node;
+
+                    /**
+                     * The value of this node, depending on its type; see the table above.
+                     * @param nodeValue {$$rhino.String}
+                     */
+                    setNodeValue(nodeValue: $$rhino.String): void;
+
+                    /**
+                     * The namespace prefix of this node, or null if it is unspecified.
+                     * @param prefix {$$rhino.String}
+                     */
+                    setPrefix(prefix: $$rhino.String): void;
+
+                    /**
+                     * This attribute returns the text content of this node and its descendants.
+                     * @param textContent {$$rhino.String}
+                     */
+                    setTextContent(textContent: $$rhino.String): void;
+                }
+                export interface Attr {
+                    /**
+                     * Returns the name of this attribute.
+                     * @returns {java.lang.String}
+                     */
+                    getName(): java.lang.String;
+
+                    /**
+                     * The Element node this attribute is attached to or null if this attribute is not in use.
+                     * @returns {Element}
+                     */
+                    getOwnerElement(): Element;
+
+                    /**
+                     * The type information associated with this attribute.
+                     * @returns {TypeInfo}
+                     */
+                    getSchemaTypeInfo(): TypeInfo;
+
+                    /**
+                     * True if this attribute was explicitly given a value in the instance document, false otherwise.
+                     * @returns {java.lang.Boolean}
+                     */
+                    getSpecified(): java.lang.Boolean;
+
+                    /**
+                     * On retrieval, the value of the attribute is returned as a string.
+                     * @returns {java.lang.String}
+                     */
+                    getValue(): java.lang.String;
+
+                    /**
+                     * Returns whether this attribute is known to be of type ID (i.e.
+                     * @returns {java.lang.Boolean}
+                     */
+                    isId(): java.lang.Boolean;
+
+                    /**
+                     * On retrieval, the value of the attribute is returned as a string.
+                     * @param value {$$rhino.String}
+                     */
+                    setValue(value: $$rhino.String): void;
+                }
+                export interface NodeList {
+                    /**
+                     * Test if a name is part of this NameList.
+                     * @param str {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    contains(str: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Test if the pair namespaceURI/name is part of this NameList.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param name {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    containsNS(namespaceURI: $$rhino.String, name: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * The number of pairs (name and namespaceURI) in the list.
+                     * @returns {java.lang.Integer}
+                     */
+                    getLength(): java.lang.Integer;
+
+                    /**
+                     * Returns the indexth name item in the collection.
+                     * @param index {$$rhino.Number}
+                     * @returns {java.lang.String}
+                     */
+                    getName(index: $$rhino.Number): java.lang.String;
+
+                    /**
+                     * Returns the indexth namespaceURI item in the collection.
+                     * @param index {$$rhino.Number}
+                     * @returns {java.lang.String}
+                     */
+                    getNamespaceURI(index: $$rhino.Number): java.lang.String;
+                }
+                export interface TypeInfo {
+                    /**
+                     * The name of a type declared for the associated element or attribute, or null if unknown.
+                     * @returns {java.lang.String}
+                     */
+                    getTypeName(): java.lang.String;
+
+                    /**
+                     * The namespace of the type declared for the associated element or attribute or null if the element does not have declaration or if no namespace information is available.
+                     * @returns {java.lang.String}
+                     */
+                    getTypeNamespace(): java.lang.String;
+
+                    /**
+                     * This method returns if there is a derivation between the reference type definition, i.e.
+                     * @param typeNamespaceArg {$$rhino.String}
+                     * @param typeNameArg {$$rhino.String}
+                     * @param derivationMethod {$$rhino.Number}
+                     * @returns {java.lang.Boolean}
+                     */
+                    isDerivedFrom(typeNamespaceArg: $$rhino.String, typeNameArg: $$rhino.String, derivationMethod: $$rhino.Number): java.lang.Boolean;
+                }
+                export interface Element extends Node {
+                    /**
+                     * Retrieves an attribute value by name.
+                     * @param name {$$rhino.String}
+                     * @returns {java.lang.String}
+                     */
+                    getAttribute(name: $$rhino.String): java.lang.String;
+
+                    /**
+                     * Retrieves an attribute node by name.
+                     * @param name {$$rhino.String}
+                     * @returns {Attr}
+                     */
+                    getAttributeNode(name: $$rhino.String): Attr;
+
+                    /**
+                     * Retrieves an Attr node by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {Attr}
+                     */
+                    getAttributeNodeNS(namespaceURI: $$rhino.String, localName: $$rhino.String): Attr;
+
+                    /**
+                     * Retrieves an attribute value by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {java.lang.String}
+                     */
+                    getAttributeNS(namespaceURI: $$rhino.String, localName: $$rhino.String): java.lang.String;
+
+                    /**
+                     * Returns a NodeList of all descendant Elements with a given tag name, in document order.
+                     * @param name {$$rhino.String}
+                     * @returns {NodeList}
+                     */
+                    getElementsByTagName(name: $$rhino.String): NodeList;
+
+                    /**
+                     * Returns a NodeList of all the descendant Elements with a given local name and namespace URI in document order.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {NodeList}
+                     */
+                    getElementsByTagNameNS(namespaceURI: $$rhino.String, localName: $$rhino.String): NodeList;
+
+                    /**
+                     * The type information associated with this element.
+                     * @returns {TypeInfo}
+                     */
+                    getSchemaTypeInfo(): TypeInfo;
+
+                    /**
+                     * The name of the element.
+                     * @returns {java.lang.String}
+                     */
+                    getTagName(): java.lang.String;
+
+                    /**
+                     * Returns true when an attribute with a given name is specified on this element or has a default value, false otherwise.
+                     * @param name {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasAttribute(name: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Returns true when an attribute with a given local name and namespace URI is specified on this element or has a default value, false otherwise.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @returns {java.lang.Boolean}
+                     */
+                    hasAttributeNS(namespaceURI: $$rhino.String, localName: $$rhino.String): java.lang.Boolean;
+
+                    /**
+                     * Removes an attribute by name.
+                     * @param name {$$rhino.String}
+                     */
+                    removeAttribute(name: $$rhino.String): void;
+
+                    /**
+                     * Removes the specified attribute node.
+                     * @param oldAttr {Attr}
+                     * @returns {Attr}
+                     */
+                    removeAttributeNode(oldAttr: Attr): Attr;
+
+                    /**
+                     * Removes an attribute by local name and namespace URI.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     */
+                    removeAttributeNS(namespaceURI: $$rhino.String, localName: $$rhino.String): void;
+
+                    /**
+                     * Adds a new attribute.
+                     * @param name {$$rhino.String}
+                     * @param value {$$rhino.String}
+                     */
+                    setAttribute(name: $$rhino.String, value: $$rhino.String): void;
+
+                    /**
+                     * Adds a new attribute node.
+                     * @param newAttr {Attr}
+                     * @returns {Attr}
+                     */
+                    setAttributeNode(newAttr: Attr): Attr;
+
+                    /**
+                     * Adds a new attribute.
+                     * @param newAttr {Attr}
+                     * @returns {Attr}
+                     */
+                    setAttributeNodeNS(newAttr: Attr): Attr;
+
+                    /**
+                     * Adds a new attribute.
+                     * @param namespaceURI {$$rhino.String}
+                     * @param qualifiedName {$$rhino.String}
+                     * @param value {$$rhino.String}
+                     */
+                    setAttributeNS(namespaceURI: $$rhino.String, qualifiedName: $$rhino.String, value: $$rhino.String): void;
+
+                    /**
+                     * If the parameter isId is true, this method declares the specified attribute to be a user-determined ID attribute .
+                     * @param name {$$rhino.String}
+                     * @param isId {$$rhino.Boolean}
+                     */
+                    setIdAttribute(name: $$rhino.String, isId: $$rhino.Boolean): void;
+
+                    /**
+                     * If the parameter isId is true, this method declares the specified attribute to be a user-determined ID attribute .
+                     * @param idAttr {Attr}
+                     * @param isId {$$rhino.Boolean}
+                     */
+                    setIdAttributeNode(idAttr: Attr, isId: $$rhino.Boolean): void;
+
+                    /**
+                     * If the parameter isId is true, this method declares the specified attribute to be a user-determined ID attribute .
+                     * @param namespaceURI {$$rhino.String}
+                     * @param localName {$$rhino.String}
+                     * @param isId {$$rhino.Boolean}
+                     */
+                    setIdAttributeNS(namespaceURI: $$rhino.String, localName: $$rhino.String, isId: $$rhino.Boolean): void;
+                }
+            }
+        }
+    }
+
     export namespace com {
         export namespace glide {
-            // export namespace monitor {
-            // export namespace sql {
-            // export class SQLChildMonitor { }
-            // export class SQLDeleteMonitor { }
-            // export class SQLInsertMonitor { }
-            // export class SQLResponseMonitor { }
-            // export class SQLSelectMonitor { }
-            // export class SQLUpdateMonitor { }
-            // }
-            // export namespace threads {
-            // export class SysBRThreadMonitor { }
-            // export class SysConcurrencyMonitor { }
-            // export class SysCPUThreadMonitor { }
-            // export class SysDBThreadMonitor { }
-            // export class SysNetThreadMonitor { }
-            // export class SysThreadMonitor { }
-            // }
-            // export class AbstractBucketCollector { }
-            // export class StatsInfo { }
-            // }
-            export namespace db {
-                // export namespace domain {
-                // export class AbstractDomainProvider { }
-                // export class Domain { }
-                // export class DomainDisplay { }
-                // export class DomainHierarchy { }
-                // export class DomainNumberProvider { }
-                // export class DomainPathDisplay { }
-                // export class DomainPathProvider { }
-                // export class DomainSpoolProvider { }
-                // export class DomainSupport { }
-                // export class DomainTree { }
-                // export class DomainUtil { }
-                // export class DomainValidator { }
-                // }
-                // export namespace explain {
-                // export class AQueryExplanation { }
-                // }
-                // export namespace auxiliary {
-                // export class Archiver { }
-                // export class ArchiveRecord { }
-                // export class ArchiveRestore { }
-                // export class ArchiveStatus { }
-                // export class ArchiveTable { }
-                // export class TableGroupMover { }
-                // export class TableMover { }
-                // }
-                // export namespace impex {
-                // export namespace datasource {
-                // export class DataSource { }
-                // }
-                // export namespace transformer {
-                // export class Transformer { }
-                // }
-                // export class Bootstrap { }
-                // export class ColumnAttributes { }
-                // export class ECCQueueTransformer { }
-                // export class ExcelLoader2 { }
-                // export class ImportLog { }
-                // export class ImportMap { }
-                // export class ImportMapField { }
-                // export class JDBCLoader { }
-                // export class JDBCProbeTestWorker { }
-                // export class Loader { }
-                // export class TableCreator { }
-                // export class Unloader { }
-                // }
-                // export namespace change {
-                // export namespace command {
-                // export class SimmerDown { }
-                // export class SimmerUp { }
-                // }
-                // export class DBChangeManager { }
-                // }
-                // export namespace pool {
-                // export class DBConnection { }
-                // export class DBConnectionPool { }
-                // export class DBConnectionPooler { }
-                // }
-                // export namespace rdbms {
-                // export namespace mysql {
-                // export class DBIMySQL { }
-                // }
-                // }
-                // export namespace meta {
-                // export class IRow { }
-                // export class StorageUtils { }
-                // export class Table { }
-                // }
-                // export namespace ir {
-                // export class IRQuerySummary { }
-                // export class IRQuerySummarySimple { }
-                // }
-                // export namespace access {
-                // export class ITableIterator { }
-                // }
-                export namespace conditions {
-                    /**
-                     * The GlideQueryCondition API provides additional AND or OR conditions that can be added to the current condition, allowing you to build complex queries.
-                     * @class QueryCondition
-                     */
-                    export class QueryCondition {
-                        protected constructor();
-                        /**
-                         * Adds an AND condition to the current condition.
-                         * @param {string} name The name of a field.
-                         * @param {QueryOperator} oper The operator for the query (=,!=,>,>=,<,<=,IN,NOT IN,STARTSWITH,ENDSWITH,CONTAINS,DOES NOT CONTAIN,INSTANCEOF).
-                         * @param {*} value The value to query on.
-                         * @returns {QueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
-                         */
-                        addCondition(name: string, oper: QueryOperator, value: any): QueryCondition;
-                        /**
-                         * Adds an AND condition to the current condition. Assumes the equals operator.
-                         * @param {string} name The name of a field.
-                         * @param {*} value The value of a field.
-                         * @returns {QueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
-                         */
-                        addCondition(name: string, value: any): QueryCondition;
-                        /**
-                         * Adds an AND condition to the current condition.
-                         * @param {QueryCondition} queryCondition Condition to add.
-                         * @returns {QueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
-                         */
-                        addCondition(queryCondition: QueryCondition): QueryCondition
-                        /**
-                         * Adds an OR condition to the current condition.
-                         * @param {string} name The name of a field.
-                         * @param {QueryOperator} oper The operator for the query (=,!=,>,>=,<,<=,IN,NOT IN,STARTSWITH,ENDSWITH,CONTAINS,DOES NOT CONTAIN,INSTANCEOF).
-                         * @param {*} value The value to query on.
-                         * @returns {QueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
-                         */
-                        addOrCondition(name: string, oper: QueryOperator, value: any): QueryCondition;
-                        /**
-                         * Adds an OR condition to the current condition. Assumes the equals operator.
-                         * @param {string} name The name of a field.
-                         * @param {*} value The value to query on.
-                         * @returns {QueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
-                         */
-                        addOrCondition(name: string, value: any): QueryCondition;
-                        /**
-                         * Adds an OR condition to the current condition. Assumes the equals operator.
-                         * @param {QueryCondition} queryCondition Condition to add.
-                         * @returns {QueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
-                         */
-                        addOrCondition(queryCondition: QueryCondition): QueryCondition;
-                    }
-                    // export class SubQuery { }
+            export namespace choice {
+                export class ChoiceList {
+
                 }
-                // export namespace table {
-                // export class TableParentChange { }
-                // export class TableParentColumnChange { }
-                // }
-                // export class CascadeFromDelete { }
-                // export class CompositeElement { }
-                // export class DatabaseVerifier { }
-                // export class DBAction { }
-                // export class DBAggregateQuery { }
-                // export class DBAggregateUtil { }
-                // export class DBCompositeAction { }
-                // export class DBConfiguration { }
-                // export class DBConfigurationManager { }
-                // export class DBConfigurationManagerEventHandler { }
-                // export class DBConfigurationParms { }
-                // export class DBConfigurationV2Migrator { }
-                // export class DBDelete { }
-                // export class DBI { }
-                // export class DBIndex { }
-                // export class DBMicroStats { }
-                // export class DBMultiTargetAction { }
-                // export class DBObjectManager { }
-                // export class DBObjectToken { }
-                // export class DBPropertiesConfig { }
-                // export class DBQuery { }
-                // export class DBTypes { }
-                // export class DBUpdate { }
-                // export class DBUtil { }
-                // export class DBView { }
-
-                /**
-                 * GlideElementDescriptor object.
-                 * @class Packages.com.glide.db.ElementDescriptor
-                 */
-                export class ElementDescriptor {
-                    protected constructor();
-                    getAttachmentEncryptionType(): Packages.java.lang.String;
-                    getEncryptionType(): Packages.java.lang.String;
-                    getInternalType(): Packages.java.lang.String;
-                    getLabel(): Packages.java.lang.String;
-                    getLength(): number;
-                    getName(): Packages.java.lang.String;
-                    getPlural(): Packages.java.lang.String;
-                    hasAttachmentsEncrypted(): boolean;
-                    isAutoOrSysID(): boolean;
-                    isChoiceTable(): boolean;
-                    isEdgeEncrypted(): boolean;
-                    isVirtual(): boolean;
-                    getBooleanAttribute(name: string): boolean;
-                }
-
-                // export class IndexDescriptor { }
-                // export class IndexUtils { }
-                // export class IOStats { }
-                // export class LabelGenerator { }
-                // export class MultipleAction { }
-                // export class MultipleDelete { }
-                // export class MultipleInsert { }
-                // export class MultipleUpdate { }
-                // export class NumberManager { }
-                // export class QueryString { }
-                // export class QueryTerm { }
-                // export class Relationships { }
-                // export class SysField { }
-                // export class SYSMany2Many { }
-                // export class TableDescriptor { }
-                // export class TableManager { }
-            }
-            // export namespace execution_plan {
-            // export class AbstractExecutionPlan { }
-            // export class ExecutionPlan { }
-            // export class TaskToken { }
-            // }
-            // export namespace listener {
-            // export class AbstractListener { }
-            // export class ScriptListener { }
-            // export class SimpleScriptListener { }
-            // }
-            export namespace ui {
-                // export namespace portal {
-                // export class AbstractRenderer { }
-                // }
-                // export namespace action {
-                // export class ActionManager { }
-                // export class UIAction { }
-                // }
-                // export namespace jelly {
-                // export namespace tags {
-                // export namespace form {
-                // export class DBMacro { }
-                // export class GroupByListTag { }
-                // export class QueryFormatter { }
-                // }
-                // export namespace mergedata {
-                // export class HistoryTag2 { }
-                // }
-                // export class BaseTag { }
-                // }
-                // export class Emitter { }
-                // export class GlideExpressionWrapper { }
-                // export class GlideJellyContext { }
-                // export class JellyRunner { }
-                // }
-                // export namespace chart {
-                // export namespace dataset {
-                // export class ChartFieldColors { }
-                // export class ChartUtil { }
-                // export class ChartValue { }
-                // export class PivotTableSummaryTableWriter { }
-                // export class SummaryTableGroupReader { }
-                // export class SummaryTableOrderedReader { }
-                // export class SummaryTableReader { }
-                // export class SummaryTableWriter { }
-                // }
-                // export class ChartGeneratorFactory { }
-                // }
-                // export namespace monitor {
-                // export class InternalMonitor { }
-                // export class IOMonitor { }
-                // export class MemoryActive { }
-                // export class MemoryCache { }
-                // export class MemorySwap { }
-                // export class MemoryTotal { }
-                // export class PartitionMonitor { }
-                // }
-                // export namespace io {
-                // export class GlideOutputWriter { }
-                // export class GlideOutputWriterFactory { }
-                // }
-                // export namespace diagnostics {
-                // export class SQLDebug { }
-                // }
-                // export class CanceledUITransaction { }
-                // export class CollectionQueryCalculator { }
-                // export class CookieMan { }
-                // export class GlideForm { }
-                // export class GlideFormCommon { }
-                // export class GlideFormulator { }
-                // export class I18NStyle { }
-                // export class ListLabel { }
-                // export class ListSearchQuery { }
-                // export class MobileExtensions { }
-                // export class Popup { }
-                // export class PublicPage { }
-                // export class RenderProperties { }
-                // export class ViewManager { }
-                // export class GlideServlet { }
-                // export class GlideServletRequest { }
-                // export class GlideServletResponse { }
-                // export class ServletStatus { }
-                // export class Sessions { }
-                // export class SysAttachment { }
-                // export class SysAttachmentInputStream { }
-                export class SysForm {
-                    // constructor(tableName: string);
-                    // constructor(tableName: string, viewName: string);
-                    // constructor();
-                    constructor(tableName?: string, viewName?: string);
-                    createDefaultBaselineVersion(record: Packages.com.glide.script.GlideRecord): void;
-                    static generateDefaultForm(tableName: string): string;
-                    static getRelatedTables(tableName: string): Packages.com.glide.choice.ChoiceList;
-                    getSuggestedFields(): Array<string>;
-                    getTableName(): string;
-                    save(): void;
-                    setAvailable(available: string): void;
-                    setCollection(s: string): void;
-                    setForm(form: string): void;
-                    setName(name: string): void;
-                    setPackageID(packageID: string): void;
-                    setScopeID(scopeID: string): void;
-                    setSelected(selected: string): void;
-                    setTablePackageID(): void;
-                    setTableScopeID(): void;
-                    setView(viewName: string): void;
-                    setViewName(viewName: string): void;
-                }
-                // export class SysForms { }
-                export class SysList {
-                    InsertListElements(fields: Array<any>): void;
-                    // constructor(tableName: string);
-                    // constructor(tableName: string, parentName: string);
-                    constructor(tableName: string, parentName?: string);
-                    createDefaultBaseline(): void;
-                    getAccessList(collectionKey: string): Array<string>;
-                    getListColumns(): Packages.com.glide.choice.ChoiceList;
-                    getListRecords(): Array<string>;
-                    getListSet(): Packages.com.glide.choice.ChoiceListSet;
-                    getRecordSet(): Packages.com.glide.script.GlideRecord;
-                    getStandardListID(): string;
-                    isUserList(): boolean;
-                    // save(): void;
-                    // save(fields: string): void;
-                    save(fields?: string): void;
-                    saveForUser(fields: string): void;
-                    setIncludeFormatting(b: boolean): void;
-                    setReconcileList(b: boolean): void;
-                    setRelatedParentID(parentID: string): void;
-                    setRelatedParentName(parentName: string): void;
-                    setRelationshipID(relationshipID: string): void;
-                    setUserApplies(b: boolean): void;
-                }
-                // export class SysListControl { }
-                // export class SysMessage { }
-                // export class SysRelatedList { }
-                // export class SysSection { }
-                // export class SysUserList { }
-                // export class GlideThreadAttributes { }
-                // export class TreePicker { }
-                // export class Session { }
-
-                /**
-                 * GlideUri API.
-                 * @class GlideURI
-                 */
-                export class GlideURI {
-                    constructor();
-                    /**
-                     * Returns the specified parameter.
-                     * @param name The parameter name.
-                     * @returns {string} The value for the specified parameter.
-                     */
-                    get(name: string): string;
-
-                    /**
-                     * Returns the file name portion of the URI.
-                     * @returns {string} The file name portion of the URI.
-                     */
-                    getFileFromPath(): string;
-
-                    /**
-                     * Sets the specified parameter to the specified value.
-                     * @param name The parameter name.
-                     * @param value The value.
-                     */
-                    set(name: string, value: string): void;
-
-                    /**
-                     * Reconstructs the URI string and performs the proper URL encoding by converting non-valid characters to their URL code. For example, converting & to '%26'.
-                     * @param path The base portion of the system URL to which the URI is appended.
-                     * @returns {string} The URL.
-                     */
-                    toString(path: string): string;
-                }
-
-                // export class ViewRuleNavigator { }
-                // export class XMLStats { }
-                // export class UINotification { }
             }
             export namespace script {
-                // export namespace api {
-                // export class CustomerScriptFixer { }
-                // export class GlideWhiteListManager { }
-                // }
-                export namespace glide_elements {
-                    /**
-                     * A Glide element that references another GlideRecord.
-                     * @class GlideElementReference
-                     * @todo Verify whether Packages.com.glide.script.glide_elements.GlideReference exists
-                     */
-                    export class GlideElementReference extends $$element.StringBased<string, GlideElementReference, string> implements $$element.IReference<IGlideTableProperties, GlideRecord>, IGlideTableProperties {
-                        /**
-                         * Created by
-                         * @type {$$rhino.Nilable<$$property.Element>}
-                         * @memberof GlideElementReference
-                         * @description Max length: 40
-                         */
-                        sys_created_by: $$rhino.Nilable<$$property.Element>;
+                export class GlideElement {
 
-                        /**
-                         * Created
-                         * @type {$$rhino.Nilable<$$property.GlideObject>}
-                         * @memberof GlideElementReference
-                         * @description Internal type is "glide_date_time"
-                         *      Max length: 40
-                         */
-                        sys_created_on: $$rhino.Nilable<$$property.GlideObject>;
-
-                        /**
-                         * Sys ID
-                         * @type {$$rhino.Nilable<$$property.Element>}
-                         * @memberof GlideElementReference
-                         * @description Internal type is "GUID"
-                         *      Max length: 32
-                         */
-                        sys_id: $$rhino.Nilable<$$property.Element>;
-
-                        /**
-                         * Updates
-                         * @type {$$rhino.Nilable<$$property.Numeric>}
-                         * @memberof GlideElementReference
-                         */
-                        sys_mod_count: $$rhino.Nilable<$$property.Numeric>;
-
-                        /**
-                         * Updated by
-                         * @type {$$rhino.Nilable<$$property.Element>}
-                         * @memberof GlideElementReference
-                         * @description Max length: 40
-                         */
-                        sys_updated_by: $$rhino.Nilable<$$property.Element>;
-
-                        /**
-                         * Updated
-                         * @type {$$rhino.Nilable<$$property.GlideObject>}
-                         * @memberof GlideElementReference
-                         * @description Internal type is "glide_date_time"
-                         *      Max length: 40
-                         */
-                        sys_updated_on: $$rhino.Nilable<$$property.GlideObject>;
-
-                        protected constructor();
-
-                        /**
-                         * Determines if the previous value of the current field matches the specified object.
-                         * @param {GlideRecord | $$rhino.Nilable<$$property.Reference>} o An object value to check against the previous value of the current field.
-                         * @returns {boolean} True if the previous value matches, false if it does not.
-                         */
-                        changesFrom(o: GlideRecord | $$rhino.Nilable<$$property.Reference>): boolean;
-
-                        /**
-                         * Determines if the new value of a field, after a change, matches the specified object.
-                         * @param {GlideRecord | GlideElementReference | GLIDE.NilableString} o An object value to check against the new value of the current field.
-                         * @returns {boolean} True if the new value matches, false if it does not.
-                         */
-                        changesTo(o: GlideRecord | $$rhino.Nilable<$$property.Reference>): boolean;
-                        /**
-                         * Gets the table name for a reference element.
-                         * @returns {string} The table name of the reference.
-                         * @memberof GlideElement
-                         */
-                        getReferenceTable(): string;
-
-                        /**
-                         * Gets a GlideRecord object for a given reference element.
-                         * @returns {GlideRecord} The GlideRecord object.
-                         * @memberof GlideElement
-                         */
-                        getRefRecord(): GlideRecord;
-
-                        /**
-                         * Sets the value of a field.
-                         * @param {GlideRecord | $$rhino.Nilable<$$property.Reference>} value Object value to set the field to.
-                         */
-                        setValue(value: GlideRecord | $$rhino.Nilable<$$property.Reference>): void;
-                    }
-
-                    export class GlideElementUserImage extends $$element.StringBased<string, GlideElementUserImage, string> { protected constructor(); }
-
-                    export class GlideElementGlideObject extends $$element.StringBased<string, GlideElementGlideObject, string> { protected constructor(); }
-
-                    export class GlideElementSourceTable extends $$element.StringBased<string, GlideElementSourceTable, string> { protected constructor(); }
-
-                    export class GlideElementSourceId extends $$element.StringBased<string, GlideElementSourceId, string>{ protected constructor(); }
-
-                    //export class GlideNumber { }
-                }
-                // export namespace proxy {
-                // export class File { }
-                // export class Socket { }
-                // }
-                // export namespace system {
-                // export class GlideSystemDateUtil { }
-                // export class GlideSystemUtilDB { }
-                // export class GlideSystemUtilScript { }
-                // }
-                // export class Action { }
-                // export class Auditor { }
-                // export class Compiler { }
-                export class FieldGlideDescriptor extends GlideElement { protected constructor(); }
-                export class GlideController extends Evaluator {
-                    // constructor();
-                    // constructor(global: any);
-                    constructor(global?: any);
-                    // evaluateAsObject(expression: string): any;
-                    // evaluateAsObject(expression: string, ed: Packages.com.glide.db.ElementDescriptor): any;
-                    evaluateAsObject(expression: string, ed?: Packages.com.glide.db.ElementDescriptor): any;
-                    static exists(name: string): any;
-                    static getCache(): Packages.com.glide.sys.cache.LRUCache;
-                    static getGlobal(name: string): any;
-                    static getSandboxGlobal(name: string): any;
-                    static putGlobal(name: string, value: any): void;
-                    static removeGlobal(string_1: string): void;
-                }
-                export class GlideElement extends $$element.StringBased<string, GlideElement, string> { protected constructor(); }
-                // export class GlideElementXMLSerializer { }
-                export class Evaluator extends Packages.com.glide.script.ScriptEvaluator {
-                    // constructor();
-                    // constructor(inter: boolean);
-                    // constructor(inter: boolean, strict: boolean);
-                    constructor(inter?: boolean, strict?: boolean);
-                    static evaluateCondition(condition: string): boolean;
-                    // evaluateString(expression: string, returnError: boolean): any;
-                    // evaluateString(expression: string, identifierKey: string, returnError: boolean): any;
-                    // static evaluateString(expression: string): any;
-                    evaluateString(expression: string, returnError_OR_identifierKey?: boolean | string, returnError?: boolean): any;
-                    static evaluateStringWithGlobals(expression: string, globals: { [key: string]: any; }): any;
-                    // static interpretGeneratedString(expression: string): any;
-                    // static interpretGeneratedString(expression: string, returnError: boolean): any;
-                    static interpretGeneratedString(expression: string, returnError?: boolean): any;
-                    // static interpretString(expression: string): any;
-                    // static interpretString(expression: string, returnError: boolean): any;
-                    static interpretString(expression: string, returnError?: boolean): any;
-                }
-
-                // export class Filter { }
-                // export class FilterList { }
-                // export class ImageLoader { }
-                // export class InternalElementTypeChoiceList { }
-                export class JSUtil {
-                    // SNC.JSUtil
-                    static isJavaObject(obj: any): boolean;
-                    static isNilJavaObject(obj: any): boolean;
-                    static isInstanceOf(obj: any, className: string): boolean;
-                    static getJavaClassName(obj: any): string;
-                    static isJavaArray(obj: any): boolean;
-                    static javaObjectHasMethod(obj: any, name: string): boolean;
-                }
-                // export class Lock { }
-                // export class GlideMemoryRecord { }
-                // export class MetaData { }
-                // export class MIDServerInfoAccessor { }
-                // export class OverLoadedChoices { }
-                /**
-                 * GlideRecord is used for database operations.
-                 * @class GlideRecord
-                 * @description A GlideRecord contains both records and fields.
-                 */
-                export class GlideRecord implements IGlideTableProperties, $$element.IDbObject {
-                    /**
-                     * Created by
-                     * @type {$$rhino.Nilable<$$property.Element>}
-                     * @memberof GlideRecord
-                     */
-                    sys_created_by: $$rhino.Nilable<$$property.Element>;
-
-                    /**
-                     * Created
-                     * @type {$$rhino.Nilable<$$property.GlideObject>}
-                     * @memberof GlideRecord
-                     * @description Internal type is "glide_date_time"
-                     */
-                    sys_created_on: $$rhino.Nilable<$$property.GlideObject>;
-
-                    /**
-                     * Sys ID
-                     * @type {$$rhino.Nilable<$$property.Element>}
-                     * @memberof GlideRecord
-                     */
-                    sys_id: $$rhino.Nilable<$$property.Element>;
-
-                    /**
-                     * Updates
-                     * @type {$$rhino.Nilable<$$property.Numeric>}
-                     * @memberof GlideRecord
-                     */
-                    sys_mod_count: $$rhino.Nilable<$$property.Numeric>;
-
-                    /**
-                     * Updated by
-                     * @type {$$rhino.Nilable<$$property.Element>}
-                     * @memberof GlideRecord
-                     */
-                    sys_updated_by: $$rhino.Nilable<$$property.Element>;
-
-                    /**
-                     * Updated
-                     * @type {$$rhino.Nilable<$$property.GlideObject>}
-                     * @memberof GlideRecord
-                     * @description Internal type is "glide_date_time"
-                     */
-                    sys_updated_on: $$rhino.Nilable<$$property.GlideObject>;
-                    /**
-                     * Adds a filter to return active records.
-                     * @memberof GlideRecord
-                     * @returns {GlideQueryCondition} Filter to return active records..
-                     * @description 
-                     */
-                    addActiveQuery(): GlideQueryCondition;
-                    /**
-                     * Changes the domain used for the query from the user's domain to the domain of the provided GlideRecord.
-                     * @memberof GlideRecord
-                     * @param {*} glideRecord - GlideRecord from which to obtain the domain.
-                     * @description  
-                     */
-                    addDomainQuery(glideRecord: any): void;
-                    /**
-                     * Adds an encoded query to other queries that may have been set.
-                     * @memberof GlideRecord
-                     * @param {string} query - An encoded query string .
-                     * @description  
-                     */
-                    addEncodedQuery(query: string): void;
-                    /**
-                     * Applies a pre-defined GlideDBFunctionBuilder object to a record.
-                     * @memberof GlideRecord
-                     * @param {*} function - A GlideDBFunctionBuilder object that defines a SQL operation.
-                     * @description 
-                     */
-                    addFunction(functionBuilder: any): void;
-                    /**
-                     * Creates an instance of the GlideRecord class for the specified table.
-                     * @constructor
-                     * @param {string} tableName - The table to be used.
-                     */
-                    constructor(tableName: string);
-                    [key: string]: any;
-                    /**
-                     * Adds a filter to return inactive records. Inactive records have the active flag set to false.
-                     * @memberof GlideRecord
-                     * @returns {GlideQueryCondition} Records where the active flag is false..
-                     * @description 
-                     */
-                    addInactiveQuery(): GlideQueryCondition;
-                    /**
-                     * Adds a filter to return records based on a relationship in a related table.
-                     * @memberof GlideRecord
-                     * @param {string} table - Table name
-                     * @returns {GlideQueryCondition} Records where the relationships match..
-                     * @description  
-                     */
-                    addJoinQuery(table: string): GlideQueryCondition;
-                    /**
-                     * Adds a filter to return records based on a relationship in a related table.
-                     * @memberof GlideRecord
-                     * @param {string} table - Table name
-                     * @param {string} primaryField - If other than sys_id, the primary field.
-                     * @returns {GlideQueryCondition} Records where the relationships match..
-                     * @description  
-                     */
-                    addJoinQuery(table: string, primaryField: string): GlideQueryCondition;
-                    /**
-                     * Adds a filter to return records based on a relationship in a related table.
-                     * @memberof GlideRecord
-                     * @param {string} table - Table name
-                     * @param {string} primaryField - If other than sys_id, the primary field.
-                     * @param {string} joinTableField - If other than sys_id, the field that joins the tables
-                     * @returns {GlideQueryCondition} Records where the relationships match..
-                     * @description  
-                     */
-                    addJoinQuery(table: string, primaryField: string, joinTableField: string): GlideQueryCondition;
-                    /**
-                     * Adds a filter to return records where the specified field is not null.
-                     * @memberof GlideRecord
-                     * @param {string} fieldName - The field name.
-                     * @returns {GlideQueryCondition} QueryCondition of records where the parameter field is not null..
-                     * @description 
-                     */
-                    addNotNullQuery(fieldName: string): GlideQueryCondition;
-                    /**
-                     * Adds a filter to return records where the specified field is null.
-                     * @memberof GlideRecord
-                     * @param {string} fieldName - The field name.
-                     * @returns {GlideQueryCondition} QueryCondition of records where the specified field is null..
-                     * @description 
-                     */
-                    addNullQuery(fieldName: string): GlideQueryCondition;
-                    /**
-                     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
-                     * @memberof GlideRecord
-                     */
-                    addQuery(): GlideQueryCondition;
-                    /**
-                     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
-                     * @memberof GlideRecord
-                     * @param {string} name - Table field name.
-                     * @param {string} operator - Query operator. The available values are dependent on the data type of the value parameter.Numbers:=!=&gt;&gt;=&lt;&lt;=Strings (must be in upper case):=!=INNOT INSTARTSWITHENDSWITHCONTAINSDOES NOT CONTAININSTANCEOF
-                     * @param {*} value - Value on which to query (not case-sensitive).
-                     * @returns {GlideQueryCondition} The query condition that was added to the GlideRecord.
-                     */
-                    addQuery(name: string, operator: string, value: any): GlideQueryCondition;
-                    /**
-                     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
-                     * @memberof GlideRecord
-                     * @param {string} name - Table field name.
-                     * @param {*} value - Value on which to query (not case-sensitive).
-                     * @returns {GlideQueryCondition} The query condition that was added to the GlideRecord.
-                     */
-                    addQuery(name: string, value: any): GlideQueryCondition;
-                    /**
-                     * Adds a filter to return records using an encoded query string.
-                     * @memberof GlideRecord
-                     * @param {string} encodedQuery - Encoded query string.
-                     * @returns {GlideQueryCondition} The query condition added to the GlideRecord.
-                     * @description 
-                     */
-                    addQuery(encodedQuery: string): GlideQueryCondition;
-                    /**
-                     * Apply a template record (from sys_template) to the current record. If the specified template is not found, no action is taken.
-                     * @memberof GlideRecord
-                     * @param {string} template - Name of a template from the sys_template table
-                     */
-                    applyTemplate(template: string): void;
-                    /**
-                     * Enables or disables the update to the fields sys_updated_by, sys_updated_on, sys_mod_count, sys_created_by, and sys_created_on. This is often used for manually updating field values on a record while leaving historical information unchanged.
-                     * @memberof GlideRecord
-                     * @param {boolean} e - If false disables updates to sys_updated_by, sys_updated_on, sys_mod_count, sys_created_by, and sys_created_on.
-                     * @description 
-                     */
-                    autoSysFields(e: boolean): void;
-                    /**
-                     * Determines if the access control rules (which includes the user's role) permit inserting new records in this table.
-                     * @memberof GlideRecord
-                     * @returns {boolean} Flag that indicates whether the user's roles permit creating of records in this table.Valid values:true: Creating permittedfalse: Creating is not permitted.
-                     * @description 
-                     */
-                    canCreate(): boolean;
-                    /**
-                     * Determines if the access control rules (which includes the user's role) permit deletion of records in this table.
-                     * @memberof GlideRecord
-                     * @returns {boolean} Flag that indicates whether the user's roles permit deleting of records in this table.Valid values:true: Deleting permittedfalse: Deleting is not permitted.
-                     * @description 
-                     */
-                    canDelete(): boolean;
-                    /**
-                     * Determines if the access control rules (which includes the user's role) permit reading this table.
-                     * @memberof GlideRecord
-                     * @returns {boolean} Flag that indicates whether the user's roles permit reading of records in this table.Valid values:true: Reading permittedfalse: Reading is not permitted.
-                     * @description 
-                     */
-                    canRead(): boolean;
-                    /**
-                     * Determines if the access control rules (which includes the user's role) permit updates to records in this table.
-                     * @memberof GlideRecord
-                     * @returns {boolean} Flag that indicates whether the user's roles permit writing of records in this table.Valid values:true: Writing permittedfalse: Writing is not permitted.
-                     * @description 
-                     */
-                    canWrite(): boolean;
-                    /**
-                     * Determines whether any of the fields in the record have changed.
-                     * @memberof GlideRecord
-                     * @returns {boolean} True if any of the fields in the record have changed, false otherwise..
-                     * @description 
-                     */
-                    changes(): boolean;
-                    /**
-                     * Deletes multiple records according to the current "where" clause.
-                     * @memberof GlideRecord
-                     * @description  
-                     */
-                    deleteMultiple(): void;
-                    /**
-                     * Deletes a single record.
-                     * @memberof GlideRecord
-                     * @returns {boolean} Flag that indicates whether the record was successfully deleted.Valid values:true: Record was deleted.false: No record was found to delete..
-                     * @description  
-                     */
-                    deleteRecord(): boolean;
-                    /**
-                     * Returns true if any record has a matching value in the specified column. If found, it also moves to the first record that matches, essentially executing next() until the record is returned.
-                     * @memberof GlideRecord
-                     * @param {string} columnName - Specifies the field name.
-                     * @param {string} value - Specifies the value to check for in the specified field.
-                     * @returns {boolean} True if any record has a matching value in the specified field..
-                     */
-                    find(columnName: string, value: string): boolean;
-                    /**
-                     * Returns the specified record in an instantiated GlideRecord object.
-                     * @memberof GlideRecord
-                     * @param {$$rhino.Nilable<$$property.Element>} sys_id - sys_id to match.
-                     * @returns {boolean} Flag that indicates whether the requested record was located - true: Record was found; false: Record was not found.
-                     * @description 
-                     */
-                    get(sys_id: $$rhino.Nilable<$$property.Element>): boolean;
-                    /**
-                     * Returns the specified record in an instantiated GlideRecord object.
-                     * @memberof GlideRecord
-                     * @param {*} name - Name of the instantiated GlideRecord column to search for the specified value parameter.
-                     * @param {*} value - Value to match
-                     * @returns {boolean} Indicates whether the requested record was located:true: record was foundfalse: record was not found.
-                     * @description  
-                     */
-                    get(name: $$rhino.String, value: any): boolean;
-                    /**
-                     * Returns the dictionary attributes on the specified field.
-                     * @memberof GlideRecord
-                     * @param {string} fieldName - Field name for which to return the dictionary attributes
-                     * @returns {string} Dictionary attributes.
-                     * @description 
-                     */
-                    getAttribute(fieldName: string): string;
-                    /**
-                     * Returns the table's label.
-                     * @memberof GlideRecord
-                     * @returns {string} The table's label.
-                     * @description 
-                     */
-                    getClassDisplayValue(): string;
-                    /**
-                     * Retrieves the display value for the current record.
-                     * @memberof GlideRecord
-                     * @returns {string} Display value for the current record.
-                     * @description 
-                     */
-                    getDisplayValue(): string;
-                    /**
-                     * Returns the element's descriptor.
-                     * @memberof GlideRecord
-                     * @returns {GlideElementDescriptor} The element's descriptor.
-                     * @description 
-                     */
-                    getED(): GlideElementDescriptor;
-                    /**
-                     * Retrieves the GlideElement for a specified field.
-                     * @memberof GlideRecord
-                     * @param {string} fieldName - A field name
-                     * @returns {GlideElement} A GlideElement object.
-                     * @description 
-                     */
-                    getElement(fieldName: string): GlideElement;
-                    /**
-                     * Retrieves the encoded query as a string.
-                     * @memberof GlideRecord
-                     * @returns {string} The encoded query.
-                     * @description 
-                     */
-                    getEncodedQuery(): string;
-                    /**
-                     * Retrieves the field value for the display field of the current record and adds escape characters for use in Jelly scripts.
-                     * @memberof GlideRecord
-                     * @returns {string} Escaped value of display field..
-                     */
-                    getEscapedDisplayValue(): string;
-                    /**
-                     * Retrieves a Java ArrayList of fields in the current record.
-                     * @memberof GlideRecord
-                     * @returns {Packages.java.util.ArrayList<IGlideElement>} Fields in the current record.
-                     */
-                    getFields(): Packages.java.util.ArrayList<IGlideElement>;
-                    /**
-                     * Retrieves the field's label.
-                     * @memberof GlideRecord
-                     * @returns {string} The field's label.
-                     * @description 
-                     */
-                    getLabel(): string;
-                    /**
-                     * Retrieves the link for the current record.
-                     * @memberof GlideRecord
-                     * @param {boolean} noStack - If true, the link generated will not append &amp;sysparm_stack=[tablename]_list.do? sysparm_query=active=true to the end of the URL; if false, the link will. Leaving the parameter empty defaults to false.
-                     * @returns {string} A URL.
-                     * @description 
-                     */
-                    getLink(noStack: boolean): string;
-                    /**
-                     * Retrieves the current row number.
-                     * @memberof GlideRecord
-                     * @param {boolean} b - 
-                     * @returns {number} The row number of the current record.
-                     */
-                    getLocation(b: boolean): number;
-                    /**
-                     * Retrieves the plural label of the GlideRecord table.
-                     * @memberof GlideRecord
-                     * @returns {string} The plural label of the GlideRecord's table..
-                     * @description  
-                     */
-                    getPlural(): string;
-                    /**
-                     * Retrieves the class (table) name for the current record.
-                     * @memberof GlideRecord
-                     * @returns {string} Class or table name.
-                     * @description 
-                     */
-                    getRecordClassName(): string;
-                    /**
-                     * Retrieves a list of names and display values of tables that refer to the current record.
-                     * @memberof GlideRecord
-                     * @param {b} Boolean - 
-                     * @returns {HashMap} Hash map with names and display values of related tables..
-                     */
-                    getRelatedLists(b: boolean): Packages.java.util.HashMap<$$rhino.String, $$rhino.String>;
-                    /**
-                     * Retrieves a list of names and display values of tables that are referred to by the current record.
-                     * @memberof GlideRecord
-                     * @param {boolean} b - 
-                     * @returns {HashMap} Hash map with names and display values of related tables..
-                     */
-                    getRelatedTables(b: boolean): Packages.java.util.HashMap<$$rhino.String, $$rhino.String>;
-                    /**
-                     * Retrieves the number of rows in the GlideRecord object.
-                     * @memberof GlideRecord
-                     * @returns {number} Number of the rows..
-                     * @description  
-                     */
-                    getRowCount(): number;
-                    /**
-                     * Retrieves the row number set by saveLocation() or setLocation().
-                     * @memberof GlideRecord
-                     * @returns {number} The saved row number..
-                     * @description 
-                     */
-                    getRowNumber(): number;
-                    /**
-                     * Retrieves the table name associated with this GlideRecord.
-                     * @memberof GlideRecord
-                     * @returns {string} A table name.
-                     * @description 
-                     */
-                    getTableName(): string;
-                    /**
-                     * Retrieves the string value of an underlying element in a field.
-                     * @memberof GlideRecord
-                     * @param {string} fieldName - Name of a field
-                     * @returns {string} The string value of the underlying element. Returns null if the field is empty, or the field does not exist..
-                     * @description 
-                     */
-                    getValue(fieldName: string): string;
-                    /**
-                     * Determines if the current record has any attachments.
-                     * @memberof GlideRecord
-                     * @returns {boolean} True if the current record has attachments, false otherwise..
-                     */
-                    hasAttachments(): boolean;
-                    /**
-                     * Determines if there are any more records in the GlideRecord.
-                     * @memberof GlideRecord
-                     * @returns {boolean} Flag that indicates if there are more records in the query set.Valid values:true: More records are in the query set.false: No more records are in the query set..
-                     * @description 
-                     */
-                    hasNext(): boolean;
-                    /**
-                     * Creates an empty record suitable for population before an insert.
-                     * @memberof GlideRecord
-                     * @description 
-                     */
-                    initialize(): void;
-                    /**
-                     * Inserts a new record using the field values that have been set for the current record.
-                     * @memberof GlideRecord
-                     * @returns {string} The sys_id of the inserted record, or null if the record is not inserted..
-                     * @description 
-                     */
-                    insert(): string;
-                    /**
-                     * Inserts a new record and also inserts or updates any related records with the provided information.
-                     * @memberof GlideRecord
-                     * @returns {string} sys_id of the inserted record or null if the record was not inserted..
-                     */
-                    insertWithReferences(): string;
-                    /**
-                     * Checks a table for the type\class of table.
-                     * @memberof GlideRecord
-                     * @param {string} className - Name of a type or class of record.
-                     * @returns {boolean} True if table is an instance of the specified class..
-                     */
-                    instanceOf(className: string): boolean;
-                    /**
-                     * Determines whether the current record has been inserted into the database. This method returns true only if the newRecord() method has been called. This method is useful for scripted ACL, and in the condition of UI actions, but should not be used in background scripts.
-                     * @memberof GlideRecord
-                     * @returns {boolean} True if the current record is new (has not been inserted into the database.).
-                     * @description 
-                     */
-                    isNewRecord(): boolean;
-                    /**
-                     * Determines if the table exists.
-                     * @memberof GlideRecord
-                     * @returns {boolean} True if the table is valid or if the record was successfully fetched, false otherwise..
-                     * @description 
-                     */
-                    isValid(): boolean;
-                    /**
-                     * Determines if the specified field is defined in the current table.
-                     * @memberof GlideRecord
-                     * @param {string} fieldName - Name of a field.
-                     * @returns {boolean} True if the field is valid, false otherwise..
-                     * @description 
-                     */
-                    isValidField(fieldName: string): boolean;
-                    /**
-                     * Determines if the current record is valid.
-                     * @memberof GlideRecord
-                     * @returns {boolean} True if the current record is valid or false if past the end of the record set..
-                     * @description 
-                     */
-                    isValidRecord(): boolean;
-                    /**
-                     * Creates a GlideRecord, set the default values for the fields and assign a unique id to the record.
-                     * @memberof GlideRecord
-                     * @description 
-                     */
-                    newRecord(): void;
-                    /**
-                     * Moves to the next record in the GlideRecord.
-                     * @memberof GlideRecord
-                     * @returns {boolean} Flag that indicates if there is a "next" record in the GlideRecord.Valid values:true: Move to the next record was successful.false: No more records in the result set..
-                     * @description  
-                     */
-                    next(): boolean;
-                    /**
-                     * Retrieves the current operation being performed, such as insert, update, delete, etc.
-                     * @memberof GlideRecord
-                     * @returns {string} The current operation.
-                     */
-                    operation(): string;
-                    /**
-                     * Specifies a field name to be used to order the query set. This may be called more than once to order by multiple fields.
-                     * @memberof GlideRecord
-                     * @param {string} fieldName - A field name
-                     */
-                    orderBy(fieldName: string): void;
-                    /**
-                     * Specifies a field used to order the query set in descending order.
-                     * @memberof GlideRecord
-                     * @param {string} fieldName - A field name.
-                     */
-                    orderByDesc(fieldName: string): void;
-                    /**
-                     * Runs the query against the table based on the filters specified by addQuery() and addEncodedQuery().
-                     * @memberof GlideRecord
-                     * @param {*} field - Field name
-                     * @param {*} value - Field value
-                     */
-                    query(field: any, value: any): void;
-                    /**
-                     * Runs the query against the table based on the filters specified by addQuery() and addEncodedQuery().
-                     * @memberof GlideRecord
-                     */
-                    query(): void;
-                    /**
-                     * Used in domain separated instances. Similar to query(), runs the query against the table based on the filters specified by addQuery() and addEncodedQuery(), but ignores domains.
-                     * @memberof GlideRecord
-                     * @param {*} field - A field name
-                     * @param {*} value - A value
-                     */
-                    queryNoDomain(field: any, value: any): void;
-                    /**
-                     * Sets the current record to be the record that was saved with saveLocation(). If saveLocation() has not been called, the current record is set to be the first record of the GlideRecord.
-                     * @memberof GlideRecord
-                     */
-                    restoreLocation(): void;
-                    /**
-                     * Save the current row number so that we can get back to this location using the restoreLocation() method.
-                     * @memberof GlideRecord
-                     */
-                    saveLocation(): void;
-                    /**
-                     * Sets a flag to indicate if the next database action (insert, update, delete) is to be aborted.
-                     * @memberof GlideRecord
-                     * @param {boolean} b - True to abort next action, or false to allow the next action.
-                     */
-                    setAbortAction(b: boolean): void;
-                    /**
-                     * Sets the specified field to the specified display value.
-                     * @memberof GlideRecord
-                     * @param {string} name - Field name
-                     * @param {*} value - Display value for the specified field.
-                     * @description 
-                     */
-                    setDisplayValue(name: string, value: any): void;
-                    /**
-                     * Updates the record even if fields have not changed.
-                     * @memberof GlideRecord
-                     * @param {boolean} force - True to update even if fields have not changed, otherwise false.
-                     */
-                    setForceUpdate(force: boolean): void;
-                    /**
-                     * Sets the limit for how many records are in the GlideRecord.
-                     * @memberof GlideRecord
-                     * @param {number} limit - Limit for records to fetch.
-                     * @description 
-                     */
-                    setLimit(limit: number): void;
-                    /**
-                     * Sets the current row location.
-                     * @memberof GlideRecord
-                     * @param {number} rowNumber - The row number to set as the current row.
-                     */
-                    setLocation(rowNumber: number): void;
-                    /**
-                     * Generates a new GUID and sets it as the unique id for the current record. This function applies only to new records. The GUID for an existing record cannot be changed
-                     * @memberof GlideRecord
-                     */
-                    setNewGuid(): void;
-                    /**
-                     * Generates a new GUID and sets it as the unique id for the current record, when inserting a new record.
-                     * @memberof GlideRecord
-                     * @param {string} guid - A string value for the new GUID
-                     * @description 
-                     */
-                    setNewGuidValue(guid: string): void;
-                    /**
-                     * Enables or disables using the reference field's display name when querying a reference field.
-                     * @memberof GlideRecord
-                     * @param {boolean} queryReferences - If true, will generate a string of display names. If false, will generate a string of sys_ids.
-                     */
-                    setQueryReferences(queryReferences: boolean): void;
-                    /**
-                     * Disable or enable the running of any engines (approval rules / assignment rules).
-                     * @memberof GlideRecord
-                     * @param {boolean} e - If true, enables engines. If false disables engines.
-                     */
-                    setUseEngines(e: boolean): void;
-                    /**
-                     * Sets the specified field to the specified value.
-                     * @memberof GlideRecord
-                     * @param {string} name - Field name
-                     * @param {*} value - A value to be assigned.
-                     * @description  
-                     */
-                    setValue(name: string, value: any): void;
-                    /**
-                     * Enables or disables the running of business rules that might normally be triggered by subsequent actions. If the e parameter is set to false, an insert/update will not be audited. Auditing only happens when the parameter is set to true for a GlideRecord operation.
-                     * @memberof GlideRecord
-                     * @param {boolean} e - If true (default), enables business rules. If false, disables business rules.
-                     * @description  
-                     */
-                    setWorkflow(e: boolean): void;
-                    /**
-                     * Updates the GlideRecord with any changes that have been made. If the record does not exist, it is inserted.
-                     * @memberof GlideRecord
-                     * @param {*} [reason] - Reason for the update. The reason appears in the audit record.
-                     * @returns {string} The sys_id of the new or updated record. Returns null if the update fails..
-                     * @description 
-                     */
-                    update(reason?: any): string;
-                    /**
-                     * Updates each GlideRecord in a stated query with a specified set of changes.
-                     * @memberof GlideRecord
-                     * @description  
-                     */
-                    updateMultiple(): void;
-                    /**
-                     * Updates a record and also inserts or updates any related records with the information provided.
-                     * @memberof GlideRecord
-                     * @param {*} reason - A string designating the reasons for the updates. The reason is displayed in the audit record.
-                     * @returns {string} The sys_id for the record being updated..
-                     */
-                    updateWithReferences(reason: any): string;
-                    /**
-                     * Moves to the next record in the GlideRecord. Provides the same functionality as next(), intended to be used in cases where the GlideRecord has a column named next.
-                     * @memberof GlideRecord
-                     * @returns {boolean} True if there are more records in the query set..
-                     * @description 
-                     */
-                    _next(): boolean;
-                    /**
-                     * Identical to query(). This method is intended to be used on tables where there is a column named query, which would interfere with using the query() method.
-                     * @memberof GlideRecord
-                     * @param {*} name - A field name
-                     * @param {*} value - A value
-                     * @description  
-                     */
-                    _query(name: any, value: any): void;
-                }
-                // export class GlideRecordFactory { }
-                // export class GlideRecordKeySetLoader { }
-                // export class RecordLock { }
-                // export class GlideRecordRollback { }
-                // export class GlideRecordSet { }
-                // export class GlideRecordSimpleSerializer { }
-                // export class GlideRecordXMLSerializer { }
-                // export class ReferenceField { }
-                // export class ReportChoiceList { }
-                // export class GlideRhinoEnvironment { }
-                export class GlideRhinoHelper {
-                    static getNativeFromRhino(obj: any): any;
-                    static evaluateAsString(script: string): string;
-                    static evaluateAsBoolean(script: string): boolean;
-                }
-                // export class RhinoScope { }
-                // export class GlideRhinoScopeHandler { }
-                // export class ChoiceList { }
-                export class ScriptEvaluator {
-                    constructor();
-                    evaluateGeneratedString(expression: string, returnError: boolean): any;
-                    // evaluateString(expression: string, returnError: boolean): any;
-                    // evaluateString(expression: string, identifierKey: string, returnError: boolean): any;
-                    evaluateString(expression: string, returnError_OR_identifierKey: boolean | string, returnError?: boolean): any;
-                    haveError(): boolean;
-                    setEnforceSecurity(enforce: boolean): void;
-                }
-                // export class GlideScriptGlobals { }
-                /**
-                 * A utility class for working with GlideRecords
-                 * @class GlideRecordUtil
-                 * @description The GlideRecordUtil class is available in server-side scripts.
-                 */
-                export class GlideRecordUtil {
-                    /**
-                     * Returns a GlideRecord instance positioned to the given CI sys_id, and of the right class (table).
-                     * @memberof GlideRecordUtil
-                     * @param {string} sys_id - The sys_id of the desired CI.
-                     * @returns {GlideRecord} A GlideRecord instance positioned to the given CI sys_id, and of the right class (table)..
-                     */
-                    getCIGR(sys_id: string): GlideRecord;
-                    /**
-                     * Returns a list of all the fields in the specified GlideRecord.
-                     * @memberof GlideRecordUtil
-                     * @param {GlideRecord} gr - A GlideRecord instance positioned to a valid record.
-                     * @returns {string} An array of field names for the specified GlideRecord..
-                     */
-                    getFields(gr: GlideRecord): string;
-                    /**
-                     * Returns a GlideRecord instance for the given table, positioned to the given sys_id, and of the right class (table).
-                     * @memberof GlideRecordUtil
-                     * @param {string} baseTable - The name of the base table containing the sys_id.
-                     * @param {string} sys_id - The sys_id of the desired record.
-                     * @returns {GlideRecord} The GlideRecord for the specified sys_id..
-                     * @description 
-                     */
-                    getGR(baseTable: string, sys_id: string): GlideRecord;
-                    /**
-                     * Returns a Java ArrayList of the ancestors of the given table name.
-                     * @memberof GlideRecordUtil
-                     * @param {string} tableName - Name of the table
-                     * @returns {Packages.java.util.ArrayList<$$rhino.String>} A list of ancestors of the specified table.
-                     * @description 
-                     */
-                    getTables(tableName: string): Packages.java.util.ArrayList<$$rhino.String>;
-                    /**
-                     * Sets the fields in the specified GlideRecord with the field values contained in the specified hashmap, unless that field name is in the ignore hashmap.
-                     * @memberof GlideRecordUtil
-                     * @param {*} hashMap - An Object instance (being used as a hashmap), with properties named for fields and containing the fields' value.
-                     * @param {GlideRecord} gr - The GlideRecord instance to receive the field values.
-                     * @param {*} ignore - An optional hashmap of field names to ignore.
-                     */
-                    mergeToGR(hashMap: any, gr: GlideRecord, ignore: any): void;
-                    /**
-                     * Populates the given hashmap from the given GlideRecord instance. Each field in the GlideRecord becomes a property in the hashmap.
-                     * @memberof GlideRecordUtil
-                     * @param {*} hashMap - An object being used as a hashmap.
-                     * @param {GlideRecord} gr - A GlideRecord instance positioned to a valid record.
-                     * @param {*} ignore - An optional hashmap of file names not to populate.
-                     */
-                    populateFromGR(hashMap: any, gr: GlideRecord, ignore: any): void;
-                }
-
-                // export class GlideSystemUtilDB { }
-                // export class ScriptWriter { }
-                // export class GlideSessionSandbox { }
-                // export class SysChoice { }
-
-                /**
-                 * GlideSystem API.
-                 * @class GlideSystem
-                 */
-                export class GlideSystem {
-                    protected constructor();
-
-                    isInteractive(): boolean;
-
-                    isLoggedIn(): boolean;
-
-                    /**
-                     * Adds an error message for the current session.
-                     * @param {*} message The message to add.
-                     */
-                    addErrorMessage(message: any): void;
-
-                    /**
-                     * Adds an info message for the current session. This method is not supported for asynchronous business rules.
-                     * @param {*} message An info message object.
-                     */
-                    addInfoMessage(message: any): void;
-
-                    /**
-                     * Returns the date and time for the beginning of last month in GMT.
-                     * @returns {string} GMT beginning of last month, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    beginningOfLastMonth(): string;
-
-                    /**
-                     * Returns the date and time for the beginning of next month in GMT.
-                     * @returns {string} GMT beginning of next month, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    beginningOfNextMonth(): string;
-
-                    /**
-                     * Returns the date and time for the beginning of next week in GMT.
-                     * @returns {string} The GMT beginning of next week, in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    beginningOfNextWeek(): string;
-
-                    /**
-                     * Returns the date and time for the beginning of next year in GMT.
-                     * @returns {string} GMT beginning of next year, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    beginningOfNextYear(): string;
-
-                    /**
-                     * Returns the date and time for the beginning of this month in GMT.
-                     * @returns {string} GMT beginning of this month, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    beginningOfThisMonth(): string;
-
-                    /**
-                     * Returns the date and time for the beginning of this quarter in GMT.
-                     * @returns {string} GMT beginning of this quarter, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    beginningOfThisQuarter(): string;
-
-                    /**
-                     * Returns the date and time for the beginning of this week in GMT.
-                     * @returns {string} GMT beginning of this week, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    beginningOfThisWeek(): string;
-
-                    /**
-                     * Returns the date and time for the beginning of this year in GMT.
-                     * @returns {string} GMT beginning of this year, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    beginningOfThisYear(): string;
-
-                    /**
-                     * Returns the date and time for the beginning of last week in GMT.
-                     * @returns {string} GMT beginning of this year, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    beginningOfLastWeek(): string;
-
-                    /**
-                     * Generates a date and time for the specified date in GMT.
-                     * @param {string} date Format: yyyy-mm-dd
-                     * @param {string} range Start, end, or a time in the 24 hour format hh:mm:ss.
-                     * @returns {string} A date and time in the format yyyy-mm-dd hh:mm:ss. If range is start, the returned value is yyyy-mm-dd 00:00:00; If range is end the return value is yyyy-mm-dd 23:59:59.
-                     */
-                    dateGenerate(date: string, range: string): string;
-
-                    /**
-                     * Returns the date and time for a specified number of days ago.
-                     * @param {number} days Integer number of days
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    daysAgo(days: number): string;
-
-                    /**
-                     * Returns the date and time for the end of the day a specified number of days ago.
-                     * @param {number} days Integer number of days
-                     * @returns {string} GMT end of the day in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    daysAgoEnd(days: number): string;
-
-                    /**
-                     * Returns the date and time for the beginning of the day a specified number of days ago.
-                     * @param {number} days Integer number of days
-                     * @returns {string} GMT end of the day in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    daysAgoStart(days: number): string;
-
-                    /**
-                     * Adds an info message for the current session. This method is not supported for asynchronous business rules.
-                     * @param {string} message The log message with place holders for any variable arguments.
-                     * @param {*} [parm1] First variable argument.
-                     * @param {*} [parm2] Second variable argument.
-                     * @param {*} [parm3] Third variable argument.
-                     * @param {*} [parm4] Fourth variable argument.
-                     * @param {*} [parm5] Fifth variable argument.
-                     */
-                    debug(message: string, parm1?: any, parm2?: any, parm3?: any, parm4?: any, parm5?: any): void;
-
-                    /**
-                     * Returns the date and time for the end of last month in GMT.
-                     * @returns {string} GMT end of last month, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfLastMonth(): string;
-
-                    /**
-                     * Returns the date and time for the end of last week in GMT.
-                     * @returns {string} GMT end of last week, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfLastWeek(): string;
-
-                    /**
-                     * Returns the date and time for the end of last year in GMT.
-                     * @returns {string} GMT in format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfLastYear(): string;
-
-                    /**
-                     * Returns the date and time for the end of next month in GMT.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfNextMonth(): string;
-
-                    /**
-                     * Returns the date and time for the end of next week in GMT.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfNextWeek(): string;
-
-                    /**
-                     * Returns the date and time for the end of next year in GMT.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfNextYear(): string;
-
-                    /**
-                     * Returns the date and time for the end of this month in GMT.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfThisMonth(): string;
-
-                    /**
-                     * Returns the date and time for the end of this quarter in GMT.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfThisQuarter(): string;
-
-                    /**
-                     * Returns the date and time for the end of this week in GMT.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfThisWeek(): string;
-
-                    /**
-                     * Returns the date and time for the end of this year in GMT.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    endOfThisYear(): string;
-
-                    /**
-                     * Writes an error message to the system log.
-                     * @param {string} message The log message with place holders for any variable arguments.
-                     * @param {*} [parm1] First variable argument.
-                     * @param {*} [parm2] Second variable argument.
-                     * @param {*} [parm3] Third variable argument.
-                     * @param {*} [parm4] Fourth variable argument.
-                     * @param {*} [parm5] Fifth variable argument.
-                     */
-                    error(message: string, parm1?: any, parm2?: any, parm3?: any, parm4?: any, parm5?: any): void;
-
-                    /**
-                     * Writes a warning message to the system log.
-                     * @param {string} message The log message with place holders for any variable arguments.
-                     * @param {*} [parm1] First variable argument.
-                     * @param {*} [parm2] Second variable argument.
-                     * @param {*} [parm3] Third variable argument.
-                     * @param {*} [parm4] Fourth variable argument.
-                     * @param {*} [parm5] Fifth variable argument.
-                     */
-                    warn(message: string, parm1?: any, parm2?: any, parm3?: any, parm4?: any, parm5?: any): void;
-
-                    /**
-                     * Writes an info message to the system log.
-                     * @param {string} message The log message with place holders for any variable arguments.
-                     * @param {*} [parm1] First variable argument.
-                     * @param {*} [parm2] Second variable argument.
-                     * @param {*} [parm3] Third variable argument.
-                     * @param {*} [parm4] Fourth variable argument.
-                     * @param {*} [parm5] Fifth variable argument.
-                     */
-                    info(message: string, parm1?: any, parm2?: any, parm3?: any, parm4?: any, parm5?: any): void;
-
-                    /**
-                     * Creates a base64 string from the specified string.
-                     * @param {string} source The string to be encoded.
-                     * @returns {string} The base64 string.
-                     */
-                    base64Encode(source: string): string;
-
-                    /**
-                     * Returns an ASCII string from the specified base64 string..
-                     * @param {string} source A base64 encoded string.
-                     * @returns {string} The decoded string.
-                     */
-                    base64Decode(source: string): string;
-
-                    /**
-                     * Queues an event for the event manager.
-                     * @param {string} name Name of the event being queued.
-                     * @param {GlideRecord} instance A GlideRecord object, such as "current".
-                     * @param {string|null|undefined} parm1 Saved with the instance if specified.
-                     * @param {string|null|undefined} parm2 Saved with the instance if specified.
-                     * @param {string} parm3 The name of the queue
-                     */
-                    eventQueue(name: string, instance: GlideRecord, parm1: string | null | undefined, parm2: string | null | undefined, parm3: string): void;
-
-                    /**
-                     * Queues an event for the event manager.
-                     * @param {string} name Name of the event being queued.
-                     * @param {GlideRecord} instance A GlideRecord object, such as "current".
-                     * @param {string|null|undefined} parm1 Saved with the instance if specified.
-                     * @param {string} parm2 The name of the queue
-                     */
-                    eventQueue(name: string, instance: GlideRecord, parm1: string | null | undefined, parm2: string): void;
-
-                    /**
-                     * Queues an event for the event manager.
-                     * @param {string} name - Name of the event being queued.
-                     * @param {GlideRecord} instance - A GlideRecord object, such as "current".
-                     * @param {string} [parm1] - The name of the queue
-                     */
-                    eventQueue(name: string, instance: GlideRecord, parm1?: string): void;
-
-                    /**
-                     * Alerts the user if event was not scheduled. Does nothing if the event is scheduled.
-                     * @param {string} name - Name of the event being queued.
-                     * @param {GlideRecord} instance - A GlideRecord object, such as "current".
-                     * @param {string} [parm1] - Saved with the instance if specified.
-                     * @param {string} [parm2] - Saved with the instance if specified.
-                     * @param {object} [expiration] - When the event expires.
-                     */
-                    eventQueueScheduled(name: string, instance: GlideRecord, parm1?: string, parm2?: string, expiration?: Object): void;
-
-                    /**
-                     * Executes a job for a scoped application.
-                     * @param job The job to be run.
-                     * @description You can only use this method on a job in the same application as the script calling this method.
-                     * @returns {string} Returns the sysID of the scheduled job. Returns null if the job is global.
-                     */
-                    executeNow(job: GlideRecord): string;
-
-                    /**
-                     * Generates a GUID that can be used when a unique identifier is required.
-                     * @returns {string} A 32-character hexadecimal GUID.
-                     */
-                    generateGUID(): string;
-
-                    /**
-                     * Gets the caller scope name; returns null if there is no caller.
-                     * @returns {string|null} The caller's scope name, or null if there is no caller.
-                     */
-                    getCallerScopeName(): string | null;
-
-                    /**
-                     * Gets a string representing the cache version for a CSS file.
-                     * @returns {string} The CSS cache version.
-                     */
-                    getCssCacheVersionString(): string;
-
-                    /**
-                     * Generates a GUID that can be used when a unique identifier is required.
-                     * @returns {string} A 32-character hexadecimal GUID.
-                     */
-                    generateGUID(): string;
-
-                    /**
-                     * Gets the caller scope name; returns null if there is no caller.
-                     * @returns {string|null} The caller's scope name, or null if there is no caller.
-                     */
-                    getCallerScopeName(): string | null;
-
-                    /**
-                     * Gets a string representing the cache version for a CSS file.
-                     * @returns {string} The CSS cache version.
-                     */
-                    getCssCacheVersionString(): string;
-
-                    /**
-                     * Returns the list of error messages for the session that were added by addErrorMessage().
-                     * @returns {string[]} List of error messages.
-                     */
-                    getErrorMessages(): string[];
-
-                    /**
-                     * Retrieves a message from UI messages with HTML special characters replaced with escape sequences, for example, & becomes &amp;.
-                     * @param id The ID of the message.
-                     * @param {*[]} [args] A list of strings or other values defined by java.text.MessageFormat, which allows you to produce language-neutral messages for display to users.
-                     * @returns {string} The UI message with HTML special characters replaced with escape sequences.
-                     */
-                    getEscapedMessage(id: string, args?: any[]): string;
-
-                    /**
-                     * Retrieves a message from UI messages.
-                     * @param id The ID of the message.
-                     * @param {*[]} [args] A list of strings or other values defined by java.text.MessageFormat, which allows you to produce language-neutral messages for display to users.
-                     * @returns {string} The UI message.
-                     */
-                    getMessage(id: string, args?: any[]): string;
-
-                    getProperty(key: string): string;
-
-                    /**
-                     * Gets the value of a Glide property. If the property is not found, returns an alternate value.
-                     * @param {string} id The key for the property whose value should be returned.
-                     * @param {string} alt Alternate object to return if the property is not found.
-                     * @returns {string | T} The value of the Glide property, or the alternate object defined above.
-                     */
-                    getProperty<T>(key: string, alt: T): string | T;
-
-                    /**
-                     * Gets a reference to the current Glide session.
-                     * @returns {Packages.com.glide.sys.GlideSession} A reference for the current session.
-                     */
-                    getSession(): Packages.com.glide.sys.GlideSession;
-
-                    /**
-                     * Retrieves the GlideSession session ID.
-                     * @returns {string} The session ID.
-                     */
-                    getSessionID(): string;
-
-                    getSessionToken(): string;
-
-                    /**
-                     * Returns the name of the time zone associated with the current user.
-                     * @returns {string} The time zone name.
-                     */
-                    getTimeZoneName(): string;
-
-                    /**
-                     * Gets the current URI for the session.
-                     * @returns {string} The URI.
-                     */
-                    getUrlOnStack(): string;
-
-                    /**
-                     * Returns a reference to the scoped GlideUser object for the current user.
-                     * @returns {GlideUser} Reference to a scoped user object.
-                     */
-                    getUser(): Packages.com.glide.sys.User;
-
-                    /**
-                     * Gets the display name of the current user.
-                     * @returns {string} The name field of the current user. Returns Abel Tuter, as opposed to abel.tuter.
-                     */
-                    getUserDisplayName(): string;
-
-                    /**
-                     * Gets the sys_id of the current user.
-                     * @returns {string} The sys_id of the current user.
-                     */
-                    getUserID(): string;
-
-
-                    /**
-                     * Gets the user name, or user id, of the current user.
-                     * @returns {string} The user name of the current user.
-                     */
-                    getUserName(): string;
-
-                    /**
-                     * Determines if the current user has the specified role.
-                     * @param {string} role The role to check.
-                     * @returns {boolean} True if the user had the role. Returns true for users with the administrator role.
-                     */
-                    hasRole(role: string): boolean;
-
-                    /**
-                     * Returns the date and time for a specified number of hours ago.
-                     * @param {number} hours Integer number of hours
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    hoursAgo(hours: number): string;
-
-                    /**
-                     * Returns the date and time for the end of the hour a specified number of hours ago.
-                     * @param {number} hours Integer number of hours
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    hoursAgoEnd(hours: number): string;
-
-                    /**
-                     * Returns the date and time for the start of the hour a specified number of hours ago.
-                     * @param {number} hours Integer number of hours
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    hoursAgoStart(hours: number): string;
-
-                    /**
-                     * Provides a safe way to call from the sandbox, allowing only trusted scripts to be included.
-                     * @param {string} name The name fo the script to include.
-                     * @returns {boolean} True if the include worked.
-                     */
-                    include(name: string): boolean;
-
-                    /**
-                     * Determines if debugging is active for a specific scope.
-                     * @returns {boolean} True if either session debugging is active or the log level is set to debug for the specified scope.
-                     */
-                    isDebugging(): boolean;
-
-                    /**
-                     * Checks if the current session is interactive. An example of an interactive session is when a user logs in normally. An example of a non-interactive session is using a SOAP request to retrieve data.
-                     * @returns {boolean} True if the session is interactive.
-                     */
-                    isInteractive(): boolean;
-
-
-                    /**
-                     * Determines if the current user is currently logged in.
-                     * @returns {boolean} True if the current user is logged in.
-                     */
-                    isLoggedIn(): boolean;
-
-                    /**
-                     * You can determine if a request comes from a mobile device.
-                     * @returns {boolean} True if the request comes from a mobile device; otherwise, false.
-                     */
-                    isMobile(): boolean;
-
-                    /**
-                     * Returns the date and time for the end of the minute a specified number of minutes ago.
-                     * @param {number} minutes Integer number of minutes.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    minutesAgoEnd(minutes: number): string;
-
-                    /**
-                     * Returns the date and time for the start of the minute a specified number of minutes ago.
-                     * @param {number} minutes Integer number of minutes.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    minutesAgoStart(minutes: number): string;
-
-                    /**
-                     * Returns the date and time for a specified number of months ago.
-                     * @param {number} months Integer number of months.
-                     * @returns {string} GMT on today's date of the specified month, in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    monthsAgo(months: number): string;
-
-                    /**
-                     * Returns the date and time for the end of the minute a specified number of minutes ago.
-                     * @param {number} minutes Integer number of minutes.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    minutesAgoEnd(minutes: number): string;
-
-                    /**
-                     * Returns the date and time for the start of the minute a specified number of minutes ago.
-                     * @param {number} minutes Integer number of minutes.
-                     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    minutesAgoStart(minutes: number): string;
-
-                    /**
-                     * Returns the date and time for the start of the month a specified number of months ago.
-                     * @param {number} months Integer number of months.
-                     * @returns {string} GMT start of the month the specified number of months ago, in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    monthsAgoStart(months: number): string;
-
-                    /**
-                     * Queries an object and returns true if the object is null, undefined, or contains an empty string.
-                     * @param {*} o The object to be checked.
-                     * @returns {boolean} True if the object is null, undefined, or contains an empty string; otherwise, returns false.
-                     */
-                    nil(o: any | null | undefined): o is "" | null | undefined;
-
-                    /**
-                     * Returns the date and time for the last day of the quarter for a specified number of quarters ago.
-                     * @param {number} quarters Integer number of quarters.
-                     * @returns {string} GMT end of the quarter that was the specified number of quarters ago, in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    quartersAgoEnd(quarters: number): string;
-
-                    /**
-                     * Returns the date and time for the first day of the quarter for a specified number of quarters ago.
-                     * @param {number} quarters Integer number of quarters.
-                     * @returns {string} GMT end of the month that was the specified number of quarters ago, in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    quartersAgoStart(quarters: number): string;
-
-                    /**
-                     * Sets the specified key to the specified value if the property is within the script's scope.
-                     * @param {string} id The key for the property to be set.
-                     * @param {string} value The value of the property to be set.
-                     * @param {string} [description] A description of the property.
-                     */
-                    setProperty(key: string, value: string, description?: string): void;
-
-                    /**
-                     * Sets the redirect URI for this transaction, which then determines the next page the user will see.
-                     * @param {string|Packages.com.glide.ui.GlideURI} o URI object or URI string to set as the redirect.
-                     */
-                    setRedirect(o: string | Packages.com.glide.ui.GlideURI): void;
-
-                    /**
-                     * Determines if a database table exists.
-                     * @param {string} name Name of the table to check for existence.
-                     * @returns {boolean} True if the table exists. False if the table was not found.
-                     */
-                    tableExists(name: string): boolean;
-
-                    /**
-                     * Encodes non-ASCII characters, unsafe ASCII characters, and spaces so the returned string can be used on the Internet. Uses UTF-8 encoding. Uses percent (%) encoding.
-                     * @param {string} url The string to be encoded.
-                     * @returns {string} A string with non-ASCII characters, unsafe ASCII characters, and spaces encoded.
-                     */
-                    urlEncode(url: string): string;
-
-                    /**
-                     * Replaces UTF-8 encoded characters with ASCII characters.
-                     * @param {string} url A string with UTF-8 percent (%) encoded characters.
-                     * @returns {string} A string with encoded characters replaced with ASCII characters.
-                     */
-                    urlDecode(url: string): string;
-
-                    /**
-                     * Takes an XML string and returns a JSON object.
-                     * @param {string} xmlString The XML string to be converted.
-                     * @returns {object|null} A JSON object representing the XML string. Null if unable to process the XML string.
-                     */
-                    xmlToJSON(xmlString: string): { [key: string]: any } | null;
-
-                    /**
-                     * Returns a date and time for a certain number of years ago.
-                     * @param {number} years Integer number of years.
-                     * @returns {string} GMT beginning of the year that is the specified number of years ago, in the format yyyy-mm-dd hh:mm:ss.
-                     */
-                    yearsAgo(years: number): string;
-
-                    /**
-                     * Returns yesterday's time (24 hours ago).
-                     * @returns {string} GMT for 24 hours ago, in the format yyyy-mm-dd hh:mm:ss
-                     */
-                    yesterday(): string;
-                }
-                // export class TableChoiceList { }
-                // export class Template { }
-                // export class UpdateTableChoiceList { }
-                // export class RhinoEnvironment { }
-                // export class RhinoHelper { }
-            }
-            // export namespace schedules {
-            // export class AJAXScheduleItem { }
-            // export class AJAXSchedulePage { }
-            // export class Schedule { }
-            // export class ScheduleDateTimeSpan { }
-            // export class ScheduleItem { }
-            // export class ScheduleTimeMap { }
-            // export class ScheduleTimeSpan { }
-            // export class TimelineFrameSeparator { }
-            // export class TimelineItem { }
-            // export class TimelineSpan { }
-            // }
-            // export namespace alerts {
-            // export class AlertActions { }
-            // }
-            export namespace sys {
-                export namespace cache {
-                    // export class CacheManager { }
-                    export class LRUCache {
-                        // constructor();
-                        // constructor(initialCapacity: number, loadFactor: number);
-                        // constructor(initialCapacity: number);
-                        constructor(initialCapacity?: number, loadFactor?: number);
-                        get(key: any): any;
-                    }
-                    // export class StringCache { }
-                    // export class SynchronizedLRUCache { }
-                }
-                // export namespace security {
-                // export class ContextualSecurityManager { }
-                // export class EncryptionContextCipher { }
-                // export class EncryptionWrapperDB { }
-                // export class EncryptionWrapperDBAdmin { }
-                // export class EncryptionWrapperNAE { }
-                // export class EncryptionWrapperNAEAdmin { }
-                // export class ISecurityManager { }
-                // export class GlideSecurityManager { }
-                // export class SecurityQueryCalculator { }
-                // }
-                // export namespace util {
-                // export class Governor { }
-                // export class SysDateUtil { }
-                // export class SysFileUtil { }
-                // export class SysSemaphore { }
-                // export class SecurelyAccess { }
-                // }
-                // export namespace ldap {
-                // export class LDAP { }
-                // export class LDAPConfig { }
-                // export class LDAPConfigurations { }
-                // export class LDAPErrorAnalyzer { }
-                // export class LDAPGroups { }
-                // export class LDAPRefresh { }
-                // export class LDAPResult { }
-                // export class LDAPTarget { }
-                // export class LDAPTransformQueue { }
-                // export class LDAPUsers { }
-                // export class LDAPUserUpdate { }
-                // }
-                // export namespace lock {
-                // export class Mutex { }
-                // export class SelfCleaningMutex { }
-                // }
-                // export namespace stats {
-                // export class MySQLWatch { }
-                // export class Statistician { }
-                // }
-                // export class Application { }
-                // export class EncryptionContext { }
-                export class ExtensionPoint {
-                    getAttribute(name: string): string;
-                }
-                // export class Group { }
-                // export class Impersonate { }
-                // export class GlideLocale { }
-                // export class Module { }
-                export class Plugin {
-                    getDescription(): any;
-                    getDisplayName(): string;
-                    getName(): string;
-                    getPath(): string;
-                    refreshArtifacts(): void;
-                }
-                export class PluginManager {
-                    constructor();
-
-                    /**
-                     * Determines if the specified plugin has been activated.
-                     * @param plugin_id - The plugin ID
-                     * @returns {boolean} True if the plugin has been activated.
-                     */
-                    isActive(plugin_id: string): boolean;
-                }
-                export class PluginManagerWorker {
-                    setPluginId(id: string): void;
-                    setIncludeDemoData(includeDemoData: boolean): void;
-                }
-                // export class PluginUtils { }
-                // export class RecordCache { }
-                // export class Relationship { }
-                // export class RelationshipUtil { }
-
-                /**
-                 * The GlideSession API allows you to find information about the current session.
-                 * @class GlideSession
-                 */
-                export class GlideSession {
-                    /**
-                     * Clears a session client value previously set with putClientData().
-                     * @memberof GlideSession
-                     * @param {string} paramName - Name of the client data to clear.
-                     * @description 
-                     */
-                    clearClientData(paramName: string): void;
-                    /**
-                     * Returns a session client value previously set with putClientData().
-                     * @memberof GlideSession
-                     * @param {string} paramName - Name of the client data to retrieve.
-                     * @returns {string} The client data as a string..
-                     * @description  
-                     */
-                    getClientData(paramName: string): string;
-                    /**
-                     * Gets the session's language code.
-                     * @memberof GlideSession
-                     * @returns {string} The session's language code..
-                     * @description 
-                     */
-                    getLanguage(): string;
-                    /**
-                     * Gets a list of roles for the current user.
-                     * @memberof GlideSession
-                     * @returns {string} A comma separated list of roles..
-                     * @description 
-                     */
-                    getRoles(): string;
-                    /**
-                     * Gets the name of the session's time zone.
-                     * @memberof GlideSession
-                     * @returns {string} The name of the session's time zone..
-                     * @description 
-                     */
-                    getTimeZoneName(): string;
-                    /**
-                     * Determines if the current session is interactive.
-                     * @memberof GlideSession
-                     * @returns {boolean} True if the session is interactive..
-                     * @description  
-                     */
-                    isInteractive(): boolean;
-                    /**
-                     * Determines if the current user is currently logged in.
-                     * @memberof GlideSession
-                     * @returns {boolean} True if the current user is logged in..
-                     * @description 
-                     */
-                    isLoggedIn(): boolean;
-                    /**
-                     * Sets a session client value that can be retrieved with getClientData(). This method is used in a server side script that runs when a form is created.
-                     * @memberof GlideSession
-                     * @param {string} paramName - Name of the client parameter to set.
-                     * @param {string} paramValue - Parameter value.
-                     * @description 
-                     */
-                    putClientData(paramName: string, paramValue: string): void;
-                }
-
-                // export class SessionDebug { }
-                // export class GlideStack { }
-                // export class SysLog { }
-                // export class Transaction { }
-                // export class TransactionManager { }
-                // export class Upgrade { }
-
-                /**
-                 * The GlideUser API provides access to information about the current user and current user roles.
-                 * @class User
-                 * @description Using the GlideUser API avoids the need to use the slower GlideRecord queries to obtain user information.
-                 */
-                export class User {
-                    /**
-                     * Returns the current user's company sys_id.
-                     * @memberof GlideUser
-                     * @returns {string} Company sys_id.
-                     * @description 
-                     */
-                    getCompanyID(): string;
-                    /**
-                     * Returns the current user's display name.
-                     * @memberof GlideUser
-                     * @returns {string} User's display name.
-                     * @description 
-                     */
-                    getDisplayName(): string;
-                    /**
-                     * Returns the display value of the user's session domain.
-                     * @memberof GlideUser
-                     * @returns {string} The display value of the user's session domain..
-                     * @description 
-                     */
-                    getDomainDisplayValue(): string;
-                    /**
-                     * Returns the user's email address.
-                     * @memberof GlideUser
-                     * @returns {string} User's email address.
-                     * @description 
-                     */
-                    getEmail(): string;
-                    /**
-                     * Returns the user's first name.
-                     * @memberof GlideUser
-                     * @returns {string} User's first name.
-                     * @description 
-                     */
-                    getFirstName(): string;
-                    /**
-                     * Returns the sys_id of the current user.
-                     * @memberof GlideUser
-                     * @returns {string} User's sys_id.
-                     * @description 
-                     */
-                    getID(): string;
-                    /**
-                     * Returns the user's last name.
-                     * @memberof GlideUser
-                     * @returns {string} User's last name.
-                     * @description 
-                     */
-                    getLastName(): string;
-                    /**
-                     * Returns an iterator containing the list of all groups to which the user belongs. Only active groups are returned.
-                     * @memberof GlideUser
-                     * @returns {Packages.java.util.Iterator<$$rhino.String>} A list of sys_ids for the active groups to which the user belongs..
-                     * @description 
-                     */
-                    getMyGroups(): Packages.java.util.Iterator<$$rhino.String>;
-                    /**
-                     * Returns the user ID, or login name, of the current user.
-                     * @memberof GlideUser
-                     * @returns {string} User ID or login name..
-                     * @description 
-                     */
-                    getName(): string;
-                    /**
-                     * Returns a list of roles that includes explicitly granted roles, inherited roles, and roles acquired by group membership.
-                     * @memberof GlideUser
-                     * @returns {Array<*>} List of all roles available to the user.
-                     * @description 
-                     */
-                    getRoles(): any[];
-                    /**
-                     * Returns the user object associated with the passed-in user ID (sys_id in sys_user) or user_name.
-                     * @memberof GlideUser
-                     * @param {string} id - Unique ID (sys_id) or user_name of the desired user record.
-                     * @returns {*} User object associated with the specified sys_id or user_name..
-                     */
-                    getUserByID(id: string): any;
-                    /**
-                     * Returns the list of roles explicitly granted to the user.
-                     * @memberof GlideUser
-                     * @returns {Array<*>} List of roles explicitly assigned to the user.
-                     * @description 
-                     */
-                    getUserRoles(): any[];
-                    /**
-                     * Determines if the current user has the specified role.
-                     * @memberof GlideUser
-                     * @param {string} role - Role to check
-                     * @returns {boolean} True if the user has the role..
-                     * @description 
-                     */
-                    hasRole(role: string): boolean;
-                    /**
-                     * Determines if the current user is a member of the specified group.
-                     * @memberof GlideUser
-                     * @param {string} group - Group to check
-                     * @returns {boolean} True if the user is a member of the group..
-                     * @description 
-                     */
-                    isMemberOf(group: string): boolean;
-                }
-
-                // export class UserAuthenticator { }
-                // export class UserGroup { }
-                // export class WorkerThreadManager { }
-            }
-            // export namespace processors {
-            // export namespace soap {
-            // export class SOAPSecurity { }
-            // }
-            // export namespace xmlhttp {
-            // export class XMLGlideRecordSerializer { }
-            // export class XMLSysMetaSerializer { }
-            // }
-            // export class ApplicationModule { }
-            // export class FieldList { }
-            // export class Processor { }
-            // export class ScriptProcessor { }
-            // }
-            // export namespace schedule {
-            // export namespace recurrence {
-            // export class ARecurrence { }
-            // }
-            // export class GlideCalendar { }
-            // export class GlideScheduler { }
-            // }
-            // export namespace lucene {
-            // export namespace attachments {
-            // export class AttachmentIndexDocument { }
-            // export class AttachmentIndexTypes { }
-            // }
-            // export class TextIndexEvent { }
-            // }
-            export namespace util {
-                // export class GlideAttributes { }
-                // export class AutomationEncrypter { }
-                // export class BoundedIntProperty { }
-                // export class Checksum { }
-                // export class CollectionEnumerator { }
-                // export class Counter { }
-                // export class DateUtil { }
-                // export class GlideDocument { }
-                // export class ElementIterator { }
-                // export class Encrypter { }
-                // export class FileUtil { }
-                // export class GlideGregorianCalendar { }
-                // export class Guid { }
-                // export class HostUtil { }
-                // export class IConstants { }
-                // export class IGlideRecord { }
-                // export class IPAddressUtil { }
-                // export class IQueryCondition { }
-                // export class Log { }
-                // export class LogCleanup { }
-                // export class MarkupWriter { }
-                // export class MemoryTable { }
-                // export class ObjectUtil { }
-                // export class ProcessRunner { }
-                // export class GlideProperties { }
-                // export class GlidePropertiesDB { }
-                // export class GlideProperty { }
-                // export class RegexUtil { }
-                // export class ReplaceUpdateFiles { }
-                // export class RequestMap { }
-                // export class SecurityUtils { }
-                // export class ShellCommand { }
-                // export class SimpleDateFormatEx { }
-                // export class GlideStatus { }
-                // export class StopWatch { }
-                // export class StringInputStream { }
-                // export class StringUtil { }
-                // export class SystemUtil { }
-                // export class ThreadUtil { }
-                // export class GlideURL { }
-                // export class URLUTF8Encoder { }
-                // export class URLUtil { }
-                // export class GlideUtil { }
-                // export class WSClient { }
-                export class XMLDocument {
-                    // constructor();
-                    // constructor(d: any);
-                    // constructor(rootName: string);
-                    // constructor(file: any);
-                    constructor(d_OR_rootName_OR_file?: any | string);
-                    createCDATAElement(name: string, value: string): any;
-                    createComment(msg: string): any;
-                    // createElement(name: string, value: string): any;
-                    // createElement(name: string): any;
-                    createElement(name: string, value?: string): any;
-                    getChildTextByTagName(parent: any, tagName: string): string;
-                    getDocument(): any;
-                    getDocumentElement(): any;
-                    getElementByTagName(tagName: string): any;
-                    getElementValueByTagName(tagName: string): string;
-                    importElement(e: any): any;
-                    importElementToParent(e: any, parent: any): any;
-                    isNamespaceAware(): boolean;
-                    isValid(): boolean;
-                    parse(xml: string): boolean;
-                    pop(): void;
-                    selectNodes(xpath: string): any;
-                    // selectSingleNode(xpath: string): any;
-                    // selectSingleNode(currentNode: any, xpath: string): any;
-                    selectSingleNode(xpath_OR_currentNode: string | any, xpath?: string): any;
-                    selectSingleNodeText(xpath: string): string;
-                    setAttribute(name: string, value: string): void;
-                    setCurrent(e: any): void;
-                    // setDocument(document: any): void;
-                    // setDocument(document: string): void;
-                    setDocument(document: any | string): void;
-                    setNamespaceAware(nsAware: boolean): void;
-                    setText(e: any, text: string): void;
-                    toIndentedString(): string;
-                    toString(): string;
-                }
-                // export class XMLElementIterator { }
-                // export class XMLParameters { }
-                // export class XMLUtil { }
-                // export class ZipUtil { }
-            }
-            // export namespace audit {
-            // export class AuditDelete { }
-            // export class HistorySet { }
-            // export class TransferAuditDataHelper { }
-            // }
-            // export namespace calendar {
-            // export class GlideCalendarWeekEntry { }
-            // export class RecordPopupGenerator { }
-            // }
-            // export namespace catalog {
-            // export namespace cloner {
-            // export class CatalogCloneWorker { }
-            // }
-            // }
-            // export namespace channel {
-            // export class Channel { }
-            // export class ChannelManager { }
-            // export class ChannelMessage { }
-            // }
-            export namespace choice {
-                export class Choice {
-                    constructor(value: string, label: string, sysId?: string);
-                    getId(): string;
-                    getImage(): string;
-                    getLabel(): string;
-                    getParameter(name: string): any;
-                    getSelected(): boolean;
-                    getValue(): string;
-                    setId(sysId: string): void;
-                    setImage(image: string): void;
-                    setLabel(string_1: string): void;
-                    setParameter(name: string, value: any): void;
-                    setSelected(selected: boolean): void;
-                    setValue(string_1: string): void;
-                }
-                export class ChoiceList {
-                    // add(choice: Choice): boolean;
-                    // add(value: string, label: string): Choice;
-                    add(choice_OR_value: Choice | string, label?: string): boolean;
-                    addAll(cl: ChoiceList): void;
-                    addFirst(value: string, label: string): void;
-                    addNone(): Choice;
-                    constructor();
-                    // getChoice(index: number): Choice;
-                    // getChoice(value: string): Choice;
-                    getChoice(index_OR_value: number | string): Choice;
-                    static getChoiceList(tableName: string, fieldName: string): ChoiceList;
-                    getChoiceNoTrim(value: string): Choice;
-                    getLabelOf(value: string): string;
-                    getNullOverride(gc: Packages.com.glide.script.GlideController): string;
-                    getSelectedIndex(): number;
-                    getSize(): number;
-                    getValueOf(label: string): string;
-                    // removeChoice(value: string): Choice;
-                    // removeChoice(i: number): Choice;
-                    removeChoice(value_OR_i: string | number): Choice;
-                    removeNone(): void;
-                    sort(): void;
-                    toJSON(): any;
-                    toXML(x: Packages.com.glide.util.XMLDocument): void;
-                }
-                // export class ChoiceListGenerator { }
-                export class ChoiceListSet {
-                    constructor();
-                    getColumns(): ChoiceList;
-                    getSelected(): ChoiceList;
-                    setColumns(clColumns: ChoiceList): void;
-                    setSelected(clSelected: ChoiceList): void;
-                    sortColumns(): void;
-                    toXML(): any;
-                }
-                // export class XMLChoiceListSerializer { }
-            }
-            export namespace update {
-                // export namespace saver {
-                // export class ChoiceListUpdateSaver { }
-                // export class DefaultUpdateSaver { }
-                // }
-                // export namespace collisions {
-                // export class CollisionDetector { }
-                // }
-                // export class RevertToOutOfBox { }
-                export class UpdateManager2 {
-                    allowBackout(sysId: string): boolean;
-                    allowVersionBackout(sysId: string): boolean;
-                    // constructor();
-                    // constructor(updateSetId: string);
-                    constructor(updateSetId?: string);
-                    getDefaultUpdateName(tableName: string, uniqueValue: string): string;
-                    getUpdateName(gr: Packages.com.glide.script.GlideRecord): string;
-                    // load(updateName: string): void;
-                    // load(updateName: string, directory: string): void;
-                    load(updateName: string, directory?: string): void;
-                    loadFile(filePath: string): void;
-                    // loadFixes(updateName: string, before: boolean): void;
-                    // loadFixes(updateName: string): void;
-                    loadFixes(updateName: string, before?: boolean): void;
-                    loadFromDatabase(category: string): void;
-                    loadIntoDatabase(category: string): boolean;
-                    // loadXML(xml: string): void;
-                    // loadXML(xml: string, writeVersion: boolean, revertedFrom: string, sourceTable: string, sourceId: string): void;
-                    loadXML(xml: string, writeVersion?: boolean, revertedFrom?: string, sourceTable?: string, sourceId?: string): void;
-                    removeUpdateSet(setID: string): void;
-                    saveBaselineChoiceListElements(tableName: string, fieldName: string): void;
-                    saveChoiceListElements(tableName: string, fieldName: string): void;
-                    saveListElements(sl: Packages.com.glide.ui.SysList): void;
-                    saveRecord(gr: Packages.com.glide.script.GlideRecord): boolean;
-                    setInstalling(b: boolean): void;
-                }
-                // export class UpdateSet { }
-                // export class UpdateSetPreviewer { }
-                // export class UpdateSetWorker { }
-                // export class UpgradeLog { }
-                // export class UpgradeMonitor { }
-            }
-            // export namespace client_transaction {
-            // export class ClientBrowserTimes { }
-            // export class ClientNetworkTimes { }
-            // }
-            // export namespace cluster {
-            // export class ClusterMessage { }
-            // export class ClusterState { }
-            // export class ClusterSynchronizer { }
-            // }
-            // export namespace cms {
-            // export class CMSLinkHelper { }
-            // export class CMSPageLink { }
-            // export class ContentConfig { }
-            // export class ContentPage { }
-            // export class ContentSite { }
-            // export class ContentType { }
-            // }
-            // export namespace misc {
-            // export class CompanyResolver { }
-            // export class QueryBreadcrumbs { }
-            // export class RecordEnsurer { }
-            // export class RelatedListReconciler { }
-            // export class TableCleaner { }
-            // export class UpgradeArtifactManager { }
-            // export class WarDeleter { }
-            // export class WarDownloader { }
-            // }
-            export namespace notification {
-                export namespace outbound {
-                    // export class EmailAction { }
-                    // export class EmailFormatter { }
-                    export class EmailOutbound extends Email {
-                        constructor(actionType_OR_action?: string | Packages.com.glide.script.GlideRecord, m?: EmailWatermark);
-                        save(): void;
-                    }
-                    // export class EmailSender { }
-                    // export class SMTPConnection { }
-                    // export class SMTPSender { }
-                }
-                // export namespace inbound {
-                // export class EmailInbound { }
-                // export class EmailReader { }
-                // export class POP3Reader { }
-                // }
-                // export namespace substitution {
-                // export class SubstituteURL { }
-                // }
-                // export class Configuration { }
-                export class Email {
-                    /**
-                     * Adds the recipient to either the cc or bcc list
-                     * @param {"cc"|"bcc"} type Either cc or bcc, determines the list to which the address is added.
-                     * @param {string} address The recipient's email address.
-                     * @param {string} [displayName] The name to be shown instead of the email address.
-                     */
-                    addAddress(type: "cc" | "bcc", address: string, displayName?: string): void;
-
-                    /**
-                     * 
-                     * @param address 
-                     */
-                    addRecipient(address: string): void;
-
-                    /**
-                     * Instantiates a scoped GlideEmailOutbound object.
-                     * @param {string} [body] Body of message
-                     */
-                    constructor(body?: string);
-
-                    /**
-                     * 
-                     */
-                    getSMSText(): string;
-
-                    /**
-                     * Returns the email's subject line.
-                     * @returns {string} The email's subject line.
-                     */
-                    getSubject(): string;
-                    getTextBody(): string;
-                    getWatermark(): EmailWatermark;
-
-                    /**
-                     * Sets the body of the email.
-                     * @param body The body of the email.
-                     */
-                    setBody(body: string): void;
-
-                    /**
-                     * Sets the sender's address.
-                     * @param from The sender's email address.
-                     */
-                    setFrom(address: string): void;
-                    setRecipients(recipients: string): void;
-
-                    /**
-                     * Sets the reply to address.
-                     * @param replyTo The reply to email address.
-                     */
-                    setReplyTo(address: string): void;
-
-                    /**
-                     * Sets the email's subject line.
-                     * @param subject Text for the subject line.
-                     */
-                    setSubject(subject: string): void;
-                }
-                export class EmailWatermark {
-                    getWatermark(): string;
                 }
             }
-            // export namespace db_context_menu {
-            // export class ContextMenu { }
-            // export class ContextMenuItem { }
-            // }
-            // export namespace currency {
-            // export class Converter { }
-            // export class ECBDownloader { }
-            // export class LocaleLoader { }
-            // export class PriceGenerator { }
-            // export class PriceLoader { }
-            // }
-            // export namespace communications {
-            // export namespace crypto {
-            // export class Credentials { }
-            // }
-            // export namespace soap {
-            // export class SOAPDocument { }
-            // export class SOAPRequest { }
-            // export class SOAPResponse { }
-            // export class SOAPSigner { }
-            // }
-            // export class HTTPClient { }
-            // export class HTTPRequest { }
-            // export class HTTPResponse { }
-            // export class RemoteGlideRecord { }
-            // export class SimpleHTTPClient { }
-            // export class SSHClient { }
-            // }
-            // export namespace security {
-            // export class CryptoService { }
-            // }
-            // export namespace generators {
-            // export class CSVExporter { }
-            // export class ExcelExporter { }
-            // }
-            // export namespace database_views {
-            // export class DatabaseViewLink { }
-            // }
             export namespace glideobject {
-                /**
-                 * Class for performing date operators and working with GlideDate fields.
-                 * @class GlideDate
-                 */
-                export class GlideDate {
-                    /**
-                     * Creates a GlideDate object with the current date time.
-                     */
-                    constructor();
-
-                    /**
-                     * Gets the date in the specified date format.
-                     * @param {string} format The desired date format.
-                     * @returns {string} The date in the specified format.
-                     */
-                    getByFormat(format: string): string;
-
-                    /**
-                     * Gets the day of the month stored by the {@link GlideDate} object, expressed in the UTC time zone.
-                     * @returns {number} The day of the month in the UTC time zone, from 1 to 31.
-                     */
-                    getDayOfMonthNoTZ(): number;
-
-                    /**
-                     * Gets the date in the current user's display format and time zone.
-                     * @returns {string} The date in the user's format and time zone.
-                     * @description Keep in mind when designing business rules or script includes that this method may return values in different formats for different users.
-                     */
-                    getDisplayValue(): string;
-
-                    /**
-                     * Gets the display value in the internal format (yyyy-MM-dd).
-                     * @returns {string} The date values for the {@link GlideDate} object in the current user's time zone and the internal time format of yyyy-MM-dd.
-                     */
-                    getDisplayValueInternal(): string;
-
-                    /**
-                     * Gets the month stored by the {@link GlideDate} object, expressed in the UTC time zone.
-                     * @returns {number} The numerical value of the month from 1 to 12.
-                     */
-                    getMonthNoTZ(): number;
-
-                    /**
-                     * Gets the date value stored in the database by the {@link GlideDate} object in the internal format, yyyy-MM-dd, and the system time zone, UTC by default.
-                     * @returns {string} The date value in the internal format and system time zone.
-                     */
-                    getValue(): string;
-
-                    /**
-                     * Gets the year stored by the {@link GlideDate} object, expressed in the UTC time zone.
-                     * @returns {number} The numerical value of the year.
-                     */
-                    getYearNoTZ(): number;
-
-                    /**
-                     * Sets a date value using the current user's display format and time zone.
-                     * @param {string} asDisplayed The date in the current user's display format and time zone.
-                     * @description The parameter must be formatted using the current user's preferred display format, such as yyyy-MM-dd.
-                     */
-                    setDisplayValue(asDisplayed: string): void;
-
-                    /**
-                     * Sets the date of the {@link GlideDate} object.
-                     * @param {string} o The date and time to use.
-                     */
-                    setValue(o: string): void;
-
-                    /**
-                     * Gets the duration difference between two {@link GlideDate} values.
-                     * @param {GlideDate} start The start value.
-                     * @param {GlideDate} end The end value.
-                     * @returns {GlideDate} The {@link GlideDate|duration} between the two values.
-                     */
-                    static subtract(start: GlideDate, end: GlideDate): GlideDate;
+                export interface IGlideObject {
+                    handlesChangeDetection(): $$rhino.Boolean;
+                    handlesPreviousValueTracking(): $$rhino.Boolean;
+                    handlesDefaultValue(): $$rhino.Boolean;
+                    getPreviousValue(): java.lang.String;
+                    changes(): $$rhino.Boolean;
+                    wasChangedInStream(): $$rhino.Boolean;
+                    isValid(bln: $$rhino.Boolean): $$rhino.Boolean;
+                    getErrorMsg(): java.lang.String;
+                    hasChoices(): $$rhino.Boolean;
+                    getChoices(cl: choice.ChoiceList): void;
+                    getTableName(): java.lang.String;
+                    setValue(o: java.lang.Object): void;
+                    setDisplayValue(string: java.lang.String): void;
+                    getDisplayValue(): java.lang.String;
+                    getValue(): java.lang.String;
+                    getStorageValue(): java.lang.String;
+                    getInitialValue(): java.lang.String
+                    setInitialValue(string: java.lang.String): void;
+                    setElement(ge: script.GlideElement): void;
+                    getHTMLValue(i?: $$rhino.Number): java.lang.String;
+                    setDefaultValue(o: java.lang.Object): void;
                 }
-
-                /**
-                 * The GlideDateTime class provides methods for performing operations on GlideDateTime objects, such as instantiating GlideDateTime objects or working with glide_date_time fields.
-                 * @class GlideDateTime
-                 * @description Use the GlideDateTime methods to perform date-time operations, such as instantiating a GlideDateTime object, performing date-time calculations, formatting a date-time, or converting between date-time formats.
-                 */
-                export class GlideDateTime {
-                    /**
-                     * Adds a GlideTime object to the current GlideDateTime object.
-                     * @memberof GlideDateTime
-                     * @param {GlideTime} time - The time to add.
-                     * @description 
-                     */
-                    add(time: GlideTime): void;
-                    /**
-                     * Adds a specified number of milliseconds to the GlideDateTime object.
-                     * @memberof GlideDateTime
-                     * @param {number} milliseconds - The number of milliseconds to add
-                     * @description 
-                     */
-                    add(milliseconds: number): void;
-                    /**
-                     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days.
-                     * @memberof GlideDateTime
-                     * @param {number} days - The number of days to add. Use a negative number to subtract.
-                     * @description 
-                     */
-                    addDays(days: number): void;
-                    /**
-                     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days.
-                     * @memberof GlideDateTime
-                     * @param {number} days - The number of days to add. Use a negative value to subtract.
-                     * @description  
-                     */
-                    addDaysLocalTime(days: number): void;
-                    /**
-                     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days.
-                     * @memberof GlideDateTime
-                     * @param {number} days - The number of days to add. Use a negative value to subtract.
-                     * @description  
-                     */
-                    addDaysUTC(days: number): void;
-                    /**
-                     * Instantiates a new GlideDateTime object with the current date and time in GMT format.
-                     * @constructor
-                     */
-                    constructor();
-                    /**
-                     * Instantiates a new GlideDateTime object set to the time of a specified GlideDateTime object in GMT format.
-                     * @constructor
-                     * @param {GlideDateTime} gDT - Object used to set the time of the new object.
-                     */
-                    constructor(gDT: GlideDateTime);
-                    /**
-                     * Instantiates a new GlideDateTime object from a date and time value in the UTC time zone specified with the format yyyy-MM-dd HH:mm:ss.
-                     * @constructor
-                     * @param {string} dateTime - A UTC date and time using the format yyyy-MM-dd HH:mm:ss.
-                     */
-                    constructor(dateTime: string);
-                    /**
-                     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months.
-                     * @memberof GlideDateTime
-                     * @param {number} months - The number of months to add. Use a negative number to subtract.
-                     * @description 
-                     */
-                    addMonths(months: number): void;
-                    /**
-                     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months.
-                     * @memberof GlideDateTime
-                     * @param {number} months - The number of months to add. Use a negative value to subtract.
-                     * @description  
-                     */
-                    addMonthsLocalTime(months: number): void;
-                    /**
-                     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months.
-                     * @memberof GlideDateTime
-                     * @param {number} months - The number of months to add. Use a negative number to subtract.
-                     * @description  
-                     */
-                    addMonthsUTC(months: number): void;
-                    /**
-                     * Adds a specified number of seconds to the GlideDateTime object.
-                     * @memberof GlideDateTime
-                     * @param {number} seconds - The number of seconds to add
-                     * @description 
-                     */
-                    addSeconds(seconds: number): void;
-                    /**
-                     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks.
-                     * @memberof GlideDateTime
-                     * @param {number} weeks - The number of weeks to add. Use a negative number to subtract.
-                     * @description 
-                     */
-                    addWeeks(weeks: number): void;
-                    /**
-                     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks.
-                     * @memberof GlideDateTime
-                     * @param {number} weeks - The number of weeks to add. Use a negative number to subtract.
-                     * @description  
-                     */
-                    addWeeksLocalTime(weeks: number): void;
-                    /**
-                     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks.
-                     * @memberof GlideDateTime
-                     * @param {number} weeks - The number of weeks to add. Use a negative number to subtract.
-                     * @description  
-                     */
-                    addWeeksUTC(weeks: number): void;
-                    /**
-                     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years.
-                     * @memberof GlideDateTime
-                     * @param {number} years - The number of years to add. Use a negative value to subtract.
-                     * @description 
-                     */
-                    addYears(years: number): void;
-                    /**
-                     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years.
-                     * @memberof GlideDateTime
-                     * @param {number} years - The number of years to add. To subtract use a negative value.
-                     * @description  
-                     */
-                    addYearsLocalTime(years: number): void;
-                    /**
-                     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years.
-                     * @memberof GlideDateTime
-                     * @param {number} years - The number of years to add. Use a negative value to subtract.
-                     * @description  
-                     */
-                    addYearsUTC(years: number): void;
-                    /**
-                     * Compares two date and time objects to determine whether one occurs before the other or if they are equivalent.
-                     * @memberof GlideDateTime
-                     * @param {*} dateTime - Date time in a GlideDateTime object
-                     * @returns {number} 0 = Dates are equal1 = The object's date is after the date specified in the parameter-1 = The object's date is before the date specified in the parameter.
-                     * @description 
-                     */
-                    compareTo(dateTime: any): number;
-                    /**
-                     * Compares an object with an existing value for equality.
-                     * @memberof GlideDateTime
-                     * @param {*} GDT - The object to compare. Can be a GlideDateTIme object or a valid date time string.
-                     * @returns {boolean} True if they are equal, false otherwise..
-                     * @description 
-                     */
-                    equals(GDT: any): boolean;
-                    /**
-                     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the system time zone, UTC by default.
-                     * @memberof GlideDateTime
-                     * @returns {GlideDate} The date in the system time zone..
-                     * @description 
-                     */
-                    getDate(): GlideDate;
-                    /**
-                     * Gets the current day of the month in the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The day of the month in the UTC time zone, from 1 to 31..
-                     * @description 
-                     */
-                    getDayOfMonth(): number;
-                    /**
-                     * Gets the day of the month stored by the GlideDateTime object, expressed in the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The day of the month in the user's time zone, from 1 to 31..
-                     * @description 
-                     */
-                    getDayOfMonthLocalTime(): number;
-                    /**
-                     * Gets the day of the month stored by the GlideDateTime object, expressed in the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The day of the month in the UTC time zone, from 1 to 31..
-                     * @description 
-                     */
-                    getDayOfMonthUTC(): number;
-                    /**
-                     * Retrieves the day of the week stored by the GlideDateTime object, expressed in the user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The day of the week value - Monday = 1, ... Sunday = 7..
-                     * @description 
-                     */
-                    getDayOfWeek(): number;
-                    /**
-                     * Gets the day of the week stored by the GlideDateTime object, expressed in the user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The day of the week value - Monday = 1, ... Sunday = 7.
-                     * @description 
-                     */
-                    getDayOfWeekLocalTime(): number;
-                    /**
-                     * Gets the day of the week stored by the GlideDateTime object, expressed in the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The day of the week value - Monday = 1, ... Sunday = 7.
-                     * @description 
-                     */
-                    getDayOfWeekUTC(): number;
-                    /**
-                     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the Java Virtual Machine time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The number of days in the current month in the Java Virtual Machine time zone..
-                     * @description 
-                     */
-                    getDaysInMonth(): number;
-                    /**
-                     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The number of days in the current month in the user's time zone..
-                     * @description 
-                     */
-                    getDaysInMonthLocalTime(): number;
-                    /**
-                     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The number of days in the month stored by the GlideDateTime object, expressed in the UTC time zone..
-                     * @description 
-                     */
-                    getDaysInMonthUTC(): number;
-                    /**
-                     * Gets the date and time value in the current user's display format and time zone. Referring to the GlideDateTime object directly returns the date and time value in the GMT time zone.
-                     * @memberof GlideDateTime
-                     * @returns {string} The date and time in the user's format and time zone. Keep in mind when designing business rules or script includes that this method may return values in different formats for different users..
-                     * @description 
-                     */
-                    getDisplayValue(): string;
-                    /**
-                     * Returns the display value in the internal format (yyyy-MM-dd HH:mm:ss). This method is useful for date/time fields, but not for date fields.
-                     * @memberof GlideDateTime
-                     * @returns {string} The date and time values for the GlideDateTime object in the current user's time zone and the internal date and time format of yyyy-MM-dd HH:mm:ss..
-                     * @description 
-                     */
-                    getDisplayValueInternal(): string;
-                    /**
-                     * Gets the amount of time that daylight saving time is offset.
-                     * @memberof GlideDateTime
-                     * @returns {number} Amount of time, in milliseconds, that daylight saving is offset. Returns 0 if there is no offset or if the time is not during daylight saving time..
-                     * @description 
-                     */
-                    getDSTOffset(): number;
-                    /**
-                     * Gets the current error message.
-                     * @memberof GlideDateTime
-                     * @returns {string} The error message.
-                     * @description 
-                     */
-                    getErrorMsg(): string;
-                    /**
-                     * Returns the object's time in the local time zone and in the internal format.
-                     * @memberof GlideDateTime
-                     * @returns {string} The object's time in the local time zone and the internal format..
-                     * @description 
-                     */
-                    getInternalFormattedLocalTime(): string;
-                    /**
-                     * Returns a date and time object set to midnight of a specified day using UTC.
-                     * @memberof GlideDateTime
-                     * @param {number} dayOfTheWeek - The day of the week for which to return the date/time object.
-                     * @returns {GlideDateTime} A GlideDateTime object set to midnight..
-                     */
-                    getInternalMidnight(dayOfTheWeek: number): GlideDateTime;
-                    /**
-                     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {GlideDate} The date in the user's time zone..
-                     * @description 
-                     */
-                    getLocalDate(): GlideDate;
-                    /**
-                     * Gets the time in the user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {GlideTime} The time in the user's time zone..
-                     * @description 
-                     */
-                    getLocalTime(): GlideTime;
-                    /**
-                     * Retrieves the month stored by the GlideDateTime object, expressed in Java Virtual Machine time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The numerical value of the month, Jan=1, Dec=12..
-                     * @description 
-                     */
-                    getMonth(): number;
-                    /**
-                     * Gets the month stored by the GlideDateTime object, expressed in the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The numerical value of the month, Jan=1, Dec=12..
-                     * @description 
-                     */
-                    getMonthLocalTime(): number;
-                    /**
-                     * Gets the month stored by the GlideDateTime object, expressed in the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The numerical value of the month, Jan=1, Dec=12..
-                     * @description 
-                     */
-                    getMonthUTC(): number;
-                    /**
-                     * Gets the number of milliseconds since January 1, 1970, 00:00:00 GMT.
-                     * @memberof GlideDateTime
-                     * @returns {number} The number of milliseconds since January 1, 1970, 00:00:00 GMT..
-                     */
-                    getNumericValue(): number;
-                    /**
-                     * Retrieves the amount of time elapsed since the midnight of a specified day to the current time.
-                     * @memberof GlideDateTime
-                     * @param {number} dayOfWeek - Day of week value from 1 to 7. 1 = Monday, 7=Sunday.
-                     * @returns {GlideTime} The amount of time elapsed since midnight of the specified day. To display the result in user-friendly terms, set the value to GlideDuration..
-                     */
-                    getSpanTime(dayOfWeek: number): GlideTime;
-                    /**
-                     * Gets the Unix duration stamp.
-                     * @memberof GlideDateTime
-                     * @returns {GlideTime} The Unix duration stamp in system format based on GMT time..
-                     * @description 
-                     */
-                    getTime(): GlideTime;
-                    /**
-                     * Gets the time zone offset in milliseconds.
-                     * @memberof GlideDateTime
-                     * @returns {number} The number of milliseconds of the time zone offset.
-                     * @description 
-                     */
-                    getTZOffset(): number;
-                    /**
-                     * Returns the object's time in local time zone in the user's format.
-                     * @memberof GlideDateTime
-                     * @returns {string} The object's time in local time and the user's format..
-                     * @description 
-                     */
-                    getUserFormattedLocalTime(): string;
-                    /**
-                     * Retrieves the time zone for the current user session.
-                     * @memberof GlideDateTime
-                     * @returns {TimeZone} TimeZone object for the current user..
-                     * @description 
-                     */
-                    getUserTimeZone(): TimeZone;
-                    /**
-                     * Retrieves a GlideDateTime object with the time set to midnight using the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} dayOfTheWeek - The day of the week, from 1 to 7. Monday=1, Sunday=7. Do not enter 0 in this parameter.
-                     * @returns {GlideDateTime} A new GlideDateTime object, set to midnight..
-                     * @description 
-                     */
-                    getUTCMidnight(dayOfTheWeek: number): GlideDateTime;
-                    /**
-                     * Gets the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default.
-                     * @memberof GlideDateTime
-                     * @returns {string} The date and time in the internal format and system time zone..
-                     * @description 
-                     */
-                    getValue(): string;
-                    /**
-                     * Gets the number of the week stored by the GlideDateTime object, expressed in the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The number of the current week. The highest week number in a year is either 52 or 53..
-                     * @description  
-                     */
-                    getWeekOfYearLocalTime(): number;
-                    /**
-                     * Gets the number of the week stored by the GlideDateTime object, expressed in the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The number of the current week in UTC time. The highest week number in a year is either 52 or 53..
-                     * @description  
-                     */
-                    getWeekOfYearUTC(): number;
-                    /**
-                     * Retrieves the year stored by the GlideDateTime object, expressed in the Java Virtual Machine time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The 4-digit year value in the Java Virtual Machine time zone..
-                     * @description 
-                     */
-                    getYear(): number;
-                    /**
-                     * Gets the year stored by the GlideDateTime object, expressed in the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The 4-digit year value in the user's time zone..
-                     * @description 
-                     */
-                    getYearLocalTime(): number;
-                    /**
-                     * Gets the year stored by the GlideDateTime object, expressed in the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @returns {number} The 4-digit year value in the UTC time zone..
-                     * @description 
-                     */
-                    getYearUTC(): number;
-                    /**
-                     * Determines if an object's date is set.
-                     * @memberof GlideDateTime
-                     * @returns {boolean} True if the object's date is set, false otherwise..
-                     * @description 
-                     */
-                    hasDate(): boolean;
-                    /**
-                     * Determines if the object's time uses a daylight saving offset
-                     * @memberof GlideDateTime
-                     * @returns {boolean} True if the time is daylight saving time, false otherwise..
-                     * @description 
-                     */
-                    isDST(): boolean;
-                    /**
-                     * Determines if a value is a valid date and time.
-                     * @memberof GlideDateTime
-                     * @returns {boolean} True if value is valid, false otherwise..
-                     * @description 
-                     */
-                    isValid(): boolean;
-                    /**
-                     * Sets the day of the month to a specified value.
-                     * @memberof GlideDateTime
-                     * @param {number} day - Day of the month, from 1 to 31.
-                     * @description 
-                     */
-                    setDayOfMonth(day: number): void;
-                    /**
-                     * Sets the day of the month to a specified value in the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} day - The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
-                     * @description 
-                     */
-                    setDayOfMonthLocalTime(day: number): void;
-                    /**
-                     * Sets the day of the month to a specified value in the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} day - The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
-                     * @description 
-                     */
-                    setDayOfMonthUTC(day: number): void;
-                    /**
-                     * Sets a date and time value using the current user's display format and time zone.
-                     * @memberof GlideDateTime
-                     * @param {string} asDisplayed - The date and time in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as MM-dd-yyyy HH:mm:ss. To assign the current date and time to a variable in a workflow script, use &lt;variable&gt;.setDisplayValue(gs.nowDateTime);.
-                     * @description 
-                     */
-                    setDisplayValue(asDisplayed: string): void;
-                    /**
-                     * Sets a date and time value using the current user's time zone and the specified date and time format.
-                     * @memberof GlideDateTime
-                     * @param {string} dateTime - The date and time in the current user's time zone.
-                     * @param {string} format - The format to use to parse the dateTime parameter.
-                     * @description  
-                     */
-                    setDisplayValue(dateTime: string, format: string): void;
-                    /**
-                     * Sets a date and time value using the internal format (yyyy-MM-dd HH:mm:ss) and the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @param {string} dateTime - The date and time in internal format
-                     * @description 
-                     */
-                    setDisplayValueInternal(dateTime: string): void;
-                    /**
-                     * Sets a date and time value using the internal format (yyyy-MM-dd HH:mm:ss) and the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @param {string} dateTime - The date and time in internal format.
-                     * @description 
-                     */
-                    setDisplayValueInternalWithAlternates(dateTime: string): void;
-                    /**
-                     * Sets the date and time of the current object using an existing GlideDateTime object.
-                     * @memberof GlideDateTime
-                     * @param {GlideDateTime} gDT - A GlideDateTime object
-                     * @description  
-                     */
-                    setGlideDateTime(gDT: GlideDateTime): void;
-                    /**
-                     * Sets the date and time.
-                     * @memberof GlideDateTime
-                     * @param {string} dateTime - The date and time to use. Accepts either a string in the GMT time zone in the internal format, or a GlideDateTime object.
-                     * @description 
-                     */
-                    setInitialValue(dateTime: string): void;
-                    /**
-                     * Sets the month stored by the GlideDateTime object to a specified value using the Java Virtual Machine time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} month - The month to change to.
-                     * @description 
-                     */
-                    setMonth(month: number): void;
-                    /**
-                     * Sets the month stored by the GlideDateTime object to a specified value using the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} month - The month to change to.
-                     * @description 
-                     */
-                    setMonthLocalTime(month: number): void;
-                    /**
-                     * Sets the month stored by the GlideDateTime object to a specified value using the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} month - The month to change to.
-                     * @description 
-                     */
-                    setMonthUTC(month: number): void;
-                    /**
-                     * Sets the date and time to the number of milliseconds since January 1, 1970 00:00:00 GMT.
-                     * @memberof GlideDateTime
-                     * @param {number} milliseconds - Number of milliseconds
-                     */
-                    setNumericValue(milliseconds: number): void;
-                    /**
-                     * Sets the time zone of the GlideDateTime object to be the specified time zone.
-                     * @memberof GlideDateTime
-                     * @param {TimeZone} timeZone - A time zone object
-                     */
-                    setTZ(timeZone: TimeZone): void;
-                    /**
-                     * Sets the date and time of the GlideDateTime object.
-                     * @memberof GlideDateTime
-                     * @param {*} dateTime - The date and time to use. This parameter may be one of several types.A string in the UTC time zone and the internal format of yyyy-MM-dd HH:mm:ss: Sets the value of the object to the specified date and time. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(value) constructor. If the date and time format used does not match the internal format, the method attempts to set the date and time using other available formats. Resolving the date and time this way can lead to inaccurate data due to ambiguity in the day and month values. When using a non-standard date and time format, use setValue(dt, format) instead.A GlideDateTime object: Sets the value of the object to the date and time stored by the GlideDateTime passed in the parameter. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(g) constructor.A Java Date object: Sets the value of the object using the value stored by the Java Date object. Using the method this way is equivalent to passing the value returned by the Java Date object getTime() to the GlideDateTime setNumericValue() method. This method does not accept JavaScript Date objects.A JavaScript Number: Sets the value of the object using the Number value as milliseconds past January 1, 1970 00:00:00 GMT. Using the method this way is equivalent to the setNumericValue(milliseconds) method.A Java Integer or Long: Sets the value of the object using the Integer or Long value as milliseconds past January 1, 1970 00:00:00 GMT. Using the method this way is equivalent to the setNumericValue(milliseconds) method.
-                     * @description  
-                     */
-                    setValue(dateTime: any): void;
-                    /**
-                     * Sets a date and time value using the UTC time zone and the specified date and time format.
-                     * @memberof GlideDateTime
-                     * @param {string} dateTime - The date and time to use.
-                     * @param {string} format - The format to use.
-                     * @description  
-                     */
-                    setValueUTC(dateTime: string, format: string): void;
-                    /**
-                     * Sets the year stored by the GlideDateTime object to a specified value using the Java Virtual Machine time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} year - The year to change to.
-                     * @description 
-                     */
-                    setYear(year: number): void;
-                    /**
-                     * Sets the year stored by the GlideDateTime object to a specified value using the current user's time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} year - The year to change to.
-                     * @description 
-                     */
-                    setYearLocalTime(year: number): void;
-                    /**
-                     * Sets the year stored by the GlideDateTime object to a specified value using the UTC time zone.
-                     * @memberof GlideDateTime
-                     * @param {number} year - The year to change to.
-                     * @description 
-                     */
-                    setYearUTC(year: number): void;
-                    /**
-                     * Gets the duration difference between two GlideDateTime values.
-                     * @memberof GlideDateTime
-                     * @param {GlideDateTime} start - The start value
-                     * @param {GlideDateTime} end - The end value
-                     * @returns {GlideDuration} The time between the two values.
-                     * @description 
-                     */
-                    subtract(start: GlideDateTime, end: GlideDateTime): GlideDuration;
-                    /**
-                     * Subtracts a specified amount of time.
-                     * @memberof GlideDateTime
-                     * @param {GlideTime} time - The time to subtract
-                     * @description 
-                     */
-                    subtract(time: GlideTime): void;
-                    /**
-                     * Subtracts a specified number of milliseconds from the GlideDateTime object.
-                     * @memberof GlideDateTime
-                     * @param {number} milliseconds - The number of milliseconds to subtract
-                     * @description 
-                     */
-                    subtract(milliseconds: number): void;
-                    /**
-                     * Returns the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default.
-                     * @memberof GlideDateTime
-                     * @returns {string} The date and time stored by the GlideDateTime object in the system time zone and format..
-                     * @description  
-                     */
-                    toString(): string;
+                export class AGlideObject implements IGlideObject {
+                    handlesDefaultValue(): $$rhino.Boolean;
+                    handlesChangeDetection(): $$rhino.Boolean;
+                    handlesPreviousValueTracking(): $$rhino.Boolean;
+                    getPreviousValue(): java.lang.String;
+                    changes(): $$rhino.Boolean;
+                    wasChangedInStream(): $$rhino.Boolean;
+                    isValid(mandatoryApplies: $$rhino.Boolean): $$rhino.Boolean;
+                    getErrorMsg(): java.lang.String;
+                    hasChoices(): $$rhino.Boolean;
+                    getChoices(cl: choice.ChoiceList): void;
+                    copyAll(from: choice.ChoiceList, to: choice.ChoiceList): void;
+                    getTableName(): java.lang.String;
+                    setValue(o: java.lang.Object): void;
+                    setDisplayValue(string: java.lang.String): void;
+                    setDefaultValue(o: java.lang.Object): void;
+                    getDisplayValue(): java.lang.String;
+                    getValue(): java.lang.String;
+                    getStorageValue(): java.lang.String;
+                    getInitialValue(): java.lang.String;
+                    setInitialValue(string: java.lang.String): void;
+                    setElement(ge: script.GlideElement): void;
+                    getHTMLValue(i?: $$rhino.Number): java.lang.String;
                 }
-
-                /**
-                 * Class for working with spans of time or durations.
-                 * @description GlideDuration objects store the duration as a date and time from January 1, 1970, 00:00:00.
-                 * As a result, {@link GlideDuration#setValue|setValue()} and {@link GlideDuration#getValue|getValue()} use the scoped GlideDateTime object for parameters and return values.
-                 * @class GlideDuration
-                 */
-                export class GlideDuration extends GlideTime {
-                    /**
-                     * Instantiates a {@link GlideDuration} object. by cloning the value of another {@link GlideDuration} object.
-                     * @param {number|string|GlideDuration} [value] If a number is passed, then this is instantiated with the specified duration in milliseconds.
-                     * If a string is passed, then this is initialized with the specified display value. If a {@link GlideDuration} object is passed, then this is cloned from that object.
-                     */
-                    constructor(value?: number | string | GlideDuration);
-
-                    /**
-                     * Add the specified duration to the object.
-                     * @param {GlideDuration} other The value to add to the object.
-                     * @returns {GlideDuration} The sum of the current and the added duration.
-                     */
-                    add(other: GlideDuration): GlideDuration;
-
-                    /**
-                     * Gets the number of days.
-                     * @returns {number} The number of days.
-                     */
-                    getDayPart(): number;
-
-                    /**
-                     * Gets the duration value in "d HH:mm:ss" format.
-                     * @returns {string} The duration value.
-                     */
-                    getDurationValue(): string;
-
-                    /**
-                     * Gets the rounded number of days.
-                     * @returns {number} The day part, rounded.
-                     * @description If the time part is more than 12 hours, the return value is rounded up. Otherwise, it is rounded down.
-                     */
-                    getRoundedDayPart(): number;
-
-                    /**
-                     * Subtracts the specified duration from the current duration.
-                     * @param {GlideDuration} duration The duration to subtract.
-                     */
-                    subtract(duration: GlideDuration): void;
+                export class GlideObject extends AGlideObject {
+                    setValue(value: java.lang.Object): void;
+                    setDisplayValue(value: java.lang.String): void;
+                    getDisplayValue(): java.lang.String;
+                    getValue(): java.lang.String;
+                    getInitialValue(): java.lang.String;
                 }
-
-                // export class HierarchicalReference { }
-                // export class IntegerTime { }
-                // export class GlideList { }
-                // export class GlideListM2MBacking { }
-                // export class GlideObjectManager { }
-                // export class ScheduleDateTime { }
-
-                /**
-                 * Class for performing time operations and working with GlideTime fields.
-                 * @class GlideTime
-                 */
-                export class GlideTime {
-                    /**
-                     * Instantiates a GlideTime object
-                     * @param {number|GlideTime} [milliseconds] The time in milliseconds.
-                     * @description If a parameter is passed, the object is initialized with the specified number of seconds.
-                     * If a {@link GlideTime} object is passed, then that object will be cloned. Otherwise, it is initiated with the current time.
-                     */
-                    constructor(milliseconds?: number | GlideTime);
-
-                    /**
-                     * Gets the time in the specified format.
-                     * @param {string} format The time format.
-                     * @returns {string} The time in the specified format.
-                     */
-                    getByFormat(format: string): string;
-
-                    /**
-                     * Gets the time in the current user's display format and time zone.
-                     * @returns {string} The time in the user's format and time zone.
-                     * @description When designing business rules or script includes remember that this method may return values in different formats for different users.
-                     */
-                    getDisplayValue(): string;
-
-                    /**
-                     * Gets the display value in the current user's time zone and the internal format (HH:mm:ss).
-                     * @returns {string} The time value for the GlideTime object in the current user's time zone and the internal time format of HH:mm:ss.
-                     */
-                    getDisplayValueInternal(): string;
-
-                    /**
-                     * Returns the hours part of the time using the local time zone.
-                     * @returns {number} The hours using the local time zone.
-                     */
-                    getHourLocalTime(): number;
-
-                    /**
-                     * Returns the hours part of the time using the local time zone.
-                     * @returns {number} The hours using the local time zone.
-                     * @description The number of hours is based on a 24 hour clock.
-                     */
-                    getHourOfDayLocalTime(): number;
-
-                    /**
-                     * Returns the hours part of the time using the UTC time zone.
-                     * @returns {number} The hours using the UTC time zone.
-                     * @description The number of hours is based on a 24 hour clock.
-                     */
-                    getHourOfDayUTC(): number;
-
-                    /**
-                     * Returns the hours part of the time using the UTC time zone.
-                     * @returns {number} The hours using the UTC time zone.
-                     * @description The number of hours is based on a 12 hour clock. Noon and midnight are represented by 0, not 12.
-                     */
-                    getHourUTC(): number;
-
-                    /**
-                     * Returns the number of minutes using the local time zone.
-                     * @returns {number} The number of minutes using the local time zone.
-                     */
-                    getMinutesLocalTime(): number;
-
-                    /**
-                     * Returns the number of minutes in the hour based on the UTC time zone.
-                     * @returns {number} The number of minutes in the hour using the UTC time zone.
-                     */
-                    getMinutesUTC(): number;
-
-                    /**
-                     * Returns the number of seconds in the current minute.
-                     * @returns {number} The number of seconds in the minute.
-                     */
-                    getSeconds(): number;
-
-                    /**
-                     * Gets the time value stored in the database by the {@link GlideTime} object in the internal format, HH:mm:ss, and the system time zone.
-                     * @returns {string} The time value in the internal fomat and system time zone.
-                     */
-                    getValue(): string;
-
-                    getXMLValue(): string;
-
-                    setXMLValue(xml: string): void;
-
-                    /**
-                     * Sets a time value using the current user's display format and time zone.
-                     * @param {string} asDisplayed The time in the current user's display format and time zone.
-                     * @description The parameter must be formatted using the current user's preferred display format, such as HH:mm:ss.
-                     */
-                    setDisplayValue(asDisplayed: string): void;
-
-                    /**
-                     * Sets the time of the {@link GlideTime} object in the internal time zone.
-                     * @param {string | Packages.com.glide.script.GlideElement} o The time in hh:mm:ss format.
-                     */
-                    setValue(o: string | Packages.com.glide.script.GlideElement): void;
-
-                    /**
-                     * Gets the duration difference between two {@link GlideTime} object values.
-                     * @param {GlideTime} startTime The start value.
-                     * @param {GlideTime} endTime The end value.
-                     * @returns {GlideTime} The duration between the two values.
-                     */
-                    static subtract(startTime: GlideTime, endTime: GlideTime): GlideTime;
-                }
-
-                export class SysClassName { }
             }
-            // export namespace secondary_db_pools {
-            // export class DBCategoryDebug { }
-            // export class DBPoolTest { }
-            // export class SecondaryDatabaseBehindnessChecker { }
-            // export class SecondaryDatabaseConfiguration { }
-            // }
-            // export namespace db_image {
-            // export class DBImageProvider { }
-            // }
-            // export namespace certificates {
-            // export class DBKeyStoreFactory { }
-            // }
-            // export namespace jsdebug {
-            // export class DebugEvaluator { }
-            // }
-            // export namespace diagrammer {
-            // export class Diagram { }
-            // export class DiagramAction { }
-            // export class DiagramEdge { }
-            // export class DiagramElement { }
-            // export class DiagramNode { }
-            // }
-            // export namespace dist {
-            // export namespace upgrade {
-            // export namespace runner {
-            // export class DistUpgradeRunner { }
-            // }
-            // }
-            // }
-            // export namespace escalation {
-            // export class EscalationManager { }
-            // }
-            // export namespace job {
-            // export class EscalationTimerJobMarkII { }
-            // export class POP3ReaderJob { }
-            // export class RunScriptJob { }
-            // export class SMTPSenderJob { }
-            // export class TableCleanerJob { }
-            // }
-            // export namespace policy {
-            // export class Event { }
-            // export class EventManager { }
-            // export class ICALUtil { }
-            // export class UpdateSyncher { }
-            // }
-            // export namespace fixes {
-            // export class FixCatalogPlans { }
-            // export class FixDeliveryPlans { }
-            // export class FixGroups { }
-            // export class FixItemOptionsAgain { }
-            // export class FixRules { }
-            // export class FixSpellCheck { }
-            // export class FixStuff { }
-            // export class FixUsers { }
-            // export class RegisterEscalationEvents { }
-            // }
-            // export namespace report {
-            // export class Gauge { }
-            // export class Report { }
-            // export class ReportViewManagement { }
-            // }
-            // export namespace system_import_set {
-            // export class ImportSet { }
-            // export class ImportSetLoader { }
-            // export class ImportSetRun { }
-            // export class ImportSetTransformer { }
-            // export class ImportSetTransformerWorker { }
-            // }
-            // export namespace xmpp {
-            // export class JID { }
-            // }
-            // export namespace autotester {
-            // export class JSTestUtil { }
-            // export class RhinoTestCase { }
-            // export class GlideTestAgent { }
-            // }
-            // export namespace labels {
-            // export class LabelEventHandler { }
-            // export class LabelUtil { }
-            // }
-            // export namespace list_v2 {
-            // export class ListGroupProperties { }
-            // export class ListProperties { }
-            // }
-            // export namespace load_test {
-            // export class LoadTestDirector { }
-            // }
-            // export namespace log_file {
-            // export class LogFileReader { }
-            // }
-            // export namespace sorting {
-            // export class OrderingDefinitionCreator { }
-            // export class OrderingManager { }
-            // }
-            export namespace worker {
-                // export class ProgressMonitor { }
-                export class ProgressWorker {
-                    constructor();
-                    getProgressID(): string;
-                    setOutputSummary(msg: string): void;
-                    setProgressErrorState(): void;
-                    setProgressMessage(m: string): void;
-                    setProgressName(name: string): void;
-                    setProgressState(status: string): void;
-                    setProgressStateCode(stateCode: string): void;
-                    setBackground(isBackground: boolean): void;
-                    start(): void;
-                }
-                export class ScriptedProgressWorker extends ProgressWorker {
-                    addMessage(message: string): void;
-                    addNonEscapedParameter(parm: string): void;
-                    addParameter(parm: string): void;
-                    constructor();
-                    setName(name: string): void;
-                }
-                // export class WorkerThread { }
-            }
-            // export namespace replicator {
-            // export class ReplicationEngine { }
-            // }
-            // export namespace rrdb {
-            // export namespace alerts {
-            // export class RRDBAlertProcessor { }
-            // }
-            // export class RRDBDefinition { }
-            // }
-            // export namespace text_search {
-            // export class SearchQueryFormatter { }
-            // }
-            // export namespace service_api {
-            // export class ServiceAPIWrapper { }
-            // export class ServiceAPI { }
-            // }
-            // export namespace collections {
-            // export class StringList { }
-            // }
-            // export namespace ts {
-            // export namespace event {
-            // export class TextIndexEvent { }
-            // }
-            // export namespace cluster {
-            // export class TSAnalysisViewer { }
-            // export class TSAnalyticsProcessor { }
-            // export class TSClusterDefinitions { }
-            // export class TSMoversViewer { }
-            // }
-            // export namespace trends {
-            // export class TSChainsHandler { }
-            // export class TSChainsLoader { }
-            // export class TSChainsPusher { }
-            // export class TSChainsSummarizer { }
-            // export class TSGlobalKeywordSummarizer { }
-            // export class TSKeywordHandler { }
-            // export class TSKeywordLoader { }
-            // export class TSKeywordPusher { }
-            // export class TSSearchSummary { }
-            // }
-            // export namespace util {
-            // export class TSDebug { }
-            // export class TSDidYouMean { }
-            // export class TSTopSearches { }
-            // export class TSUtil { }
-            // }
-            // export namespace stats {
-            // export class TSIndexStatistician { }
-            // export class TSIndexStopGenerator { }
-            // export class TSSearchStatistician { }
-            // }
-            // export namespace indexer {
-            // export class TSIndexTables { }
-            // }
-            // export class TSVersion { }
-            // }
-            // export namespace startup {
-            // export class TomcatHelper { }
-            // }
-            // export namespace system_update_set {
-            // export class UpdateSetController { }
-            // }
-            // export namespace wiki {
-            // export class GlideWikiModel { }
-            // }
-            // export namespace wsdlreader {
-            // export class WSDefinition { }
-            // export class GlideWSDLReader { }
-            // }
-            // export namespace junit {
-            // export namespace misc {
-            // export class TestExtension { }
-            // }
-            // }
-            // export class Glide { }
-        }
-        export namespace glideapp {
-            // export namespace questionset {
-            // export class AbstractChoiceListQuestion { }
-            // export class CheckBoxQuestion { }
-            // export class ContainerAwareQuestionSet { }
-            // export class DateQuestion { }
-            // export class DateTimeQuestion { }
-            // export class ListCollectorQuestion { }
-            // export class LookupSelectQuestion { }
-            // export class Question { }
-            // export class QuestionChoice { }
-            // export class ReferenceQuestion { }
-            // export class SequencedQuestionSet { }
-            // export class YesNoQuestion { }
-            // }
-            // export namespace ecc {
-            // export namespace ccmdb {
-            // export class ProcessQueue { }
-            // }
-            // export class ADSILoader { }
-            // export class CMDBHelper { }
-            // export class CMDBSoftwareHelper { }
-            // export class ECCInputMessage { }
-            // export class ECCOutputMessage { }
-            // export class ECCQueueConnector { }
-            // export class ECCQueueProcessor { }
-            // export class ECCResponseMessage { }
-            // export class IECC { }
-            // export class QueueHelper { }
-            // export class QueueReader { }
-            // export class WMILoader { }
-            // }
-            // export namespace google_maps {
-            // export class AJAXMapPage { }
-            // }
-            // export namespace servicecatalog {
-            // export namespace valve {
-            // export class ValveProcessor { }
-            // }
-            // export namespace variables {
-            // export class Variable { }
-            // export class VariablePoolQuestionSet { }
-            // }
-            // export class CalculationHelper { }
-            // export class Cart { }
-            // export class CartItem { }
-            // export class CatalogCategoryBatcher { }
-            // export class CatalogItem { }
-            // export class Category { }
-            // export class CategoryPopper { }
-            // export class CatItemPopper { }
-            // export class DeliveryPlan { }
-            // export class ExpertPanelCatalogOrder { }
-            // export class Fixes { }
-            // export class IOUpgrade { }
-            // export class ItemOptionsQuestionSet { }
-            // export class OrderGuide { }
-            // export class RequestItemWorkflow { }
-            // export class RequestNew { }
-            // export class ScriptHelper { }
-            // export class SecurityMask { }
-            // export class TaskApprovalHelper { }
-            // }
-            // export namespace chart {
-            // export class ChartParameters { }
-            // }
-            // export namespace live {
-            // export namespace db {
-            // export namespace ChatRoom {
-            // export class Error { }
-            // }
-            // export class ChatRoom { }
-            // }
-            // export class LiveUtils { }
-            // }
-            // export namespace workflow {
-            // export namespace ui {
-            // export class ContextDiagramProcessor { }
-            // }
-            // export class Workflow { }
-            // export class WorkflowHelper { }
-            // }
-            // export namespace live_feed {
-            // export namespace HTMLTransformers {
-            // export class ExpandableText { }
-            // }
-            // export class LiveFeedEventHandler { }
-            // export class LiveFeedJournalWriter { }
-            // export class LiveFeedUIAction { }
-            // export class MessageTag { }
-            // export class TimeAgo { }
-            // }
-            // export namespace home {
-            // export class Home { }
-            // export class HomePage { }
-            // export class HomePageFactory { }
-            // }
-            // export namespace jms {
-            // export class JMSECCReceiver { }
-            // export class JMSECCSender { }
-            // }
-            // export namespace knowledge {
-            // export class KBIncludes { }
-            // }
-            // export namespace live_common {
-            // export class LiveProfile { }
-            // }
-            // export namespace version {
-            // export class UpdateVersion { }
-            // }
-            // export namespace survey {
-            // export class UpgradeQuestions { }
-            // }
-            // export namespace wizard {
-            // export class WizardIntercept { }
-            // }
-        }
-        export namespace glidesoft {
-            // export namespace util {
-            // export namespace xml {
-            // export class GlideAttributesImpl { }
-            // export class XMLMemoryTable { }
-            // }
-            // }
-        }
-        export namespace snc {
-            // export namespace commons {
-            // export namespace networks {
-            // export class Address32Bit { }
-            // export class DiscoveryRanges { }
-            // export class IPAddressV4 { }
-            // export class IPAddressV6 { }
-            // export class IPIterator { }
-            // export class IPList { }
-            // export class IPMetaCollection { }
-            // export class IPNetmaskV4 { }
-            // export class IPNetworkV4 { }
-            // export class IPRangeV4 { }
-            // export class MACAddress { }
-            // export class MACAddressMfr { }
-            // }
-            // export class MIDConfigParameter { }
-            // }
-            // export namespace field_normalization {
-            // export namespace db {
-            // export class Configuration { }
-            // export class ExtantDataJob { }
-            // export class Value { }
-            // }
-            // export class AliasApplier { }
-            // export class Configurations { }
-            // export class ExtantDataJobState { }
-            // export class NormalCoalescer { }
-            // export class Normalizer { }
-            // export class NormalValueChanger { }
-            // export class PendingValueCollector { }
-            // export class Preferences { }
-            // export class RuleApplier { }
-            // export class RuleToPending { }
-            // export class TransformApplier { }
-            // }
-            // export namespace apps {
-            // export namespace api {
-            // export class AppFiles { }
-            // export class AppsAccess { }
-            // export class AppsUI { }
-            // export class TableEditor { }
-            // }
-            // export namespace db {
-            // export class ApplicationFileListener { }
-            // }
-            // export namespace file {
-            // export class FileTree { }
-            // }
-            // export namespace tree {
-            // export class TreeBuilder { }
-            // }
-            // }
-            // export namespace discovery {
-            // export namespace sensor {
-            // export namespace snmp {
-            // export class Classify { }
-            // export class DiscoverySNMPClassificatio { }
-            // }
-            // export class ASensor { }
-            // export class ClassifiedProcess { }
-            // }
-            // export namespace logging {
-            // export class DeviceHistory { }
-            // export class DiscoveryLog { }
-            // }
-            // export namespace database {
-            // export class DiscoveryReconciler { }
-            // export class PrintServerHelper { }
-            // export class ScrapeIANAEnterpriseNumbers { }
-            // export class ScrapeIEEENICCodes { }
-            // }
-            // export namespace utils {
-            // export class Hostname { }
-            // }
-            // export namespace perfmon {
-            // export class ProbeRunTime { }
-            // }
-            // export class DiscoveryCancel { }
-            // export class DiscoveryClassification { }
-            // export class DiscoveryRangesDB { }
-            // export class DiscoveryUtils { }
-            // export class Layer7Connections { }
-            // export class MIDServerRangesDB { }
-            // export class Probe { }
-            // export class SensorProcessor { }
-            // export class SerialNumber { }
-            // export class SerialNumberList { }
-            // export class SessionMate { }
-            // }
-            // export namespace authentication {
-            // export namespace digest {
-            // export class Authentication { }
-            // }
-            // }
-            // export namespace cmdb {
-            // export class BaselineCMDB { }
-            // export class ECMDBUtil { }
-            // export class MakeAndModel { }
-            // export class ReclassifyCI { }
-            // export class Relationships { }
-            // }
-            // export namespace ha {
-            // export namespace clone {
-            // export namespace instance {
-            // export class Instance { }
-            // export class DropBackupTablesTask { }
-            // export class InstanceClone { }
-            // export class InstanceRollback { }
-            // export class ScheduleDropBackupTablesTask { }
-            // export class SendNotificationTask { }
-            // export class SimmerControl { }
-            // }
-            // export class BulkCopy { }
-            // export class CloneController { }
-            // export class CloneLogger { }
-            // export class CloneTask { }
-            // export class CloneUtils { }
-            // export class DropTablesTask { }
-            // export class HAClone { }
-            // }
-            // export namespace connectivity {
-            // export class ConnectionTest { }
-            // export class HAConnectionTest { }
-            // export class InstanceConnectionTest { }
-            // }
-            // export namespace tablecheck {
-            // export class HADatabaseCheck { }
-            // export class HAReplicationQueueSnapshotBuilder { }
-            // export class HATableCheck { }
-            // export class HATableCheckThread { }
-            // export class HATableQuickCheck { }
-            // export class HATableRepair { }
-            // }
-            // export class HAPairingUtils { }
-            // export class HAReplicationController { }
-            // export class HAUtils { }
-            // export class ReadTest { }
-            // }
-            // export namespace db {
-            // export namespace clone {
-            // export namespace change {
-            // export class DBChangeManagerFactoryHA { }
-            // }
-            // }
-            // export namespace replicate {
-            // export class ReplicationAdvisor { }
-            // export class ReplicationEngine { }
-            // export class ReplicationQueue { }
-            // export class TableRotation { }
-            // export class TableRotationExtension { }
-            // export class TableRotationExtensions { }
-            // export class TableRotationWatcher { }
-            // }
-            // }
-            // export namespace ec2 {
-            // export class EC2Properties { }
-            // }
-            // export namespace customer_logon {
-            // export class ElrondClient { }
-            // export class RequestCredentials { }
-            // }
-            // export namespace expert {
-            // export class Expert { }
-            // export class ExpertInstance { }
-            // export class ExpertPanel { }
-            // }
-            // export namespace da {
-            // export namespace gateway {
-            // export namespace replication {
-            // export class FailoverController { }
-            // export class GatewayPluginStartup { }
-            // }
-            // export namespace clone {
-            // export class GatewayClone { }
-            // export class GatewayTruncateHierarchy { }
-            // }
-            // export class GatewayCache { }
-            // export class GatewayConnectivity { }
-            // export class GlideGateways { }
-            // }
-            // }
-            // export namespace ipauthenticator {
-            // export class IPAuthenticator { }
-            // }
-            // export namespace jrobin {
-            // export class JRobinGraphDef { }
-            // export class RrdGlideBackendFactory { }
-            // }
-            // export namespace system {
-            // export class NotifySNC { }
-            // }
-            // export namespace on_call_rotation {
-            // export class OnCallRotation { }
-            // }
-            // export namespace discovery_automation {
-            // export class RBSensorProcessor { }
-            // }
-            // export namespace software_asset_management {
-            // export class SAMCounter { }
-            // }
-            // export namespace automation {
-            // export class TriggerSynchronizer { }
-            // }
         }
     }
-}
-declare class TimeZone extends Packages.java.util.TimeZone { }
-// declare class Glide extends Packages.com.glide.Glide { }
-// declare class GlideAbstractBucketCollector extends Packages.com.glide.monitor.AbstractBucketCollector { }
-// declare class GlideAbstractDomainProvider extends Packages.com.glide.db.domain.AbstractDomainProvider { }
-// declare class GlideAbstractExecutionPlan extends Packages.com.glide.execution_plan.AbstractExecutionPlan { }
-// declare class GlideAbstractListener extends Packages.com.glide.listener.AbstractListener { }
-// declare class GlideAbstractRenderer extends Packages.com.glide.ui.portal.AbstractRenderer { }
-// declare class GlideAction extends Packages.com.glide.script.Action { }
-// declare class GlideActionManager extends Packages.com.glide.ui.action.ActionManager { }
-// declare class GlideAJAXScheduleItem extends Packages.com.glide.schedules.AJAXScheduleItem { }
-// declare class GlideAJAXSchedulePage extends Packages.com.glide.schedules.AJAXSchedulePage { }
-// declare class GlideAlertActions extends Packages.com.glide.alerts.AlertActions { }
-// declare class GlideappAbstractChoiceListQuestion extends Packages.com.glideapp.questionset.AbstractChoiceListQuestion { }
-// declare class GlideappADSILoader extends Packages.com.glideapp.ecc.ADSILoader { }
-// declare class GlideappAJAXMapPage extends Packages.com.glideapp.google_maps.AJAXMapPage { }
-// declare class GlideappCalculationHelper extends Packages.com.glideapp.servicecatalog.CalculationHelper { }
-// declare class GlideappCart extends Packages.com.glideapp.servicecatalog.Cart { }
-// declare class GlideappCartItem extends Packages.com.glideapp.servicecatalog.CartItem { }
-// declare class GlideappCatalogCategoryBatcher extends Packages.com.glideapp.servicecatalog.CatalogCategoryBatcher { }
-// declare class GlideappCatalogItem extends Packages.com.glideapp.servicecatalog.CatalogItem { }
-// declare class GlideappCategory extends Packages.com.glideapp.servicecatalog.Category { }
-// declare class GlideappCategoryPopper extends Packages.com.glideapp.servicecatalog.CategoryPopper { }
-// declare class GlideappCatItemPopper extends Packages.com.glideapp.servicecatalog.CatItemPopper { }
-// declare class GlideappChartParameters extends Packages.com.glideapp.chart.ChartParameters { }
-// declare class GlideappChatRoom extends Packages.com.glideapp.live.db.ChatRoom { }
-// declare class GlideappChatRoom$Error extends Packages.com.glideapp.live.db.ChatRoom.Error { }
-// declare class GlideappCheckBoxQuestion extends Packages.com.glideapp.questionset.CheckBoxQuestion { }
-// declare class GlideappCMDBHelper extends Packages.com.glideapp.ecc.CMDBHelper { }
-// declare class GlideappCMDBSoftwareHelper extends Packages.com.glideapp.ecc.CMDBSoftwareHelper { }
-// declare class GlideappContainerAwareQuestionSet extends Packages.com.glideapp.questionset.ContainerAwareQuestionSet { }
-// declare class GlideappContextDiagramProcessor extends Packages.com.glideapp.workflow.ui.ContextDiagramProcessor { }
-// declare class GlideappDateQuestion extends Packages.com.glideapp.questionset.DateQuestion { }
-// declare class GlideappDateTimeQuestion extends Packages.com.glideapp.questionset.DateTimeQuestion { }
-// declare class GlideappDeliveryPlan extends Packages.com.glideapp.servicecatalog.DeliveryPlan { }
-// declare class GlideappECCInputMessage extends Packages.com.glideapp.ecc.ECCInputMessage { }
-// declare class GlideappECCOutputMessage extends Packages.com.glideapp.ecc.ECCOutputMessage { }
-// declare class GlideappECCQueueConnector extends Packages.com.glideapp.ecc.ECCQueueConnector { }
-// declare class GlideappECCQueueProcessor extends Packages.com.glideapp.ecc.ECCQueueProcessor { }
-// declare class GlideappECCResponseMessage extends Packages.com.glideapp.ecc.ECCResponseMessage { }
-// declare class GlideappExpandableText extends Packages.com.glideapp.live_feed.HTMLTransformers.ExpandableText { }
-// declare class GlideappExpertPanelCatalogOrder extends Packages.com.glideapp.servicecatalog.ExpertPanelCatalogOrder { }
-// declare class GlideappFixes extends Packages.com.glideapp.servicecatalog.Fixes { }
-// declare class GlideappHome extends Packages.com.glideapp.home.Home { }
-// declare class GlideappHomePage extends Packages.com.glideapp.home.HomePage { }
-// declare class GlideappHomePageFactory extends Packages.com.glideapp.home.HomePageFactory { }
-// declare class GlideappIECC extends Packages.com.glideapp.ecc.IECC { }
-// declare class GlideappIOUpgrade extends Packages.com.glideapp.servicecatalog.IOUpgrade { }
-// declare class GlideappItemOptionsQuestionSet extends Packages.com.glideapp.servicecatalog.ItemOptionsQuestionSet { }
-// declare class GlideappJMSECCReceiver extends Packages.com.glideapp.jms.JMSECCReceiver { }
-// declare class GlideappJMSECCSender extends Packages.com.glideapp.jms.JMSECCSender { }
-// declare class GlideappKBIncludes extends Packages.com.glideapp.knowledge.KBIncludes { }
-// declare class GlideApplication extends Packages.com.glide.sys.Application { }
-// declare class GlideApplicationModule extends Packages.com.glide.processors.ApplicationModule { }
-// declare class GlideappListCollectorQuestion extends Packages.com.glideapp.questionset.ListCollectorQuestion { }
-// declare class GlideappLiveFeedEventHandler extends Packages.com.glideapp.live_feed.LiveFeedEventHandler { }
-// declare class GlideappLiveFeedJournalWriter extends Packages.com.glideapp.live_feed.LiveFeedJournalWriter { }
-// declare class GlideappLiveFeedUIAction extends Packages.com.glideapp.live_feed.LiveFeedUIAction { }
-// declare class GlideappLiveProfile extends Packages.com.glideapp.live_common.LiveProfile { }
-// declare class GlideappLiveUtils extends Packages.com.glideapp.live.LiveUtils { }
-// declare class GlideappLookupSelectQuestion extends Packages.com.glideapp.questionset.LookupSelectQuestion { }
-// declare class GlideappMessageTag extends Packages.com.glideapp.live_feed.MessageTag { }
-// declare class GlideappOrderGuide extends Packages.com.glideapp.servicecatalog.OrderGuide { }
-// declare class GlideappProcessQueue extends Packages.com.glideapp.ecc.ccmdb.ProcessQueue { }
-// declare class GlideappQuestion extends Packages.com.glideapp.questionset.Question { }
-// declare class GlideappQuestionChoice extends Packages.com.glideapp.questionset.QuestionChoice { }
-// declare class GlideappQueueHelper extends Packages.com.glideapp.ecc.QueueHelper { }
-// declare class GlideappQueueReader extends Packages.com.glideapp.ecc.QueueReader { }
-// declare class GlideappReferenceQuestion extends Packages.com.glideapp.questionset.ReferenceQuestion { }
-// declare class GlideappRequestItemWorkflow extends Packages.com.glideapp.servicecatalog.RequestItemWorkflow { }
-// declare class GlideappRequestNew extends Packages.com.glideapp.servicecatalog.RequestNew { }
-// declare class GlideappScriptHelper extends Packages.com.glideapp.servicecatalog.ScriptHelper { }
-// declare class GlideappSecurityMask extends Packages.com.glideapp.servicecatalog.SecurityMask { }
-// declare class GlideappSequencedQuestionSet extends Packages.com.glideapp.questionset.SequencedQuestionSet { }
-// declare class GlideappTaskApprovalHelper extends Packages.com.glideapp.servicecatalog.TaskApprovalHelper { }
-// declare class GlideappTimeAgo extends Packages.com.glideapp.live_feed.TimeAgo { }
-// declare class GlideappUpdateVersion extends Packages.com.glideapp.version.UpdateVersion { }
-// declare class GlideappUpgradeQuestions extends Packages.com.glideapp.survey.UpgradeQuestions { }
-// declare class GlideappValveProcessor extends Packages.com.glideapp.servicecatalog.valve.ValveProcessor { }
-// declare class GlideappVariable extends Packages.com.glideapp.servicecatalog.variables.Variable { }
-// declare class GlideappVariablePoolQuestionSet extends Packages.com.glideapp.servicecatalog.variables.VariablePoolQuestionSet { }
-// declare class GlideappWizardIntercept extends Packages.com.glideapp.wizard.WizardIntercept { }
-// declare class GlideappWMILoader extends Packages.com.glideapp.ecc.WMILoader { }
-// declare class GlideappWorkflow extends Packages.com.glideapp.workflow.Workflow { }
-// declare class GlideappWorkflowHelper extends Packages.com.glideapp.workflow.WorkflowHelper { }
-// declare class GlideappYesNoQuestion extends Packages.com.glideapp.questionset.YesNoQuestion { }
-// declare class GlideAQueryExplanation extends Packages.com.glide.db.explain.AQueryExplanation { }
-// declare class GlideArchiver extends Packages.com.glide.db.auxiliary.Archiver { }
-// declare class GlideArchiveRecord extends Packages.com.glide.db.auxiliary.ArchiveRecord { }
-// declare class GlideArchiveRestore extends Packages.com.glide.db.auxiliary.ArchiveRestore { }
-// declare class GlideArchiveStatus extends Packages.com.glide.db.auxiliary.ArchiveStatus { }
-// declare class GlideArchiveTable extends Packages.com.glide.db.auxiliary.ArchiveTable { }
-// declare class GlideARecurrence extends Packages.com.glide.schedule.recurrence.ARecurrence { }
-// declare class GlideAttachmentIndexDocument extends Packages.com.glide.lucene.attachments.AttachmentIndexDocument { }
-// declare class GlideAttachmentIndexTypes extends Packages.com.glide.lucene.attachments.AttachmentIndexTypes { }
-// declare class GlideAttributes extends Packages.com.glide.util.GlideAttributes { }
-// declare class GlideAuditDelete extends Packages.com.glide.audit.AuditDelete { }
-// declare class GlideAuditor extends Packages.com.glide.script.Auditor { }
-// declare class GlideAutomationEncrypter extends Packages.com.glide.util.AutomationEncrypter { }
-// declare class GlideBaseTag extends Packages.com.glide.ui.jelly.tags.BaseTag { }
-// declare class GlideBootstrap extends Packages.com.glide.db.impex.Bootstrap { }
-// declare class GlideBoundedIntProperty extends Packages.com.glide.util.BoundedIntProperty { }
-// declare class GlideCacheManager extends Packages.com.glide.sys.cache.CacheManager { }
-// declare class GlideCalendar extends Packages.com.glide.schedule.GlideCalendar { }
-// declare class GlideCalendarWeekEntry extends Packages.com.glide.calendar.GlideCalendarWeekEntry { }
-// declare class GlideCanceledUITransaction extends Packages.com.glide.ui.CanceledUITransaction { }
-// declare class GlideCascadeFromDelete extends Packages.com.glide.db.CascadeFromDelete { }
-// declare class GlideCatalogCloneWorker extends Packages.com.glide.catalog.cloner.CatalogCloneWorker { }
-// declare class GlideChannel extends Packages.com.glide.channel.Channel { }
-// declare class GlideChannelManager extends Packages.com.glide.channel.ChannelManager { }
-// declare class GlideChannelMessage extends Packages.com.glide.channel.ChannelMessage { }
-// declare class GlideChartFieldColors extends Packages.com.glide.ui.chart.dataset.ChartFieldColors { }
-// declare class GlideChartGeneratorFactory extends Packages.com.glide.ui.chart.ChartGeneratorFactory { }
-// declare class GlideChartUtil extends Packages.com.glide.ui.chart.dataset.ChartUtil { }
-// declare class GlideChartValue extends Packages.com.glide.ui.chart.dataset.ChartValue { }
-// declare class GlideChecksum extends Packages.com.glide.util.Checksum { }
-declare class GlideChoice extends Packages.com.glide.choice.Choice { }
-declare class GlideChoiceList extends Packages.com.glide.choice.ChoiceList { }
-// declare class GlideChoiceListGenerator extends Packages.com.glide.choice.ChoiceListGenerator { }
-declare class GlideChoiceListSet extends Packages.com.glide.choice.ChoiceListSet { }
-// declare class GlideChoiceListUpdateSaver extends Packages.com.glide.update.saver.ChoiceListUpdateSaver { }
-// declare class GlideClientBrowserTimes extends Packages.com.glide.client_transaction.ClientBrowserTimes { }
-// declare class GlideClientNetworkTimes extends Packages.com.glide.client_transaction.ClientNetworkTimes { }
-// declare class GlideClusterMessage extends Packages.com.glide.cluster.ClusterMessage { }
-// declare class GlideClusterState extends Packages.com.glide.cluster.ClusterState { }
-// declare class GlideClusterSynchronizer extends Packages.com.glide.cluster.ClusterSynchronizer { }
-// declare class GlideCMSLinkHelper extends Packages.com.glide.cms.CMSLinkHelper { }
-// declare class GlideCMSPageLink extends Packages.com.glide.cms.CMSPageLink { }
-// declare class GlideCollectionEnumerator extends Packages.com.glide.util.CollectionEnumerator { }
-// declare class GlideCollectionQueryCalculator extends Packages.com.glide.ui.CollectionQueryCalculator { }
-// declare class GlideCollisionDetector extends Packages.com.glide.update.collisions.CollisionDetector { }
-// declare class GlideColumnAttributes extends Packages.com.glide.db.impex.ColumnAttributes { }
-// declare class GlideCompanyResolver extends Packages.com.glide.misc.CompanyResolver { }
-// declare class GlideCompiler extends Packages.com.glide.script.Compiler { }
-// declare class GlideCompositeElement extends Packages.com.glide.db.CompositeElement { }
-// declare class GlideConfiguration extends Packages.com.glide.notification.Configuration { }
-// declare class GlideContentConfig extends Packages.com.glide.cms.ContentConfig { }
-// declare class GlideContentPage extends Packages.com.glide.cms.ContentPage { }
-// declare class GlideContentSite extends Packages.com.glide.cms.ContentSite { }
-// declare class GlideContentType extends Packages.com.glide.cms.ContentType { }
-// declare class GlideContextMenu extends Packages.com.glide.db_context_menu.ContextMenu { }
-// declare class GlideContextMenuItem extends Packages.com.glide.db_context_menu.ContextMenuItem { }
-// declare class GlideContextualSecurityManager extends Packages.com.glide.sys.security.ContextualSecurityManager { }
-declare class GlideController extends Packages.com.glide.script.GlideController { }
-// declare class GlideConverter extends Packages.com.glide.currency.Converter { }
-// declare class GlideCookieMan extends Packages.com.glide.ui.CookieMan { }
-// declare class GlideCounter extends Packages.com.glide.util.Counter { }
-// declare class GlideCredentials extends Packages.com.glide.communications.crypto.Credentials { }
-// declare class GlideCryptoService extends Packages.com.glide.security.CryptoService { }
-// declare class GlideCSVExporter extends Packages.com.glide.generators.CSVExporter { }
-// declare class GlideCustomerScriptFixer extends Packages.com.glide.script.api.CustomerScriptFixer { }
-// declare class GlideDatabaseVerifier extends Packages.com.glide.db.DatabaseVerifier { }
-// declare class GlideDatabaseViewLink extends Packages.com.glide.database_views.DatabaseViewLink { }
-// declare class GlideDataSource extends Packages.com.glide.db.impex.datasource.DataSource { }
-declare class GlideDate extends Packages.com.glide.glideobject.GlideDate { }
-declare class GlideDateTime extends Packages.com.glide.glideobject.GlideDateTime { }
-// declare class GlideDateUtil extends Packages.com.glide.util.DateUtil { }
-// declare class GlideDBAction extends Packages.com.glide.db.DBAction { }
-// declare class GlideDBAggregateQuery extends Packages.com.glide.db.DBAggregateQuery { }
-// declare class GlideDBAggregateUtil extends Packages.com.glide.db.DBAggregateUtil { }
-// declare class GlideDBCategoryDebug extends Packages.com.glide.secondary_db_pools.DBCategoryDebug { }
-// declare class GlideDBChangeManager extends Packages.com.glide.db.change.DBChangeManager { }
-// declare class GlideDBCompositeAction extends Packages.com.glide.db.DBCompositeAction { }
-// declare class GlideDBConfiguration extends Packages.com.glide.db.DBConfiguration { }
-// declare class GlideDBConfigurationManager extends Packages.com.glide.db.DBConfigurationManager { }
-// declare class GlideDBConfigurationManagerEventHandler extends Packages.com.glide.db.DBConfigurationManagerEventHandler { }
-// declare class GlideDBConfigurationParms extends Packages.com.glide.db.DBConfigurationParms { }
-// declare class GlideDBConfigurationV2Migrator extends Packages.com.glide.db.DBConfigurationV2Migrator { }
-// declare class GlideDBConnection extends Packages.com.glide.db.pool.DBConnection { }
-// declare class GlideDBConnectionPool extends Packages.com.glide.db.pool.DBConnectionPool { }
-// declare class GlideDBConnectionPooler extends Packages.com.glide.db.pool.DBConnectionPooler { }
-// declare class GlideDBDelete extends Packages.com.glide.db.DBDelete { }
-// declare class GlideDBI extends Packages.com.glide.db.DBI { }
-// declare class GlideDBImageProvider extends Packages.com.glide.db_image.DBImageProvider { }
-// declare class GlideDBIMySQL extends Packages.com.glide.db.rdbms.mysql.DBIMySQL { }
-// declare class GlideDBIndex extends Packages.com.glide.db.DBIndex { }
-// declare class GlideDBKeyStoreFactory extends Packages.com.glide.certificates.DBKeyStoreFactory { }
-// declare class GlideDBMacro extends Packages.com.glide.ui.jelly.tags.form.DBMacro { }
-// declare class GlideDBMicroStats extends Packages.com.glide.db.DBMicroStats { }
-// declare class GlideDBMultiTargetAction extends Packages.com.glide.db.DBMultiTargetAction { }
-// declare class GlideDBObjectManager extends Packages.com.glide.db.DBObjectManager { }
-// declare class GlideDBObjectToken extends Packages.com.glide.db.DBObjectToken { }
-// declare class GlideDBPoolTest extends Packages.com.glide.secondary_db_pools.DBPoolTest { }
-// declare class GlideDBPropertiesConfig extends Packages.com.glide.db.DBPropertiesConfig { }
-// declare class GlideDBQuery extends Packages.com.glide.db.DBQuery { }
-// declare class GlideDBTypes extends Packages.com.glide.db.DBTypes { }
-// declare class GlideDBUpdate extends Packages.com.glide.db.DBUpdate { }
-// declare class GlideDBUtil extends Packages.com.glide.db.DBUtil { }
-// declare class GlideDBView extends Packages.com.glide.db.DBView { }
-// declare class GlideDebugEvaluator extends Packages.com.glide.jsdebug.DebugEvaluator { }
-// declare class GlideDefaultUpdateSaver extends Packages.com.glide.update.saver.DefaultUpdateSaver { }
-// declare class GlideDiagram extends Packages.com.glide.diagrammer.Diagram { }
-// declare class GlideDiagramAction extends Packages.com.glide.diagrammer.DiagramAction { }
-// declare class GlideDiagramEdge extends Packages.com.glide.diagrammer.DiagramEdge { }
-// declare class GlideDiagramElement extends Packages.com.glide.diagrammer.DiagramElement { }
-// declare class GlideDiagramNode extends Packages.com.glide.diagrammer.DiagramNode { }
-// declare class GlideDistUpgradeRunner extends Packages.com.glide.dist.upgrade.runner.DistUpgradeRunner { }
-// declare class GlideDocument extends Packages.com.glide.util.GlideDocument { }
-// declare class GlideDomain extends Packages.com.glide.db.domain.Domain { }
-// declare class GlideDomainDisplay extends Packages.com.glide.db.domain.DomainDisplay { }
-// declare class GlideDomainHierarchy extends Packages.com.glide.db.domain.DomainHierarchy { }
-// declare class GlideDomainNumberProvider extends Packages.com.glide.db.domain.DomainNumberProvider { }
-// declare class GlideDomainPathDisplay extends Packages.com.glide.db.domain.DomainPathDisplay { }
-// declare class GlideDomainPathProvider extends Packages.com.glide.db.domain.DomainPathProvider { }
-// declare class GlideDomainSpoolProvider extends Packages.com.glide.db.domain.DomainSpoolProvider { }
-// declare class GlideDomainSupport extends Packages.com.glide.db.domain.DomainSupport { }
-// declare class GlideDomainTree extends Packages.com.glide.db.domain.DomainTree { }
-// declare class GlideDomainUtil extends Packages.com.glide.db.domain.DomainUtil { }
-// declare class GlideDomainValidator extends Packages.com.glide.db.domain.DomainValidator { }
-declare class GlideDuration extends Packages.com.glide.glideobject.GlideDuration { }
-// declare class GlideECBDownloader extends Packages.com.glide.currency.ECBDownloader { }
-// declare class GlideECCQueueTransformer extends Packages.com.glide.db.impex.ECCQueueTransformer { }
-declare class GlideElement extends Packages.com.glide.script.GlideElement { protected constructor(); }
-declare class GlideElementBoolean extends Packages.java.lang.Boolean implements $$element.IValueSpecific<boolean, GlideElementBoolean, $$rhino.BooleanString> {
-    protected constructor(); 
-    /**
-     * Determines if the user's role permits the creation of new records in this field.
-     * @memberof GlideElementBoolean
-     * @returns {boolean} True if the field can be created, false otherwise..
-     * @description 
-     */
-    canCreate(): boolean;
-    /**
-     * Determines whether the user's role permits them to read the associated GlideRecord.
-     * @memberof GlideElementBoolean
-     * @returns {boolean} True if the field can be read, false otherwise..
-     * @description 
-     */
-    canRead(): boolean;
-    /**
-     * Determines whether the user's role permits them to write to the associated GlideRecord.
-     * @memberof GlideElementBoolean
-     * @returns {boolean} True if the user can write to the field, false otherwise..
-     * @description 
-     */
-    canWrite(): boolean;
-    /**
-     * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
-     * @memberof GlideElementBoolean
-     * @returns {boolean} True if the field has changed, false otherwise..
-     * @description  
-     */
-    changes(): boolean;
-    /**
-     * Determines if the previous value of the current field matches the specified object.
-     * @memberof GlideElementBoolean
-     * @param {$$rhino.Nilable<$$property.Boolean>} value - An object value to check against the previous value of the current field.
-     * @returns {boolean} True if the previous value matches the parameter, false if it does not..
-     * @description  
-     */
-    changesFrom(value: $$rhino.Nilable<$$property.Boolean>): boolean;
-    /**
-     * Determines if the new value of a field, after a change, matches the specified object.
-     * @memberof GlideElementBoolean
-     * @param {$$rhino.Nilable<$$property.Boolean>} value - An object value to check against the new value of the current field.
-     * @returns {boolean} True if the new value matches the parameter, false if it does not..
-     * @description  
-     */
-    changesTo(value: $$rhino.Nilable<$$property.Boolean>): boolean;
-    /**
-     * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
-     * @memberof GlideElementBoolean
-     * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT..
-     * @description 
-     */
-    dateNumericValue(): number;
-    /**
-     * Debugs the object and adds debug messages using setError(String).
-     * @memberof GlideElementBoolean
-     * @param {*} o - An object to debug.
-     */
-    debug(o: any): void;
-    /**
-     * Returns the value of the specified attribute from the dictionary.
-     * @memberof GlideElementBoolean
-     * @param {string} attributeName - Attribute name
-     * @returns {string} Attribute value.
-     * @description  
-     */
-    getAttribute(attributeName: string): string;
-    /**
-     * Gets the base table of the field.
-     * @memberof GlideElementBoolean
-     * @returns {string} Name of the base table. This may be different from the table that the field is defined on. See "Tables and Classes" in the product documentation..
-     */
-    getBaseTableName(): string;
-    /**
-     * Returns the Boolean value of the specified attribute from the dictionary.
-     * @memberof GlideElementBoolean
-     * @param {string} attributeName - Attribute name
-     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist..
-     * @description  
-     */
-    getBooleanAttribute(attributeName: string): boolean;
-    /**
-     * Generates a choice list for a field. Returns the choice values from the base table only, not from the extended table.
-     * @memberof GlideElementBoolean
-     * @param {string} [value] - A dependent value.
-     * @returns {Packages.java.util.ArrayList<*>} The choice values for the field..
-     * @description 
-     */
-    getChoices(value?: string): Packages.java.util.ArrayList<any>;
-    /**
-     * Gets the choice label for the current choice value.
-     * @memberof GlideElementBoolean
-     * @returns {string} The choice label..
-     * @description 
-     */
-    getChoiceValue(): string;
-    /**
-     * Gets the number of debug messages logged by debug().
-     * @memberof GlideElementBoolean
-     * @returns {number} The number of debug messages..
-     */
-    getDebugCount(): number;
-    /**
-     * Checks whether or not the field is dependent on another field.
-     * @memberof GlideElementBoolean
-     * @returns {string} Name of the field on which the current field depends..
-     */
-    getDependent(): string;
-    /**
-     * Gets the table that the current table depends on.
-     * @memberof GlideElementBoolean
-     * @returns {string} The name of the table..
-     */
-    getDependentTable(): string;
-    /**
-     * Gets the formatted display value of the field.
-     * @memberof GlideElementBoolean
-     * @param {number} maxChar - Optional, maximum number of characters to return.
-     * @returns {string} Display value of the field..
-     * @description 
-     */
-    getDisplayValue(maxChar: number): string;
-    /**
-     * Gets the formatted display value of a field, or a specified substitute value if the display value is null or empty.
-     * @memberof GlideElementBoolean
-     * @param {number} maxChar - Optional, the maximum number of characters to be returned.
-     * @param {string} nullSub - The value to return if the display value is null or empty.
-     * @returns {string} The formatted display value of the field, or the specified substitute value..
-     */
-    getDisplayValueExt(maxChar: number, nullSub: string): string;
-    /**
-     * Returns an element descriptor.
-     * @memberof IDbObject
-     * @returns {GlideElementDescriptor} Field's element descriptor..
-     * @description 
-     */
-    getED(): GlideElementDescriptor;
-    /**
-     * Gets the value for a given element.
-     * @memberof GlideElementBoolean
-     * @param {string} value - An element
-     * @returns {string} The value of the element..
-     */
-    getElementValue(value: string): string;
-    /**
-     * Gets error debug messages.
-     * @memberof GlideElementBoolean
-     * @returns {string} A string of debug messages.
-     */
-    getError(): string;
-    /**
-     * Gets the escaped value for the current element.
-     * @memberof GlideElementBoolean
-     * @returns {string} The escaped value of the current element..
-     */
-    getEscapedValue(): string;
-    /**
-     * Gets the CSS style for the field.
-     * @memberof GlideElementBoolean
-     * @returns {string} The CSS style for the field..
-     */
-    getFieldStyle(): string;
-    /**
-     * Gets a glide object.
-     * @memberof GlideElementBoolean
-     * @returns {*} A Glide object..
-     */
-    getGlideObject(): any;
-    /**
-     * Gets a glide record.
-     * @memberof GlideElementBoolean
-     * @returns {GlideRecord} A glide record.
-     */
-    getGlideRecord(): GlideRecord;
-    /**
-     * Returns the HTML value of a field.
-     * @memberof GlideElementBoolean
-     * @param {number} [maxChars] - Maximum number of characters to return.
-     * @returns {string} HTML value for the field..
-     * @description 
-     */
-    getHTMLValue(maxChars?: number): string;
-    /**
-     * Returns the HTML value of a field, or a specified substitute value if the HTML value is null or empty.
-     * @memberof GlideElementBoolean
-     * @param {number} maxChar - The maximum number of characters to return.
-     * @param {string} nullSub - The value to return if the HTML value is null or empty.
-     * @returns {string} The HTML value or the specified substitute value..
-     */
-    getHTMLValueExt(maxChar: number, nullSub: string): string;
-    /**
-     * Returns either the most recent journal entry or all journal entries.
-     * @memberof GlideElementBoolean
-     * @param {number} mostRecent - If 1, returns the most recent entry. If -1, returns all journal entries.
-     * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n"..
-     * @description 
-     */
-    getJournalEntry(mostRecent: number): string;
-    /**
-     * Returns the object's label.
-     * @memberof IDbObject
-     * @returns {string} Object's label.
-     * @description 
-     */
-    getLabel(): string;
-    /**
-     * Returns the name of the field.
-     * @memberof GlideElementBoolean
-     * @returns {string} Field name.
-     * @description 
-     */
-    getName(): string;
-    /**
-     * Get the CSS style for the value.
-     * @memberof GlideElementBoolean
-     * @returns {string} The CSS style for the value..
-     */
-    getStyle(): string;
-    /**
-     * Returns the name of the field's table.
-     * @memberof IDbObject
-     * @returns {string} Name of the table. This may be different from the table Class that the record is in. See Tables and Classes in the product documentation..
-     * @description 
-     */
-    getTableName(): string;
-    /**
-     * Retrieves the value and escapes the HTML.
-     * @memberof GlideElementBoolean
-     * @returns {string} The escaped HTML.
-     */
-    getTextAreaDisplayValue(): string;
-    /**
-     * Retrieves the XHTML value of a field.
-     * @memberof GlideElementBoolean
-     * @returns {string} The XHTML value.
-     */
-    getXHTMLValue(): string;
-    /**
-     * Gets the XML value of a field as a string.
-     * @memberof GlideElementBoolean
-     * @returns {string} The XML value.
-     */
-    getXMLValue(): string;
-    /**
-     * Determines whether a field has a particular attribute.
-     * @memberof GlideElementBoolean
-     * @param {string} attributeName - The attribute to check for
-     * @returns {boolean} True if the field has the attribute, false otherwise..
-     */
-    hasAttribute(attributeName: string): boolean;
-    /**
-     * Determines if the user has the right to perform a particular operation.
-     * @memberof GlideElementBoolean
-     * @param {string} operationName - Name of the operation to check for
-     * @returns {boolean} True if the user has permission to perform the operation, false otherwise..
-     */
-    hasRightsTo(operationName: string): boolean;
-    /**
-     * Determines if the field has a value.
-     * @memberof GlideElementBoolean
-     * @returns {boolean} True if the field has a value, false otherwise..
-     */
-    hasValue(): boolean;
-    /**
-     * Determines whether the field is null.
-     * @memberof GlideElementBoolean
-     * @returns {boolean} True if the field is null or an empty string, false otherwise..
-     * @description 
-     */
-    nil(): boolean;
-    /**
-     * Sets the duration field to a number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
-     * @memberof GlideElementBoolean
-     * @param {number} milliseconds - Number of milliseconds spanned by the duration.
-     * @description 
-     */
-    setDateNumericValue(milliseconds: number): void;
-    /**
-     * Sets the display value of the field.
-     * @memberof GlideElementBoolean
-     * @param {*} displayValue - Value to be displayed.
-     * @description 
-     */
-    setDisplayValue(displayValue: any): void;
-    /**
-     * Adds an error message.
-     * @memberof GlideElementBoolean
-     * @description  
-     */
-    setError(): void;
-    /**
-     * Sets the initial value of a field.
-     * @memberof GlideElementBoolean
-     * @param {string} value - Initial value for the field.
-     */
-    setInitialValue(value: string): void;
-    /**
-     * Sets the journal entry.
-     * @memberof GlideElementBoolean
-     * @param {*} value - The value to set the journal entry to.
-     * @param {string} userName - The user to attribute the journal entry to. Does not set the journal entry's created by field.
-     */
-    setJournalEntry(value: any, userName: string): void;
-    /**
-     * Sets the value of a field.
-     * @memberof GlideElementBoolean
-     * @param {$$rhino.Nilable<$$property.Boolean>} value - The value the field is to be set to.
-     * @description  
-     */
-    setValue(value: $$rhino.Nilable<$$property.Boolean>): void;
-}
-declare class GlideElementBreakdownElement extends $$element.StringBased<string, GlideElementBreakdownElement, string> { protected constructor(); }
-declare class GlideElementCompressed extends $$element.StringBased<string, GlideElementCompressed, string> { protected constructor(); }
-declare class GlideElementConditions extends $$element.StringBased<string, GlideElementConditions, string> { protected constructor(); }
-declare class GlideElementCounter extends $$element.StringBased<string, GlideElementCounter, string> { protected constructor(); }
-declare class GlideElementCurrency extends $$element.StringBased<string, GlideElementCurrency, string> { protected constructor(); }
-declare class GlideElementDataObject extends $$element.StringBased<string, GlideElementDataObject, string> { protected constructor(); }
-declare class GlideElementDescriptor extends Packages.com.glide.db.ElementDescriptor { protected constructor(); }
-declare class GlideElementDocumentation extends $$element.StringBased<string, GlideElementDocumentation, string> { protected constructor(); }
-declare class GlideElementDocumentId extends $$element.StringBased<string, GlideElementDocumentId, string> { protected constructor(); }
-declare class GlideElementDomainId extends $$element.StringBased<string, GlideElementDomainId, string> { protected constructor(); }
-declare class GlideElementFullUTF8 extends $$element.StringBased<string, GlideElementFullUTF8, string> { protected constructor(); }
-declare class GlideElementGlideObject extends Packages.com.glide.script.glide_elements.GlideElementGlideObject { protected constructor(); }
-declare class GlideElementGlideVar extends $$element.StringBased<string, GlideElementGlideVar, string> { protected constructor(); }
-declare class GlideElementIcon extends $$element.StringBased<string, GlideElementIcon, string> { protected constructor(); }
-declare class GlideElementInternalType extends $$element.StringBased<string, GlideElementInternalType, string> { protected constructor(); }
-// declare class GlideElementIterator extends Packages.com.glide.util.ElementIterator { }
-declare class GlideElementNameValue extends $$element.StringBased<string, GlideElementNameValue, string> { protected constructor(); }
-declare class GlideElementNumeric extends $$element.StringBased<number, GlideElementNumeric, string> implements $$element.IValueSpecific<number, GlideElementNumeric, string> { protected constructor(); }
-declare class GlideElementPassword extends $$element.StringBased<string, GlideElementPassword, string> { protected constructor(); }
-declare class GlideElementPassword2 extends $$element.StringBased<string, GlideElementPassword2, string> { protected constructor(); }
-declare class GlideElementPrice extends $$element.StringBased<string, GlideElementPrice, string> { }
-declare class GlideElementReference extends Packages.com.glide.script.glide_elements.GlideElementReference { protected constructor(); }
-declare class GlideElementScript extends $$element.StringBased<string, GlideElementScript, string> { protected constructor(); }
-declare class GlideElementShortFieldName extends $$element.StringBased<string, GlideElementShortFieldName, string> { protected constructor(); }
-declare class GlideElementShortTableName extends $$element.StringBased<string, GlideElementShortTableName, string> { protected constructor(); }
-declare class GlideElementSourceId extends Packages.com.glide.script.glide_elements.GlideElementSourceId { protected constructor(); }
-declare class GlideElementSourceName extends $$element.StringBased<string, GlideElementSourceName, string> { protected constructor(); }
-declare class GlideElementSourceTable extends Packages.com.glide.script.glide_elements.GlideElementSourceTable { protected constructor(); }
-declare class GlideElementSysClassName extends $$element.StringBased<string, GlideElementSysClassName, string> { protected constructor(); }
-declare class GlideElementTranslatedField extends $$element.StringBased<string, GlideElementTranslatedField, string> { protected constructor(); }
-declare class GlideElementTranslatedHTML extends $$element.StringBased<string, GlideElementTranslatedHTML, string> { protected constructor(); }
-declare class GlideElementTranslatedText extends $$element.StringBased<string, GlideElementTranslatedText, string> { protected constructor(); }
-declare class GlideElementURL extends $$element.StringBased<string, GlideElementURL, string> { protected constructor(); }
-declare class GlideElementUserImage extends Packages.com.glide.script.glide_elements.GlideElementUserImage { protected constructor(); }
-declare class GlideElementVariableConditions extends $$element.StringBased<string, GlideElementVariableConditions, string> { protected constructor(); }
-declare class GlideElementVariables extends $$element.StringBased<string, GlideElementVariables, string> { protected constructor(); }
-declare class GlideElementWikiText extends $$element.StringBased<string, GlideElementWikiText, string> { protected constructor(); }
-declare class GlideElementWorkflow extends $$element.StringBased<string, GlideElementWorkflow, string> { protected constructor(); }
-declare class GlideElementWorkflowConditions extends $$element.StringBased<string, GlideElementWorkflowConditions, string> { protected constructor(); }
-// declare class GlideElementXMLSerializer extends Packages.com.glide.script.GlideElementXMLSerializer { }
-declare class GlideEmail extends Packages.com.glide.notification.Email { }
-// declare class GlideEmailAction extends Packages.com.glide.notification.outbound.EmailAction { }
-// declare class GlideEmailFormatter extends Packages.com.glide.notification.outbound.EmailFormatter { }
-// declare class GlideEmailInbound extends Packages.com.glide.notification.inbound.EmailInbound { }
-declare class GlideEmailOutbound extends Packages.com.glide.notification.outbound.EmailOutbound { }
-// declare class GlideEmailReader extends Packages.com.glide.notification.inbound.EmailReader { }
-// declare class GlideEmailSender extends Packages.com.glide.notification.outbound.EmailSender { }
-declare class GlideEmailWatermark extends Packages.com.glide.notification.EmailWatermark { }
-// declare class GlideEmitter extends Packages.com.glide.ui.jelly.Emitter { }
-// declare class GlideEncrypter extends Packages.com.glide.util.Encrypter { }
-// declare class GlideEncryptionContext extends Packages.com.glide.sys.EncryptionContext { }
-// declare class GlideEncryptionContextCipher extends Packages.com.glide.sys.security.EncryptionContextCipher { }
-// declare class GlideEncryptionWrapperDB extends Packages.com.glide.sys.security.EncryptionWrapperDB { }
-// declare class GlideEncryptionWrapperDBAdmin extends Packages.com.glide.sys.security.EncryptionWrapperDBAdmin { }
-// declare class GlideEncryptionWrapperNAE extends Packages.com.glide.sys.security.EncryptionWrapperNAE { }
-// declare class GlideEncryptionWrapperNAEAdmin extends Packages.com.glide.sys.security.EncryptionWrapperNAEAdmin { }
-// declare class GlideEscalationManager extends Packages.com.glide.escalation.EscalationManager { }
-// declare class GlideEscalationTimerJobMarkII extends Packages.com.glide.job.EscalationTimerJobMarkII { }
-declare class GlideEvaluator extends Packages.com.glide.script.Evaluator { }
-// declare class GlideEvent extends Packages.com.glide.policy.Event { }
-// declare class GlideEventManager extends Packages.com.glide.policy.EventManager { }
-// declare class GlideExcelExporter extends Packages.com.glide.generators.ExcelExporter { }
-// declare class GlideExcelLoader2 extends Packages.com.glide.db.impex.ExcelLoader2 { }
-// declare class GlideExecutionPlan extends Packages.com.glide.execution_plan.ExecutionPlan { }
-// declare class GlideExpressionWrapper extends Packages.com.glide.ui.jelly.GlideExpressionWrapper { }
-declare class GlideExtensionPoint extends Packages.com.glide.sys.ExtensionPoint { }
-// declare class GlideFieldList extends Packages.com.glide.processors.FieldList { }
-// declare class GlideFile extends Packages.com.glide.script.proxy.File { }
-// declare class GlideFileUtil extends Packages.com.glide.util.FileUtil { }
-// declare class GlideFilter extends Packages.com.glide.script.Filter { }
-// declare class GlideFilterList extends Packages.com.glide.script.FilterList { }
-// declare class GlideFixCatalogPlans extends Packages.com.glide.fixes.FixCatalogPlans { }
-// declare class GlideFixDeliveryPlans extends Packages.com.glide.fixes.FixDeliveryPlans { }
-// declare class GlideFixGroups extends Packages.com.glide.fixes.FixGroups { }
-// declare class GlideFixItemOptionsAgain extends Packages.com.glide.fixes.FixItemOptionsAgain { }
-// declare class GlideFixRules extends Packages.com.glide.fixes.FixRules { }
-// declare class GlideFixSpellCheck extends Packages.com.glide.fixes.FixSpellCheck { }
-// declare class GlideFixStuff extends Packages.com.glide.fixes.FixStuff { }
-// declare class GlideFixUsers extends Packages.com.glide.fixes.FixUsers { }
-// declare class GlideForm extends Packages.com.glide.ui.GlideForm { }
-// declare class GlideFormCommon extends Packages.com.glide.ui.GlideFormCommon { }
-// declare class GlideFormulator extends Packages.com.glide.ui.GlideFormulator { }
-// declare class GlideGauge extends Packages.com.glide.report.Gauge { }
-// declare class GlideGovernor extends Packages.com.glide.sys.util.Governor { }
-// declare class GlideGregorianCalendar extends Packages.com.glide.util.GlideGregorianCalendar { }
-// declare class GlideGroup extends Packages.com.glide.sys.Group { }
-// declare class GlideGroupByListTag extends Packages.com.glide.ui.jelly.tags.form.GroupByListTag { }
-// declare class GlideGuid extends Packages.com.glide.util.Guid { }
-// declare class GlideHierarchicalReference extends Packages.com.glide.glideobject.HierarchicalReference { }
-// declare class GlideHistorySet extends Packages.com.glide.audit.HistorySet { }
-// declare class GlideHistoryTag2 extends Packages.com.glide.ui.jelly.tags.mergedata.HistoryTag2 { }
-// declare class GlideHostUtil extends Packages.com.glide.util.HostUtil { }
-// declare class GlideHTTPClient extends Packages.com.glide.communications.HTTPClient { }
-// declare class GlideHTTPRequest extends Packages.com.glide.communications.HTTPRequest { }
-// declare class GlideHTTPResponse extends Packages.com.glide.communications.HTTPResponse { }
-// declare class GlideI18NStyle extends Packages.com.glide.ui.I18NStyle { }
-// declare class GlideICALUtil extends Packages.com.glide.policy.ICALUtil { }
-// declare class GlideIConstants extends Packages.com.glide.util.IConstants { }
-// declare class GlideIGlideRecord extends Packages.com.glide.util.IGlideRecord { }
-// declare class GlideImageLoader extends Packages.com.glide.script.ImageLoader { }
-// declare class GlideImpersonate extends Packages.com.glide.sys.Impersonate { }
-// declare class GlideImportLog extends Packages.com.glide.db.impex.ImportLog { }
-// declare class GlideImportMap extends Packages.com.glide.db.impex.ImportMap { }
-// declare class GlideImportMapField extends Packages.com.glide.db.impex.ImportMapField { }
-// declare class GlideImportSet extends Packages.com.glide.system_import_set.ImportSet { }
-// declare class GlideImportSetLoader extends Packages.com.glide.system_import_set.ImportSetLoader { }
-// declare class GlideImportSetRun extends Packages.com.glide.system_import_set.ImportSetRun { }
-// declare class GlideImportSetTransformer extends Packages.com.glide.system_import_set.ImportSetTransformer { }
-// declare class GlideImportSetTransformerWorker extends Packages.com.glide.system_import_set.ImportSetTransformerWorker { }
-// declare class GlideIndexDescriptor extends Packages.com.glide.db.IndexDescriptor { }
-// declare class GlideIndexUtils extends Packages.com.glide.db.IndexUtils { }
-// declare class GlideIntegerTime extends Packages.com.glide.glideobject.IntegerTime { }
-// declare class GlideInternalElementTypeChoiceList extends Packages.com.glide.script.InternalElementTypeChoiceList { }
-// declare class GlideInternalMonitor extends Packages.com.glide.ui.monitor.InternalMonitor { }
-// declare class GlideIOMonitor extends Packages.com.glide.ui.monitor.IOMonitor { }
-// declare class GlideIOStats extends Packages.com.glide.db.IOStats { }
-// declare class GlideIPAddressUtil extends Packages.com.glide.util.IPAddressUtil { }
-// declare class GlideIQueryCondition extends Packages.com.glide.util.IQueryCondition { }
-// declare class GlideIRow extends Packages.com.glide.db.meta.IRow { }
-// declare class GlideIRQuerySummary extends Packages.com.glide.db.ir.IRQuerySummary { }
-// declare class GlideIRQuerySummarySimple extends Packages.com.glide.db.ir.IRQuerySummarySimple { }
-// declare class GlideISecurityManager extends Packages.com.glide.sys.security.ISecurityManager { }
-// declare class GlideITableIterator extends Packages.com.glide.db.access.ITableIterator { }
-// declare class GlideJDBCLoader extends Packages.com.glide.db.impex.JDBCLoader { }
-// declare class GlideJDBCProbeTestWorker extends Packages.com.glide.db.impex.JDBCProbeTestWorker { }
-// declare class GlideJellyContext extends Packages.com.glide.ui.jelly.GlideJellyContext { }
-// declare class GlideJellyRunner extends Packages.com.glide.ui.jelly.JellyRunner { }
-// declare class GlideJID extends Packages.com.glide.xmpp.JID { }
-// declare class GlideJSTestUtil extends Packages.com.glide.autotester.JSTestUtil { }
-declare class GlideJSUtil extends Packages.com.glide.script.JSUtil { }
-// declare class GlideLabelEventHandler extends Packages.com.glide.labels.LabelEventHandler { }
-// declare class GlideLabelGenerator extends Packages.com.glide.db.LabelGenerator { }
-// declare class GlideLabelUtil extends Packages.com.glide.labels.LabelUtil { }
-// declare class GlideLDAP extends Packages.com.glide.sys.ldap.LDAP { }
-// declare class GlideLDAPConfig extends Packages.com.glide.sys.ldap.LDAPConfig { }
-// declare class GlideLDAPConfigurations extends Packages.com.glide.sys.ldap.LDAPConfigurations { }
-// declare class GlideLDAPErrorAnalyzer extends Packages.com.glide.sys.ldap.LDAPErrorAnalyzer { }
-// declare class GlideLDAPGroups extends Packages.com.glide.sys.ldap.LDAPGroups { }
-// declare class GlideLDAPRefresh extends Packages.com.glide.sys.ldap.LDAPRefresh { }
-// declare class GlideLDAPResult extends Packages.com.glide.sys.ldap.LDAPResult { }
-// declare class GlideLDAPTarget extends Packages.com.glide.sys.ldap.LDAPTarget { }
-// declare class GlideLDAPTransformQueue extends Packages.com.glide.sys.ldap.LDAPTransformQueue { }
-// declare class GlideLDAPUsers extends Packages.com.glide.sys.ldap.LDAPUsers { }
-// declare class GlideLDAPUserUpdate extends Packages.com.glide.sys.ldap.LDAPUserUpdate { }
-// declare class GlideList extends Packages.com.glide.glideobject.GlideList { }
-// declare class GlideListGroupProperties extends Packages.com.glide.list_v2.ListGroupProperties { }
-// declare class GlideListLabel extends Packages.com.glide.ui.ListLabel { }
-// declare class GlideListM2MBacking extends Packages.com.glide.glideobject.GlideListM2MBacking { }
-// declare class GlideListProperties extends Packages.com.glide.list_v2.ListProperties { }
-// declare class GlideListSearchQuery extends Packages.com.glide.ui.ListSearchQuery { }
-// declare class GlideLoader extends Packages.com.glide.db.impex.Loader { }
-// declare class GlideLoadTestDirector extends Packages.com.glide.load_test.LoadTestDirector { }
-// declare class GlideLocale extends Packages.com.glide.sys.GlideLocale { }
-// declare class GlideLocaleLoader extends Packages.com.glide.currency.LocaleLoader { }
-// declare class GlideLock extends Packages.com.glide.script.Lock { }
-// declare class GlideLog extends Packages.com.glide.util.Log { }
-// declare class GlideLogCleanup extends Packages.com.glide.util.LogCleanup { }
-// declare class GlideLogFileReader extends Packages.com.glide.log_file.LogFileReader { }
-declare class GlideLRUCache extends Packages.com.glide.sys.cache.LRUCache { }
-// declare class GlideLuceneTextIndexEvent extends Packages.com.glide.lucene.TextIndexEvent { }
-// declare class GlideMarkupWriter extends Packages.com.glide.util.MarkupWriter { }
-// declare class GlideMemoryActive extends Packages.com.glide.ui.monitor.MemoryActive { }
-// declare class GlideMemoryCache extends Packages.com.glide.ui.monitor.MemoryCache { }
-// declare class GlideMemoryRecord extends Packages.com.glide.script.GlideMemoryRecord { }
-// declare class GlideMemorySwap extends Packages.com.glide.ui.monitor.MemorySwap { }
-// declare class GlideMemoryTable extends Packages.com.glide.util.MemoryTable { }
-// declare class GlideMemoryTotal extends Packages.com.glide.ui.monitor.MemoryTotal { }
-// declare class GlideMetaData extends Packages.com.glide.script.MetaData { }
-// declare class GlideMIDServerInfoAccessor extends Packages.com.glide.script.MIDServerInfoAccessor { }
-// declare class GlideMobileExtensions extends Packages.com.glide.ui.MobileExtensions { }
-// declare class GlideModule extends Packages.com.glide.sys.Module { }
-// declare class GlideMultipleAction extends Packages.com.glide.db.MultipleAction { }
-// declare class GlideMultipleDelete extends Packages.com.glide.db.MultipleDelete { }
-// declare class GlideMultipleInsert extends Packages.com.glide.db.MultipleInsert { }
-// declare class GlideMultipleUpdate extends Packages.com.glide.db.MultipleUpdate { }
-// declare class GlideMutex extends Packages.com.glide.sys.lock.Mutex { }
-// declare class GlideMySQLWatch extends Packages.com.glide.sys.stats.MySQLWatch { }
-// declare class GlideNumber extends Packages.com.glide.script.glide_elements.GlideNumber { }
-// declare class GlideNumberManager extends Packages.com.glide.db.NumberManager { }
-// declare class GlideObjectManager extends Packages.com.glide.glideobject.GlideObjectManager { }
-// declare class GlideObjectUtil extends Packages.com.glide.util.ObjectUtil { }
-// declare class GlideOrderingDefinitionCreator extends Packages.com.glide.sorting.OrderingDefinitionCreator { }
-// declare class GlideOrderingManager extends Packages.com.glide.sorting.OrderingManager { }
-// declare class GlideOutputWriter extends Packages.com.glide.ui.io.GlideOutputWriter { }
-// declare class GlideOutputWriterFactory extends Packages.com.glide.ui.io.GlideOutputWriterFactory { }
-// declare class GlideOverLoadedChoices extends Packages.com.glide.script.OverLoadedChoices { }
-// declare class GlidePartitionMonitor extends Packages.com.glide.ui.monitor.PartitionMonitor { }
-// declare class GlidePivotTableSummaryTableWriter extends Packages.com.glide.ui.chart.dataset.PivotTableSummaryTableWriter { }
-declare class GlidePlugin extends Packages.com.glide.sys.Plugin { }
-declare class GlidePluginManager extends Packages.com.glide.sys.PluginManager { }
-declare class GlidePluginManagerWorker extends Packages.com.glide.sys.PluginManagerWorker { }
-// declare class GlidePluginUtils extends Packages.com.glide.sys.PluginUtils { }
-// declare class GlidePOP3Reader extends Packages.com.glide.notification.inbound.POP3Reader { }
-// declare class GlidePOP3ReaderJob extends Packages.com.glide.job.POP3ReaderJob { }
-// declare class GlidePopup extends Packages.com.glide.ui.Popup { }
-// declare class GlidePriceGenerator extends Packages.com.glide.currency.PriceGenerator { }
-// declare class GlidePriceLoader extends Packages.com.glide.currency.PriceLoader { }
-// declare class GlideProcessor extends Packages.com.glide.processors.Processor { }
-// declare class GlideProcessRunner extends Packages.com.glide.util.ProcessRunner { }
-// declare class GlideProgressMonitor extends Packages.com.glide.worker.ProgressMonitor { }
-declare class GlideProgressWorker extends Packages.com.glide.worker.ProgressWorker { }
-// declare class GlideProperties extends Packages.com.glide.util.GlideProperties { }
-// declare class GlidePropertiesDB extends Packages.com.glide.util.GlidePropertiesDB { }
-// declare class GlideProperty extends Packages.com.glide.util.GlideProperty { }
-// declare class GlidePublicPage extends Packages.com.glide.ui.PublicPage { }
-// declare class GlideQueryBreadcrumbs extends Packages.com.glide.misc.QueryBreadcrumbs { }
-declare class GlideQueryCondition extends Packages.com.glide.db.conditions.QueryCondition { protected constructor(); }
-// declare class GlideQueryFormatter extends Packages.com.glide.ui.jelly.tags.form.QueryFormatter { }
-// declare class GlideQueryString extends Packages.com.glide.db.QueryString { }
-// declare class GlideQueryTerm extends Packages.com.glide.db.QueryTerm { }
-declare class GlideRecord extends Packages.com.glide.script.GlideRecord { }
-// declare class GlideRecordCache extends Packages.com.glide.sys.RecordCache { }
-// declare class GlideRecordEnsurer extends Packages.com.glide.misc.RecordEnsurer { }
-// declare class GlideRecordFactory extends Packages.com.glide.script.GlideRecordFactory { }
-// declare class GlideRecordKeySetLoader extends Packages.com.glide.script.GlideRecordKeySetLoader { }
-// declare class GlideRecordLock extends Packages.com.glide.script.RecordLock { }
-// declare class GlideRecordPopupGenerator extends Packages.com.glide.calendar.RecordPopupGenerator { }
-// declare class GlideRecordRollback extends Packages.com.glide.script.GlideRecordRollback { }
-// declare class GlideRecordSet extends Packages.com.glide.script.GlideRecordSet { }
-// declare class GlideRecordSimpleSerializer extends Packages.com.glide.script.GlideRecordSimpleSerializer { }
-// declare class GlideRecordXMLSerializer extends Packages.com.glide.script.GlideRecordXMLSerializer { }
-// declare class GlideReferenceField extends Packages.com.glide.script.ReferenceField { }
-// declare class GlideRegexUtil extends Packages.com.glide.util.RegexUtil { }
-// declare class GlideRegisterEscalationEvents extends Packages.com.glide.fixes.RegisterEscalationEvents { }
-// declare class GlideRelatedListReconciler extends Packages.com.glide.misc.RelatedListReconciler { }
-// declare class GlideRelationship extends Packages.com.glide.sys.Relationship { }
-// declare class GlideRelationships extends Packages.com.glide.db.Relationships { }
-// declare class GlideRelationshipUtil extends Packages.com.glide.sys.RelationshipUtil { }
-// declare class GlideRemoteGlideRecord extends Packages.com.glide.communications.RemoteGlideRecord { }
-// declare class GlideRenderProperties extends Packages.com.glide.ui.RenderProperties { }
-// declare class GlideReplaceUpdateFiles extends Packages.com.glide.util.ReplaceUpdateFiles { }
-// declare class GlideReplicationEngine extends Packages.com.glide.replicator.ReplicationEngine { }
-// declare class GlideReport extends Packages.com.glide.report.Report { }
-// declare class GlideReportChoiceList extends Packages.com.glide.script.ReportChoiceList { }
-// declare class GlideReportViewManagement extends Packages.com.glide.report.ReportViewManagement { }
-// declare class GlideRequestMap extends Packages.com.glide.util.RequestMap { }
-// declare class GlideRevertToOutOfBox extends Packages.com.glide.update.RevertToOutOfBox { }
-// declare class GlideRhinoEnvironment extends Packages.com.glide.script.GlideRhinoEnvironment { }
-declare class GlideRhinoHelper extends Packages.com.glide.script.GlideRhinoHelper { }
-// declare class GlideRhinoScope extends Packages.com.glide.script.RhinoScope { }
-// declare class GlideRhinoScopeHandler extends Packages.com.glide.script.GlideRhinoScopeHandler { }
-// declare class GlideRhinoTestCase extends Packages.com.glide.autotester.RhinoTestCase { }
-// declare class GlideRRDBAlertProcessor extends Packages.com.glide.rrdb.alerts.RRDBAlertProcessor { }
-// declare class GlideRRDBDefinition extends Packages.com.glide.rrdb.RRDBDefinition { }
-// declare class GlideRunScriptJob extends Packages.com.glide.job.RunScriptJob { }
-// declare class GlideSchedule extends Packages.com.glide.schedules.Schedule { }
-// declare class GlideScheduleDateTime extends Packages.com.glide.glideobject.ScheduleDateTime { }
-// declare class GlideScheduleDateTimeSpan extends Packages.com.glide.schedules.ScheduleDateTimeSpan { }
-// declare class GlideScheduleItem extends Packages.com.glide.schedules.ScheduleItem { }
-// declare class GlideScheduler extends Packages.com.glide.schedule.GlideScheduler { }
-// declare class GlideScheduleTimeMap extends Packages.com.glide.schedules.ScheduleTimeMap { }
-// declare class GlideScheduleTimeSpan extends Packages.com.glide.schedules.ScheduleTimeSpan { }
-// declare class GlideScriptChoiceList extends Packages.com.glide.script.ChoiceList { }
-declare class GlideScriptedProgressWorker extends Packages.com.glide.worker.ScriptedProgressWorker { }
-declare class GlideScriptEvaluator extends Packages.com.glide.script.ScriptEvaluator { }
-// declare class GlideScriptGlobals extends Packages.com.glide.script.GlideScriptGlobals { }
-// declare class GlideScriptListener extends Packages.com.glide.listener.ScriptListener { }
-// declare class GlideScriptProcessor extends Packages.com.glide.processors.ScriptProcessor { }
-declare class GlideScriptRecordUtil extends Packages.com.glide.script.GlideRecordUtil { }
-// declare class GlideScriptSystemUtilDB extends Packages.com.glide.script.GlideSystemUtilDB { }
-// declare class GlideScriptViewManager extends Packages.com.glide.ui.ViewManager { }
-// declare class GlideScriptWriter extends Packages.com.glide.script.ScriptWriter { }
-// declare class GlideSearchQueryFormatter extends Packages.com.glide.text_search.SearchQueryFormatter { }
-// declare class GlideSecondaryDatabaseBehindnessChecker extends Packages.com.glide.secondary_db_pools.SecondaryDatabaseBehindnessChecker { }
-// declare class GlideSecondaryDatabaseConfiguration extends Packages.com.glide.secondary_db_pools.SecondaryDatabaseConfiguration { }
-// declare class GlideSecurityManager extends Packages.com.glide.sys.security.GlideSecurityManager { }
-// declare class GlideSecurityQueryCalculator extends Packages.com.glide.sys.security.SecurityQueryCalculator { }
-// declare class GlideSecurityUtils extends Packages.com.glide.util.SecurityUtils { }
-// declare class GlideSelfCleaningMutex extends Packages.com.glide.sys.lock.SelfCleaningMutex { }
-// declare class GlideServiceAPIWrapper extends Packages.com.glide.service_api.ServiceAPIWrapper { }
-// declare class GlideServlet extends Packages.com.glide.ui.GlideServlet { }
-// declare class GlideServletRequest extends Packages.com.glide.ui.GlideServletRequest { }
-// declare class GlideServletResponse extends Packages.com.glide.ui.GlideServletResponse { }
-// declare class GlideServletStatus extends Packages.com.glide.ui.ServletStatus { }
-declare class GlideSession extends Packages.com.glide.sys.GlideSession { protected constructor(); }
-// declare class GlideSessionDebug extends Packages.com.glide.sys.SessionDebug { }
-// declare class GlideSessions extends Packages.com.glide.ui.Sessions { }
-// declare class GlideSessionSandbox extends Packages.com.glide.script.GlideSessionSandbox { }
-// declare class GlideShellCommand extends Packages.com.glide.util.ShellCommand { }
-// declare class GlideSimmerDown extends Packages.com.glide.db.change.command.SimmerDown { }
-// declare class GlideSimmerUp extends Packages.com.glide.db.change.command.SimmerUp { }
-// declare class GlideSimpleDateFormatEx extends Packages.com.glide.util.SimpleDateFormatEx { }
-// declare class GlideSimpleHTTPClient extends Packages.com.glide.communications.SimpleHTTPClient { }
-// declare class GlideSimpleScriptListener extends Packages.com.glide.listener.SimpleScriptListener { }
-// declare class GlideSMTPConnection extends Packages.com.glide.notification.outbound.SMTPConnection { }
-// declare class GlideSMTPSender extends Packages.com.glide.notification.outbound.SMTPSender { }
-// declare class GlideSMTPSenderJob extends Packages.com.glide.job.SMTPSenderJob { }
-// declare class GlideSOAPDocument extends Packages.com.glide.communications.soap.SOAPDocument { }
-// declare class GlideSOAPRequest extends Packages.com.glide.communications.soap.SOAPRequest { }
-// declare class GlideSOAPResponse extends Packages.com.glide.communications.soap.SOAPResponse { }
-// declare class GlideSOAPSecurity extends Packages.com.glide.processors.soap.SOAPSecurity { }
-// declare class GlideSOAPSigner extends Packages.com.glide.communications.soap.SOAPSigner { }
-// declare class GlideSocket extends Packages.com.glide.script.proxy.Socket { }
-// declare class GlidesoftGlideAttributesImpl extends Packages.com.glidesoft.util.xml.GlideAttributesImpl { }
-// declare class GlidesoftXMLMemoryTable extends Packages.com.glidesoft.util.xml.XMLMemoryTable { }
-// declare class GlideSQLChildMonitor extends Packages.com.glide.monitor.sql.SQLChildMonitor { }
-// declare class GlideSQLDebug extends Packages.com.glide.ui.diagnostics.SQLDebug { }
-// declare class GlideSQLDeleteMonitor extends Packages.com.glide.monitor.sql.SQLDeleteMonitor { }
-// declare class GlideSQLInsertMonitor extends Packages.com.glide.monitor.sql.SQLInsertMonitor { }
-// declare class GlideSQLResponseMonitor extends Packages.com.glide.monitor.sql.SQLResponseMonitor { }
-// declare class GlideSQLSelectMonitor extends Packages.com.glide.monitor.sql.SQLSelectMonitor { }
-// declare class GlideSQLUpdateMonitor extends Packages.com.glide.monitor.sql.SQLUpdateMonitor { }
-// declare class GlideSSHClient extends Packages.com.glide.communications.SSHClient { }
-// declare class GlideStack extends Packages.com.glide.sys.GlideStack { }
-// declare class GlideStatistician extends Packages.com.glide.sys.stats.Statistician { }
-// declare class GlideStatsInfo extends Packages.com.glide.monitor.StatsInfo { }
-// declare class GlideStatus extends Packages.com.glide.util.GlideStatus { }
-// declare class GlideStopWatch extends Packages.com.glide.util.StopWatch { }
-// declare class GlideStorageUtils extends Packages.com.glide.db.meta.StorageUtils { }
-// declare class GlideStringCache extends Packages.com.glide.sys.cache.StringCache { }
-// declare class GlideStringInputStream extends Packages.com.glide.util.StringInputStream { }
-// declare class GlideStringList extends Packages.com.glide.collections.StringList { }
-// declare class GlideStringUtil extends Packages.com.glide.util.StringUtil { }
-// declare class GlideSubQuery extends Packages.com.glide.db.conditions.SubQuery { }
-// declare class GlideSubstituteURL extends Packages.com.glide.notification.substitution.SubstituteURL { }
-// declare class GlideSummaryTableGroupReader extends Packages.com.glide.ui.chart.dataset.SummaryTableGroupReader { }
-// declare class GlideSummaryTableOrderedReader extends Packages.com.glide.ui.chart.dataset.SummaryTableOrderedReader { }
-// declare class GlideSummaryTableReader extends Packages.com.glide.ui.chart.dataset.SummaryTableReader { }
-// declare class GlideSummaryTableWriter extends Packages.com.glide.ui.chart.dataset.SummaryTableWriter { }
-// declare class GlideSynchronizedLRUCache extends Packages.com.glide.sys.cache.SynchronizedLRUCache { }
-// declare class GlideSysAttachment extends Packages.com.glide.ui.SysAttachment { }
-// declare class GlideSysAttachmentInputStream extends Packages.com.glide.ui.SysAttachmentInputStream { }
-// declare class GlideSysBRThreadMonitor extends Packages.com.glide.monitor.threads.SysBRThreadMonitor { }
-// declare class GlideSysChoice extends Packages.com.glide.script.SysChoice { }
-// declare class GlideSysConcurrencyMonitor extends Packages.com.glide.monitor.threads.SysConcurrencyMonitor { }
-// declare class GlideSysCPUThreadMonitor extends Packages.com.glide.monitor.threads.SysCPUThreadMonitor { }
-// declare class GlideSysDateUtil extends Packages.com.glide.sys.util.SysDateUtil { }
-// declare class GlideSysDBThreadMonitor extends Packages.com.glide.monitor.threads.SysDBThreadMonitor { }
-// declare class GlideSysField extends Packages.com.glide.db.SysField { }
-// declare class GlideSysFileUtil extends Packages.com.glide.sys.util.SysFileUtil { }
-declare class GlideSysForm extends Packages.com.glide.ui.SysForm { }
-// declare class GlideSysForms extends Packages.com.glide.ui.SysForms { }
-declare class GlideSysList extends Packages.com.glide.ui.SysList { }
-// declare class GlideSysListControl extends Packages.com.glide.ui.SysListControl { }
-// declare class GlideSysLog extends Packages.com.glide.sys.SysLog { }
-// declare class GlideSYSMany2Many extends Packages.com.glide.db.SYSMany2Many { }
-// declare class GlideSysMessage extends Packages.com.glide.ui.SysMessage { }
-// declare class GlideSysNetThreadMonitor extends Packages.com.glide.monitor.threads.SysNetThreadMonitor { }
-// declare class GlideSysRelatedList extends Packages.com.glide.ui.SysRelatedList { }
-// declare class GlideSysSection extends Packages.com.glide.ui.SysSection { }
-// declare class GlideSysSemaphore extends Packages.com.glide.sys.util.SysSemaphore { }
-declare class GlideSystem extends Packages.com.glide.script.GlideSystem { protected constructor(); }
-// declare class GlideSystemDateUtil extends Packages.com.glide.script.system.GlideSystemDateUtil { }
-// declare class GlideSystemUtil extends Packages.com.glide.util.SystemUtil { }
-// declare class GlideSystemUtilDB extends Packages.com.glide.script.system.GlideSystemUtilDB { }
-// declare class GlideSystemUtilScript extends Packages.com.glide.script.system.GlideSystemUtilScript { }
-// declare class GlideSysThreadMonitor extends Packages.com.glide.monitor.threads.SysThreadMonitor { }
-// declare class GlideSysUserList extends Packages.com.glide.ui.SysUserList { }
-// declare class GlideTable extends Packages.com.glide.db.meta.Table { }
-// declare class GlideTableChoiceList extends Packages.com.glide.script.TableChoiceList { }
-// declare class GlideTableCleaner extends Packages.com.glide.misc.TableCleaner { }
-// declare class GlideTableCleanerJob extends Packages.com.glide.job.TableCleanerJob { }
-// declare class GlideTableCreator extends Packages.com.glide.db.impex.TableCreator { }
-// declare class GlideTableDescriptor extends Packages.com.glide.db.TableDescriptor { }
-// declare class GlideTableGroupMover extends Packages.com.glide.db.auxiliary.TableGroupMover { }
-// declare class GlideTableManager extends Packages.com.glide.db.TableManager { }
-// declare class GlideTableMover extends Packages.com.glide.db.auxiliary.TableMover { }
-// declare class GlideTableParentChange extends Packages.com.glide.db.table.TableParentChange { }
-// declare class GlideTableParentColumnChange extends Packages.com.glide.db.table.TableParentColumnChange { }
-// declare class GlideTaskToken extends Packages.com.glide.execution_plan.TaskToken { }
-// declare class GlideTemplate extends Packages.com.glide.script.Template { }
-// declare class GlideTestAgent extends Packages.com.glide.autotester.GlideTestAgent { }
-// declare class GlideTextIndexEvent extends Packages.com.glide.ts.event.TextIndexEvent { }
-// declare class GlideThreadAttributes extends Packages.com.glide.ui.GlideThreadAttributes { }
-// declare class GlideThreadUtil extends Packages.com.glide.util.ThreadUtil { }
-declare class GlideTime extends Packages.com.glide.glideobject.GlideTime { }
-// declare class GlideTimelineFrameSeparator extends Packages.com.glide.schedules.TimelineFrameSeparator { }
-// declare class GlideTimelineItem extends Packages.com.glide.schedules.TimelineItem { }
-// declare class GlideTimelineSpan extends Packages.com.glide.schedules.TimelineSpan { }
-// declare class GlideTomcatHelper extends Packages.com.glide.startup.TomcatHelper { }
-// declare class GlideTransaction extends Packages.com.glide.sys.Transaction { }
-// declare class GlideTransactionManager extends Packages.com.glide.sys.TransactionManager { }
-// declare class GlideTransferAuditDataHelper extends Packages.com.glide.audit.TransferAuditDataHelper { }
-// declare class GlideTransformer extends Packages.com.glide.db.impex.transformer.Transformer { }
-// declare class GlideTreePicker extends Packages.com.glide.ui.TreePicker { }
-// declare class GlideTSAnalysisViewer extends Packages.com.glide.ts.cluster.TSAnalysisViewer { }
-// declare class GlideTSAnalyticsProcessor extends Packages.com.glide.ts.cluster.TSAnalyticsProcessor { }
-// declare class GlideTSChainsHandler extends Packages.com.glide.ts.trends.TSChainsHandler { }
-// declare class GlideTSChainsLoader extends Packages.com.glide.ts.trends.TSChainsLoader { }
-// declare class GlideTSChainsPusher extends Packages.com.glide.ts.trends.TSChainsPusher { }
-// declare class GlideTSChainsSummarizer extends Packages.com.glide.ts.trends.TSChainsSummarizer { }
-// declare class GlideTSClusterDefinitions extends Packages.com.glide.ts.cluster.TSClusterDefinitions { }
-// declare class GlideTSDebug extends Packages.com.glide.ts.util.TSDebug { }
-// declare class GlideTSDidYouMean extends Packages.com.glide.ts.util.TSDidYouMean { }
-// declare class GlideTSGlobalKeywordSummarizer extends Packages.com.glide.ts.trends.TSGlobalKeywordSummarizer { }
-// declare class GlideTSIndexStatistician extends Packages.com.glide.ts.stats.TSIndexStatistician { }
-// declare class GlideTSIndexStopGenerator extends Packages.com.glide.ts.stats.TSIndexStopGenerator { }
-// declare class GlideTSIndexTables extends Packages.com.glide.ts.indexer.TSIndexTables { }
-// declare class GlideTSKeywordHandler extends Packages.com.glide.ts.trends.TSKeywordHandler { }
-// declare class GlideTSKeywordLoader extends Packages.com.glide.ts.trends.TSKeywordLoader { }
-// declare class GlideTSKeywordPusher extends Packages.com.glide.ts.trends.TSKeywordPusher { }
-// declare class GlideTSMoversViewer extends Packages.com.glide.ts.cluster.TSMoversViewer { }
-// declare class GlideTSSearchStatistician extends Packages.com.glide.ts.stats.TSSearchStatistician { }
-// declare class GlideTSSearchSummary extends Packages.com.glide.ts.trends.TSSearchSummary { }
-// declare class GlideTSTopSearches extends Packages.com.glide.ts.util.TSTopSearches { }
-// declare class GlideTSUtil extends Packages.com.glide.ts.util.TSUtil { }
-// declare class GlideTSVersion extends Packages.com.glide.ts.TSVersion { }
-// declare class GlideUIAction extends Packages.com.glide.ui.action.UIAction { }
-// declare class GlideUISession extends Packages.com.glide.ui.Session { }
-// declare class GlideUnloader extends Packages.com.glide.db.impex.Unloader { }
-declare class GlideUpdateManager2 extends Packages.com.glide.update.UpdateManager2 { }
-// declare class GlideUpdateSet extends Packages.com.glide.update.UpdateSet { }
-// declare class GlideUpdateSetController extends Packages.com.glide.system_update_set.UpdateSetController { }
-// declare class GlideUpdateSetPreviewer extends Packages.com.glide.update.UpdateSetPreviewer { }
-// declare class GlideUpdateSetWorker extends Packages.com.glide.update.UpdateSetWorker { }
-// declare class GlideUpdateSyncher extends Packages.com.glide.policy.UpdateSyncher { }
-// declare class GlideUpdateTableChoiceList extends Packages.com.glide.script.UpdateTableChoiceList { }
-// declare class GlideUpgrade extends Packages.com.glide.sys.Upgrade { }
-// declare class GlideUpgradeArtifactManager extends Packages.com.glide.misc.UpgradeArtifactManager { }
-// declare class GlideUpgradeLog extends Packages.com.glide.update.UpgradeLog { }
-// declare class GlideUpgradeMonitor extends Packages.com.glide.update.UpgradeMonitor { }
-declare class GlideURI extends Packages.com.glide.ui.GlideURI { }
-// declare class GlideURL extends Packages.com.glide.util.GlideURL { }
-// declare class GlideURLUTF8Encoder extends Packages.com.glide.util.URLUTF8Encoder { }
-// declare class GlideURLUtil extends Packages.com.glide.util.URLUtil { }
-declare class GlideUser extends Packages.com.glide.sys.User { }
-// declare class GlideUserAuthenticator extends Packages.com.glide.sys.UserAuthenticator { }
-// declare class GlideUserGroup extends Packages.com.glide.sys.UserGroup { }
-// declare class GlideUtil extends Packages.com.glide.util.GlideUtil { }
-// declare class GlideViewRuleNavigator extends Packages.com.glide.ui.ViewRuleNavigator { }
-// declare class GlideWarDeleter extends Packages.com.glide.misc.WarDeleter { }
-// declare class GlideWarDownloader extends Packages.com.glide.misc.WarDownloader { }
-// declare class GlideWhiteListManager extends Packages.com.glide.script.api.GlideWhiteListManager { }
-// declare class GlideWikiModel extends Packages.com.glide.wiki.GlideWikiModel { }
-// declare class GlideWorkerThread extends Packages.com.glide.worker.WorkerThread { }
-// declare class GlideWorkerThreadManager extends Packages.com.glide.sys.WorkerThreadManager { }
-// declare class GlideWSClient extends Packages.com.glide.util.WSClient { }
-// declare class GlideWSDefinition extends Packages.com.glide.wsdlreader.WSDefinition { }
-// declare class GlideWSDLReader extends Packages.com.glide.wsdlreader.GlideWSDLReader { }
-// declare class GlideXMLChoiceListSerializer extends Packages.com.glide.choice.XMLChoiceListSerializer { }
-declare class GlideXMLDocument extends Packages.com.glide.util.XMLDocument { }
-// declare class GlideXMLElementIterator extends Packages.com.glide.util.XMLElementIterator { }
-// declare class GlideXMLGlideRecordSerializer extends Packages.com.glide.processors.xmlhttp.XMLGlideRecordSerializer { }
-// declare class GlideXMLParameters extends Packages.com.glide.util.XMLParameters { }
-// declare class GlideXMLStats extends Packages.com.glide.ui.XMLStats { }
-// declare class GlideXMLSysMetaSerializer extends Packages.com.glide.processors.xmlhttp.XMLSysMetaSerializer { }
-// declare class GlideXMLUtil extends Packages.com.glide.util.XMLUtil { }
-// declare class GlideZipUtil extends Packages.com.glide.util.ZipUtil { }
-// declare class RhinoEnvironment extends Packages.com.glide.script.RhinoEnvironment { }
-// declare class RhinoHelper extends Packages.com.glide.script.RhinoHelper { }
-// declare class SecurelyAccess extends Packages.com.glide.sys.util.SecurelyAccess { }
-// declare class ServiceAPI extends Packages.com.glide.service_api.ServiceAPI { }
-// declare class SncAddress32Bit extends Packages.com.snc.commons.networks.Address32Bit { }
-// declare class SncAliasApplier extends Packages.com.snc.field_normalization.AliasApplier { }
-// declare class SncAppFiles extends Packages.com.snc.apps.api.AppFiles { }
-// declare class SncApplicationFileListener extends Packages.com.snc.apps.db.ApplicationFileListener { }
-// declare class SncAppsAccess extends Packages.com.snc.apps.api.AppsAccess { }
-// declare class SncAppsUI extends Packages.com.snc.apps.api.AppsUI { }
-// declare class SncASensor extends Packages.com.snc.discovery.sensor.ASensor { }
-// declare class SncAuthentication extends Packages.com.snc.authentication.digest.Authentication { }
-// declare class SncBaselineCMDB extends Packages.com.snc.cmdb.BaselineCMDB { }
-// declare class SncBulkCopy extends Packages.com.snc.ha.clone.BulkCopy { }
-// declare class SncClassifiedProcess extends Packages.com.snc.discovery.sensor.ClassifiedProcess { }
-// declare class SncClassify extends Packages.com.snc.discovery.sensor.snmp.Classify { }
-// declare class SncCloneController extends Packages.com.snc.ha.clone.CloneController { }
-// declare class SncCloneInstance extends Packages.com.snc.ha.clone.instance.Instance { }
-// declare class SncCloneLogger extends Packages.com.snc.ha.clone.CloneLogger { }
-// declare class SncCloneTask extends Packages.com.snc.ha.clone.CloneTask { }
-// declare class SncCloneUtils extends Packages.com.snc.ha.clone.CloneUtils { }
-// declare class SncConfiguration extends Packages.com.snc.field_normalization.db.Configuration { }
-// declare class SncConfigurations extends Packages.com.snc.field_normalization.Configurations { }
-// declare class SncConnectionTest extends Packages.com.snc.ha.connectivity.ConnectionTest { }
-// declare class SncDBChangeManagerFactoryHA extends Packages.com.snc.db.clone.change.DBChangeManagerFactoryHA { }
-// declare class SncDeviceHistory extends Packages.com.snc.discovery.logging.DeviceHistory { }
-// declare class SncDiscoveryCancel extends Packages.com.snc.discovery.DiscoveryCancel { }
-// declare class SncDiscoveryClassification extends Packages.com.snc.discovery.DiscoveryClassification { }
-// declare class SncDiscoveryLog extends Packages.com.snc.discovery.logging.DiscoveryLog { }
-// declare class SncDiscoveryRanges extends Packages.com.snc.commons.networks.DiscoveryRanges { }
-// declare class SncDiscoveryRangesDB extends Packages.com.snc.discovery.DiscoveryRangesDB { }
-// declare class SncDiscoveryReconciler extends Packages.com.snc.discovery.database.DiscoveryReconciler { }
-// declare class SncDiscoverySNMPClassification extends Packages.com.snc.discovery.sensor.snmp.DiscoverySNMPClassificatio { }
-// declare class SncDiscoveryUtils extends Packages.com.snc.discovery.DiscoveryUtils { }
-// declare class SncDropBackupTablesTask extends Packages.com.snc.ha.clone.instance.DropBackupTablesTask { }
-// declare class SncDropTablesTask extends Packages.com.snc.ha.clone.DropTablesTask { }
-// declare class SncEC2Properties extends Packages.com.snc.ec2.EC2Properties { }
-// declare class SncECMDBUtil extends Packages.com.snc.cmdb.ECMDBUtil { }
-// declare class SncElrondClient extends Packages.com.snc.customer_logon.ElrondClient { }
-// declare class SncExpert extends Packages.com.snc.expert.Expert { }
-// declare class SncExpertInstance extends Packages.com.snc.expert.ExpertInstance { }
-// declare class SncExpertPanel extends Packages.com.snc.expert.ExpertPanel { }
-// declare class SncExtantDataJob extends Packages.com.snc.field_normalization.db.ExtantDataJob { }
-// declare class SncExtantDataJobState extends Packages.com.snc.field_normalization.ExtantDataJobState { }
-// declare class SncFailoverController extends Packages.com.snc.da.gateway.replication.FailoverController { }
-// declare class SncFileTree extends Packages.com.snc.apps.file.FileTree { }
-// declare class SncGatewayCache extends Packages.com.snc.da.gateway.GatewayCache { }
-// declare class SncGatewayClone extends Packages.com.snc.da.gateway.clone.GatewayClone { }
-// declare class SncGatewayConnectivity extends Packages.com.snc.da.gateway.GatewayConnectivity { }
-// declare class SncGatewayPluginStartup extends Packages.com.snc.da.gateway.replication.GatewayPluginStartup { }
-// declare class SncGatewayTruncateHierarchy extends Packages.com.snc.da.gateway.clone.GatewayTruncateHierarchy { }
-// declare class SncGlideGateways extends Packages.com.snc.da.gateway.GlideGateways { }
-// declare class SncHAClone extends Packages.com.snc.ha.clone.HAClone { }
-// declare class SncHAConnectionTest extends Packages.com.snc.ha.connectivity.HAConnectionTest { }
-// declare class SncHADatabaseCheck extends Packages.com.snc.ha.tablecheck.HADatabaseCheck { }
-// declare class SncHAPairingUtils extends Packages.com.snc.ha.HAPairingUtils { }
-// declare class SncHAReplicationController extends Packages.com.snc.ha.HAReplicationController { }
-// declare class SncHAReplicationQueueSnapshotBuilder extends Packages.com.snc.ha.tablecheck.HAReplicationQueueSnapshotBuilder { }
-// declare class SncHATableCheck extends Packages.com.snc.ha.tablecheck.HATableCheck { }
-// declare class SncHATableCheckThread extends Packages.com.snc.ha.tablecheck.HATableCheckThread { }
-// declare class SncHATableQuickCheck extends Packages.com.snc.ha.tablecheck.HATableQuickCheck { }
-// declare class SncHATableRepair extends Packages.com.snc.ha.tablecheck.HATableRepair { }
-// declare class SncHAUtils extends Packages.com.snc.ha.HAUtils { }
-// declare class SncHostname extends Packages.com.snc.discovery.utils.Hostname { }
-// declare class SncInstanceClone extends Packages.com.snc.ha.clone.instance.InstanceClone { }
-// declare class SncInstanceConnectionTest extends Packages.com.snc.ha.connectivity.InstanceConnectionTest { }
-// declare class SncInstanceRollback extends Packages.com.snc.ha.clone.instance.InstanceRollback { }
-// declare class SncIPAddressV4 extends Packages.com.snc.commons.networks.IPAddressV4 { }
-// declare class SncIPAddressV6 extends Packages.com.snc.commons.networks.IPAddressV6 { }
-// declare class SncIPAuthenticator extends Packages.com.snc.ipauthenticator.IPAuthenticator { }
-// declare class SncIPIterator extends Packages.com.snc.commons.networks.IPIterator { }
-// declare class SncIPList extends Packages.com.snc.commons.networks.IPList { }
-// declare class SncIPMetaCollection extends Packages.com.snc.commons.networks.IPMetaCollection { }
-// declare class SncIPNetmaskV4 extends Packages.com.snc.commons.networks.IPNetmaskV4 { }
-// declare class SncIPNetworkV4 extends Packages.com.snc.commons.networks.IPNetworkV4 { }
-// declare class SncIPRangeV4 extends Packages.com.snc.commons.networks.IPRangeV4 { }
-// declare class SncJRobinGraphDef extends Packages.com.snc.jrobin.JRobinGraphDef { }
-// declare class SncLayer7Connections extends Packages.com.snc.discovery.Layer7Connections { }
-// declare class SncMACAddress extends Packages.com.snc.commons.networks.MACAddress { }
-// declare class SncMACAddressMfr extends Packages.com.snc.commons.networks.MACAddressMfr { }
-// declare class SncMakeAndModel extends Packages.com.snc.cmdb.MakeAndModel { }
-// declare class SncMIDConfigParameter extends Packages.com.snc.commons.MIDConfigParameter { }
-// declare class SncMIDServerRangesDB extends Packages.com.snc.discovery.MIDServerRangesDB { }
-// declare class SncNormalCoalescer extends Packages.com.snc.field_normalization.NormalCoalescer { }
-// declare class SncNormalizer extends Packages.com.snc.field_normalization.Normalizer { }
-// declare class SncNormalValueChanger extends Packages.com.snc.field_normalization.NormalValueChanger { }
-// declare class SncNotifySNC extends Packages.com.snc.system.NotifySNC { }
-// declare class SncOnCallRotation extends Packages.com.snc.on_call_rotation.OnCallRotation { }
-// declare class SncPendingValueCollector extends Packages.com.snc.field_normalization.PendingValueCollector { }
-// declare class SncPreferences extends Packages.com.snc.field_normalization.Preferences { }
-// declare class SncPrintServerHelper extends Packages.com.snc.discovery.database.PrintServerHelper { }
-// declare class SncProbe extends Packages.com.snc.discovery.Probe { }
-// declare class SncProbeRunTime extends Packages.com.snc.discovery.perfmon.ProbeRunTime { }
-// declare class SncRBSensorProcessor extends Packages.com.snc.discovery_automation.RBSensorProcessor { }
-// declare class SncReadTest extends Packages.com.snc.ha.ReadTest { }
-// declare class SncReclassifyCI extends Packages.com.snc.cmdb.ReclassifyCI { }
-// declare class SncRelationships extends Packages.com.snc.cmdb.Relationships { }
-// declare class SncReplicationAdvisor extends Packages.com.snc.db.replicate.ReplicationAdvisor { }
-// declare class SncReplicationEngine extends Packages.com.snc.db.replicate.ReplicationEngine { }
-// declare class SncReplicationQueue extends Packages.com.snc.db.replicate.ReplicationQueue { }
-// declare class SncRequestCredentials extends Packages.com.snc.customer_logon.RequestCredentials { }
-// declare class SncRrdGlideBackendFactory extends Packages.com.snc.jrobin.RrdGlideBackendFactory { }
-// declare class SncRuleApplier extends Packages.com.snc.field_normalization.RuleApplier { }
-// declare class SncRuleToPending extends Packages.com.snc.field_normalization.RuleToPending { }
-// declare class SncSAMCounter extends Packages.com.snc.software_asset_management.SAMCounter { }
-// declare class SncScheduleDropBackupTablesTask extends Packages.com.snc.ha.clone.instance.ScheduleDropBackupTablesTask { }
-// declare class SncScrapeIANAEnterpriseNumbers extends Packages.com.snc.discovery.database.ScrapeIANAEnterpriseNumbers { }
-// declare class SncScrapeIEEENICCodes extends Packages.com.snc.discovery.database.ScrapeIEEENICCodes { }
-// declare class SncSendNotificationTask extends Packages.com.snc.ha.clone.instance.SendNotificationTask { }
-// declare class SncSensorProcessor extends Packages.com.snc.discovery.SensorProcessor { }
-// declare class SncSerialNumber extends Packages.com.snc.discovery.SerialNumber { }
-// declare class SncSerialNumberList extends Packages.com.snc.discovery.SerialNumberList { }
-// declare class SncSessionMate extends Packages.com.snc.discovery.SessionMate { }
-// declare class SncSimmerControl extends Packages.com.snc.ha.clone.instance.SimmerControl { }
-// declare class SncTableEditor extends Packages.com.snc.apps.api.TableEditor { }
-// declare class SncTableRotation extends Packages.com.snc.db.replicate.TableRotation { }
-// declare class SncTableRotationExtension extends Packages.com.snc.db.replicate.TableRotationExtension { }
-// declare class SncTableRotationExtensions extends Packages.com.snc.db.replicate.TableRotationExtensions { }
-// declare class SncTableRotationWatcher extends Packages.com.snc.db.replicate.TableRotationWatcher { }
-// declare class SncTransformApplier extends Packages.com.snc.field_normalization.TransformApplier { }
-// declare class SncTreeBuilder extends Packages.com.snc.apps.tree.TreeBuilder { }
-// declare class SncTriggerSynchronizer extends Packages.com.snc.automation.TriggerSynchronizer { }
-// declare class SncValue extends Packages.com.snc.field_normalization.db.Value { }
-// declare class TestExtension extends Packages.com.glide.junit.misc.TestExtension { }
-// declare class UINotification extends Packages.com.glide.ui.UINotification { }
-
-/**
- * JSUtil is a class of shortcuts for common JavaScript routines.
- * @class JSUtil
- * @description Script includes and business rules that are marked as Application = "global" and Accessible from = "All applications" can be used in scoped scripts.JSUtil is not available in scoped scripts.The JSUtil API is available in server-side scripts.
- */
-declare var JSUtil: {
-    /**
-     * Checks if item is null or is undefined.
-     * @memberof JSUtil
-     * @param {*} item - The object to check
-     * @returns {boolean} True if the specified object is null or undefined..
-     */
-    doesNotHave(item: any): boolean;
-    /**
-     * Escape ampersands commonly used to define URL attributes.
-     * @memberof JSUtil
-     * @param {string} text - The text
-     * @returns {string} The text with ampersands properly escaped..
-     */
-    escapeAttr(text: string): string;
-    /**
-     * Escapes invalid XML characters such as "&lt; &gt; &amp;".
-     * @memberof JSUtil
-     * @param {string} text - The text
-     * @returns {string} The text with escape characters added..
-     */
-    escapeText(text: string): string;
-    /**
-     * Returns the value in a boolean GlideRecord field.
-     * @memberof JSUtil
-     * @param {GlideRecord} gr - A GlideRecord
-     * @param {string} field - The field from which to retrieve the boolean value.
-     * @returns {boolean} Returns the value in a boolean GlideRecord field, returns true if value of field is true, "true", 1, or "1"..
-     */
-    getBooleanValue(gr: GlideRecord, field: string): boolean;
-    /**
-     * Checks if item is not null and is not undefined.
-     * @memberof JSUtil
-     * @param {*} item - The Object to check
-     * @returns {boolean} True if the specified object is not null and is not undefined..
-     */
-    has(item: any): boolean;
-    /**
-     * Checks to see if the specified object is a member of the specified class.
-     * @memberof JSUtil
-     * @param {*} item - The object to check
-     * @param {string} className - The class to check
-     * @returns {boolean} True if the specified object is a member of the specified class..
-     * @description 
-     */
-    instance_of(item: any, className: string): boolean;
-    /**
-     * Checks if the specified object is a Java class.
-     * @memberof JSUtil
-     * @param {*} value - The object to check
-     * @returns {boolean} True if the specified object is an instance of a Java class..
-     */
-    isJavaObject(value: any): boolean;
-    /**
-     * Logs all the properties in the given object: name, type, and value.
-     * @memberof JSUtil
-     * @param {*} obj - The object for which to enumerate properties
-     * @param {string} name - Optional name for the logged object
-     * @description 
-     */
-    logObject(obj: any, name: string): void;
-    /**
-     * Checks if item is null, undefined, or evaluates to the empty string.
-     * @memberof JSUtil
-     * @param {*} item - The object to check
-     * @returns {boolean} True if the item is null, undefined, or evaluates to the empty string..
-     */
-    nil(item: any): boolean;
-    /**
-     * Checks if item is null, undefined, or evaluates to the empty string.
-     * @memberof JSUtil
-     * @param {*} item - The object to check
-     * @returns {boolean} True if the item exists and is not empty..
-     */
-    notNil(item: any): boolean;
-    /**
-     * Converts the specified object to a Boolean.
-     * @memberof JSUtil
-     * @param {*} item - The object to convert
-     * @returns {boolean} If the specified object is a boolean, it is passed through. Non-zero numbers return true. Null or undefined return false. Strings return true only if exactly equal to 'true'..
-     */
-    toBoolean(item: any): boolean;
-    /**
-     * Determines the type of the specified object.
-     * @memberof JSUtil
-     * @param {*} value - The object to check
-     * @returns {string} The type of the specified object.'null' if the given value is null or undefined'string' if the given value is a primitive string or a String wrapper instance'number' if the given value is a primitive number or a Number wrapper instance'boolean' if the given value is a primitive boolean or a Boolean wrapper instance'function' if the given value is a function'object' otherwise.
-     */
-    type_of(value: any): string;
-    /**
-     * Restore ampersands from escaped text.
-     * @memberof JSUtil
-     * @param {string} text - The text
-     * @returns {string} The text with escape characters removed..
-     */
-    unescapeAttr(text: string): string;
-    /**
-     * Removes escape characters.
-     * @memberof JSUtil
-     * @param {string} text - The text to process.
-     * @returns {string} The the text without escape characters..
-     */
-    unescapeText(text: string): string;
 }
 
 /**
  * GlideAggregate enables you to easily create database aggregation queries.
  * @class GlideAggregate
- * @description The GlideAggregate class is an extension of GlideRecord and provides database aggregation (COUNT, SUM, MIN, MAX, AVG) queries. This functionality can be helpful when creating customized reports or in calculations for calculated fields. The GlideAggregate class works only on number fields.When you use GlideAggregate on currency or price fields, you are working with the reference currency value. Be sure to convert the aggregate values to the user's session currency for display. Because the conversion rate between the currency or price value (displayed value) and its reference currency value (aggregation value) might change, the result may not be what the user expects.
+ * @description The scoped GlideAggregate class is an extension of GlideRecord and provides database aggregation (COUNT, SUM, MIN, MAX, AVG) queries. This functionality can be helpful when creating customized reports or in calculations for calculated fields. The GlideAggregate class works only on number fields.When you use GlideAggregate on currency or price fields, you are working with the reference currency value. Be sure to convert the aggregate values to the user's session currency for display. Because the conversion rate between the currency or price value (displayed value) and its reference currency value (aggregation value) might change, the result may not be what the user expects.
  */
 declare class GlideAggregate extends GlideRecord {
+    /**
+     * Creates a GlideAggregate object on the specified table.
+     * @constructor
+     * @param {string} tableName - Name of the table.
+     */
+    constructor(tableName: string);
     /**
      * Adds an aggregate.
      * @memberof GlideAggregate
      * @param {string} agg - Name of the aggregate to add, for example, COUNT, MIN, or MAX
-     * @param {string} name - (Optional) Name of the column to aggregate. Null is the default.
-     * @description 
+     * @param {string} [name] - Name of the column to aggregate. Null is the default.
      */
-    addAggregate(agg: string, name: string): void;
-    /**
-     * Adds a "having" element to the aggregate e.g. select category, count(*) from incident group by category HAVING count(*) &gt; 5.
-     * @memberof GlideAggregate
-     * @param {string} name - The aggregate to filter on for example, COUNT.
-     * @param {string} operator - The operator symbol for example &lt;, &gt;, =, !=.
-     * @param {string} value - The value to query on, for example '5'.
-     */
-    addHaving(name: string, operator: string, value: string): void;
+    addAggregate(agg: string, name?: string): void;
     /**
      * Adds a trend for a field.
      * @memberof GlideAggregate
      * @param {string} fieldName - The name of the field for which trending should occur.
-     * @param {string} timeInterval - The time interval for the trend. The following choices are available: year, quarter, date, week, month, dayofweek, hour, value.
-     * @description 
+     * @param {string} timeInterval - The time interval for the trend. The following choices are available: Year, Quarter, Date, Week, DayOfWeek, Hour, Value.
      */
     addTrend(fieldName: string, timeInterval: string): void;
     /**
      * Gets the value of an aggregate from the current record.
      * @memberof GlideAggregate
      * @param {string} agg - The type of the aggregate, for example, SUM or Count.
-     * @param {string} name - Name of the field to get the aggregate from.
-     * @returns {string} The value of the aggregate..
-     * @description 
+     * @param {string} [name] - Name of the field to get the aggregate from.
+     * @returns {string} The value of the aggregate.
      */
-    getAggregate(agg: string, name: string): string;
+    getAggregate(agg: string, name?: string): string;
     /**
-     * Retrieves the query necessary to return the current aggregate.
+     * Gets the query necessary to return the current aggregate.
      * @memberof GlideAggregate
-     * @returns {string} The query..
+     * @returns {string} The encoded query to get the aggregate.
      */
-    getQuery(): string;
-    /**
-     * Returns the number of records by summing an aggregate.
-     * @memberof GlideAggregate
-     * @param {string} agg - The aggregate
-     * @param {string} name - The name of the field to aggregate
-     * @returns {number} The total.
-     */
-    getTotal(agg: string, name: string): number;
+    getAggregateEncodedQuery(): string;
     /**
      * Provides the name of a field to use in grouping the aggregates.
      * @memberof GlideAggregate
      * @param {string} name - Name of the field.
-     * @description  
+     * @description 
      */
     groupBy(name: string): void;
     /**
      * Orders the aggregates based on the specified aggregate and field.
      * @memberof GlideAggregate
-     * @param {string} agg - Type of aggregation, for example SUM, COUNT, MIN, MAX.
+     * @param {string} agg - Type of aggregation.
      * @param {string} fieldName - Name of the field to aggregate.
-     * @description 
      */
     orderByAggregate(agg: string, fieldName: string): void;
     /**
      * Sets whether the results are to be grouped.
      * @memberof GlideAggregate
-     * @param {boolean} b - Set to true if grouping is true, otherwise set to false.
-     * @description 
+     * @param {boolean} b - When true the results are grouped.
      */
     setGroup(b: boolean): void;
 }
 
 /**
- * ArrayUtil API is a script include with useful functions for working with JavaScript arrays.
- * @class ArrayUtil
- * @description These methods are available to any server-side script.
+ * GlideQueryCondition object.
+ * @class GlideQueryCondition
  */
-declare class ArrayUtil {
+declare class GlideQueryCondition {
+    protected constructor();
     /**
-     * Merge two arrays.
-     * @memberof ArrayUtil
-     * @param {Array<*>} parent - An array to merge
-     * @param {Array<*>} child - An array to merge
-     * @returns {Array<*>} An array of elements from both input arrays. Duplicates are not removed..
+     * Adds an AND condition to the current condition.
+     * @param {string} name The name of a field.
+     * @param {QueryOperator} oper The operator for the query (=,!=,>,>=,<,<=,IN,NOT IN,STARTSWITH,ENDSWITH,CONTAINS,DOES NOT CONTAIN,INSTANCEOF).
+     * @param {*} value The value to query on.
+     * @returns {GlideQueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
      */
-    concat(parent: any[], child: any[]): any[];
+    addCondition(name: string, oper: QueryOperator, value: any): GlideQueryCondition;
     /**
-     * Searches the array for the element. Returns true if the element exists in the array, otherwise returns false.
-     * @memberof ArrayUtil
-     * @param {Array<*>} array - The array to search
-     * @param {*} element - The element to search for
-     * @returns {boolean} True if the element is in the array, false otherwise..
+     * Adds an AND condition to the current condition. Assumes the equals operator.
+     * @param {string} name The name of a field.
+     * @param {*} value The value of a field.
+     * @returns {GlideQueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
      */
-    contains(array: any[], element: any): boolean;
+    addCondition(name: string, value: any): GlideQueryCondition;
     /**
-     * Convert an object to an array.
-     * @memberof ArrayUtil
-     * @param {*} a - The object to be converted.
-     * @returns {Array<*>} An array created from the object..
+     * Adds an AND condition to the current condition.
+     * @param {GlideQueryCondition} queryCondition Condition to add.
+     * @returns {GlideQueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
      */
-    convertArray(a: any): any[];
+    addCondition(queryCondition: GlideQueryCondition): GlideQueryCondition
     /**
-     * Finds the differences between two or more arrays.
-     * @memberof ArrayUtil
-     * @param {Array<*>} a - An array
-     * @param {Array<*>} b - An array
-     * @returns {Array<*>} Returns an array of items from array a that were not found in either array b or c, or other input arrays. Duplicates are removed from the result..
-     * @description 
+     * Adds an OR condition to the current condition.
+     * @param {string} name The name of a field.
+     * @param {QueryOperator} oper The operator for the query (=,!=,>,>=,<,<=,IN,NOT IN,STARTSWITH,ENDSWITH,CONTAINS,DOES NOT CONTAIN,INSTANCEOF).
+     * @param {*} value The value to query on.
+     * @returns {GlideQueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
      */
-    diff(a: any[], b: any[]): any[];
+    addOrCondition(name: string, oper: QueryOperator, value: any): GlideQueryCondition;
     /**
-     * Returns an array from the object.
-     * @memberof ArrayUtil
-     * @param {*} object - The object from which to create an array.
-     * @returns {Array<*>} An array created from the object..
+     * Adds an OR condition to the current condition. Assumes the equals operator.
+     * @param {string} name The name of a field.
+     * @param {*} value The value to query on.
+     * @returns {GlideQueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
      */
-    ensureArray(object: any): any[];
+    addOrCondition(name: string, value: any): GlideQueryCondition;
     /**
-     * Searches the array for the element. Returns the element index if found, -1 otherwise.
-     * @memberof ArrayUtil
-     * @param {Array<*>} array - The array to search
-     * @param {*} element - The element to search for
-     * @returns {number} The index where the element was found, -1 otherwise..
+     * Adds an OR condition to the current condition. Assumes the equals operator.
+     * @param {GlideQueryCondition} queryCondition Condition to add.
+     * @returns {GlideQueryCondition} A reference to a GlideQueryConditon that was added to the GlideRecord.
      */
-    indexOf(array: any[], element: any): number;
-    /**
-     * Searches the array for the element starting with the startIndex element. Returns the element index.
-     * @memberof ArrayUtil
-     * @param {Array<*>} array - The array to search
-     * @param {*} element - The element to search for
-     * @param {number} startIndex - The index to begin the search
-     * @returns {number} The position of the element in the array, or -1 if the element is not in the array..
-     */
-    indexOf(array: any[], element: any, startIndex: number): number;
-    /**
-     * Finds the elements present in all arrays.
-     * @memberof ArrayUtil
-     * @param {Array<*>} a - An array
-     * @param {Array<*>} b - An array
-     * @returns {Array<*>} An array of elements from array a that were found in all of the other input arrays. Duplicates are removed..
-     * @description 
-     */
-    intersect(a: any[], b: any[]): any[];
-    /**
-     * Merge two or more arrays.
-     * @memberof ArrayUtil
-     * @param {Array<*>} a - An array
-     * @param {Array<*>} b - An array
-     * @returns {Array<*>} An array of items from all the input arrays. Duplicates are removed..
-     * @description 
-     */
-    union(a: any[], b: any[]): any[];
-    /**
-     * Removes duplicate items from an array.
-     * @memberof ArrayUtil
-     * @param {Array<*>} a - The array to check for duplicate elements.
-     * @returns {Array<*>} An array of unique items from the input array..
-     */
-    unique(a: any[]): any[];
+    addOrCondition(queryCondition: GlideQueryCondition): GlideQueryCondition;
 }
 
-declare interface ICustomClassPrototype0<TPrototype extends ICustomClassPrototype0<TPrototype, Type>, Type extends string> { initialize(this: TPrototype): void; type: Type; }
-declare interface ICustomClassPrototype1<TPrototype extends ICustomClassPrototype1<TPrototype, Type, TArg>, Type extends string, TArg> { initialize(this: TPrototype, arg: TArg): void; type: Type; }
-declare interface ICustomClassPrototype2<TPrototype extends ICustomClassPrototype2<TPrototype, Type, TArg0, TArg1>, Type extends string, TArg0, TArg1> { initialize(this: TPrototype, arg0: TArg0, arg1: TArg1): void; type: Type; }
-declare interface ICustomClassPrototype3<TPrototype extends ICustomClassPrototype3<TPrototype, Type, TArg0, TArg1, TArg2>, Type extends string, TArg0, TArg1, TArg2> { initialize(this: TPrototype, arg0: TArg0, arg1: TArg1, arg2: TArg2): void; type: Type; }
-declare interface ICustomClassPrototype4<TPrototype extends ICustomClassPrototype4<TPrototype, Type, TArg0, TArg1, TArg2, TArg3>, Type extends string, TArg0, TArg1, TArg2, TArg3> { initialize(this: TPrototype, arg0: TArg0, arg1: TArg1, arg2: TArg2, arg3: TArg3): void; type: Type; }
-declare interface ICustomClassPrototypeN<TPrototype extends ICustomClassPrototypeN<TPrototype, Type>, Type extends string> { initialize(this: TPrototype, ...args: any[]): void; type: Type; }
-
-declare interface CustomClassConstructor0<TPrototype extends ICustomClassPrototype0<TPrototype, string>, TInstance extends TPrototype> { new(): TInstance;(): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructor1<TPrototype extends ICustomClassPrototype1<TPrototype, string, TArg>, TInstance extends TPrototype, TArg> { new(arg: TArg): TInstance;(arg: TArg): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructor2<TPrototype extends ICustomClassPrototype2<TPrototype, string, TArg0, TArg1>, TInstance extends TPrototype, TArg0, TArg1> { new(arg0: TArg0, arg1: TArg1): TInstance;(arg0: TArg0, arg1: TArg1): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructor3<TPrototype extends ICustomClassPrototype3<TPrototype, string, TArg0, TArg1, TArg2>, TInstance extends TPrototype, TArg0, TArg1, TArg2> { new(arg0: TArg0, arg1: TArg1, arg2: TArg2): TInstance;(arg0: TArg0, arg1: TArg1, arg2: TArg2): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructor4<TPrototype extends ICustomClassPrototype4<TPrototype, string, TArg0, TArg1, TArg2, TArg3>, TInstance extends TPrototype, TArg0, TArg1, TArg2, TArg3> { new(arg0: TArg0, arg1: TArg1, arg2: TArg2, arg3: TArg3): TInstance;(arg0: TArg0, arg1: TArg1, arg2: TArg2, arg3: TArg3): TInstance; prototype: TPrototype; }
-declare interface CustomClassConstructorN<TPrototype extends ICustomClassPrototypeN<TPrototype, string>, TInstance extends TPrototype> { new(...args: any[]): TInstance;(): TInstance; prototype: TPrototype; }
-
-declare var Class: {
-    create<TConstructor extends CustomClassConstructor0<ICustomClassPrototype0<any, string>, ICustomClassPrototype0<any, string>> |
-        CustomClassConstructor1<ICustomClassPrototype1<any, string, any>, ICustomClassPrototype1<any, string, any>, any> |
-        CustomClassConstructor2<ICustomClassPrototype2<any, string, any, any>, ICustomClassPrototype2<any, string, any, any>, any, any> |
-        CustomClassConstructor3<ICustomClassPrototype3<any, string, any, any, any>, ICustomClassPrototype3<any, string, any, any, any>, any, any, any> |
-        CustomClassConstructor4<ICustomClassPrototype4<any, string, any, any, any, any>, ICustomClassPrototype4<any, string, any, any, any, any>, any, any, any, any> |
-        CustomClassConstructorN<ICustomClassPrototypeN<any, string>, ICustomClassPrototypeN<any, string>>>(): TConstructor;
-};
+/**
+ * The scoped GlideDate class provides methods for performing operations on GlideDate objects, such as instantiating GlideDate objects or working with GlideDate fields.
+ * @class GlideDate
+ */
+declare class GlideDate {
+    /**
+     * Creates a GlideDate object with the current date time.
+     * @constructor
+     */
+    constructor();
+    /**
+     * Gets the date in the specified date format.
+     * @memberof GlideDate
+     * @param {string} format - the desired date format
+     * @returns {string} the date in the specified format.
+     */
+    getByFormat(format: string): string;
+    /**
+     * Gets the day of the month stored by the GlideDate object, expressed in the UTC time zone.
+     * @memberof GlideDate
+     * @returns {number} The day of the month in the UTC time zone, from 1 to 31.
+     */
+    getDayOfMonthNoTZ(): number;
+    /**
+     * Gets the date in the current user's display format and time zone.
+     * @memberof GlideDate
+     * @returns {string} The date in the user's format and time zone. Keep in mind when designing business rules or script includes that this method may return values in different formats for different users.
+     */
+    getDisplayValue(): string;
+    /**
+     * Gets the display value in the internal format (yyyy-MM-dd).
+     * @memberof GlideDate
+     * @returns {string} The date values for the GlideDate object in the current user's time zone and the internal time format of yyyy-MM-dd.
+     */
+    getDisplayValueInternal(): string;
+    /**
+     * Gets the month stored by the GlideDate object, expressed in the UTC time zone.
+     * @memberof GlideDate
+     * @returns {number} The numerical value of the month from 1 to 12.
+     */
+    getMonthNoTZ(): number;
+    /**
+     * Gets the date value stored in the database by the GlideDate object in the internal format, yyyy-MM-dd, and the system time zone, UTC by default.
+     * @memberof GlideDate
+     * @returns {string} The date value in the internal format and system time zone.
+     */
+    getValue(): string;
+    /**
+     * Gets the year stored by the GlideDate object, expressed in the UTC time zone.
+     * @memberof GlideDate
+     * @returns {number} The numerical value of the year.
+     */
+    getYearNoTZ(): number;
+    /**
+     * Sets a date value using the current user's display format and time zone.
+     * @memberof GlideDate
+     * @param {string} asDisplayed - The date in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as yyyy-MM-dd.
+     */
+    setDisplayValue(asDisplayed: string): void;
+    /**
+     * Sets the date of the GlideDate object.
+     * @memberof GlideDate
+     * @param {string} o - The date and time to use.
+     */
+    setValue(o: string): void;
+    /**
+     * Gets the duration difference between two GlideDate values.
+     * @memberof GlideDate
+     * @param {GlideDate} start - The start value.
+     * @param {GlideDate} end - The end value.
+     * @returns {GlideDuration} The duration between the two values.
+     */
+    subtract(start: GlideDate, end: GlideDate): GlideDuration;
+}
 
 /**
- * Application File
+ * The scoped GlideDateTime class provides methods for performing operations on GlideDateTime objects, such as instantiating GlideDateTime objects or working with glide_date_time fields.
+ * @class GlideDateTime
+ * @description Use the GlideDateTime methods to perform date-time operations, such as instantiating a GlideDateTime object, performing date-time calculations, formatting a date-time, or converting between date-time formats.
+ */
+declare class GlideDateTime {
+    /**
+     * Adds a GlideTime object to the current GlideDateTime object.
+     * @memberof GlideDateTime
+     * @param {GlideTime} gd - The GlideTime object to add.
+     */
+    add(gd: GlideTime): void;
+    /**
+     * Adds the specified number of milliseconds to the current GlideDateTime object.
+     * @memberof GlideDateTime
+     * @param {number} milliseconds - The number of milliseconds to add.
+     */
+    add(milliseconds: number): void;
+    /**
+     * Instantiates a new GlideDateTime object with the current date and time in Greenwich Mean Time (GMT).
+     * @constructor
+     */
+    constructor();
+    /**
+     * Instantiates a new GlideDateTime object set to the time of the GlideDateTime object passed in the parameter.
+     * @constructor
+     * @param {GlideDateTime} g - The GlideDateTime object to use for setting the time of the new object.
+     */
+    constructor(g: GlideDateTime);
+    /**
+     * Instantiates a new GlideDateTime object from a date and time value in the UTC time zone specified with the format yyyy-MM-dd HH:mm:ss.
+     * @constructor
+     * @param {string} value - A UTC date and time using the internal format yyyy-MM-dd HH:mm:ss.
+     */
+    constructor(value: string);
+    /**
+     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days. The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts days using the local date and time values.
+     * @memberof GlideDateTime
+     * @param {number} days - The number of days to add. Use a negative value to subtract.
+     */
+    addDaysLocalTime(days: number): void;
+    /**
+     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days. The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts days using the UTC date and time values.
+     * @memberof GlideDateTime
+     * @param {number} days - The number of days to add. Use a negative number to subtract.
+     */
+    addDaysUTC(days: number): void;
+    /**
+     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months. The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts months using the local date and time values.
+     * @memberof GlideDateTime
+     * @param {number} months - The number of months to add. use a negative value to subtract.
+     */
+    addMonthsLocalTime(months: number): void;
+    /**
+     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months. The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts months using the UTC date and time values.
+     * @memberof GlideDateTime
+     * @param {number} months - The number of months to add. Use a negative value to subtract.
+     */
+    addMonthsUTC(months: number): void;
+    /**
+     * Adds the specified number of seconds to the current GlideDateTime object.
+     * @memberof GlideDateTime
+     * @param {number} seconds - The number of seconds to add.
+     */
+    addSeconds(seconds: number): void;
+    /**
+     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks. The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts weeks using the local date and time values.
+     * @memberof GlideDateTime
+     * @param {number} weeks - The number of weeks to add. Use a negative value to subtract.
+     */
+    addWeeksLocalTime(weeks: number): void;
+    /**
+     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks. The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts weeks using the UTC date and time values.
+     * @memberof GlideDateTime
+     * @param {number} weeks - The number of weeks to add. Use a negative value to subtract.
+     */
+    addWeeksUTC(weeks: number): void;
+    /**
+     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years. The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts years using the local date and time values.
+     * @memberof GlideDateTime
+     * @param {number} years - The number of years to add. Use a negative value to subtract.
+     */
+    addYearsLocalTime(years: number): void;
+    /**
+     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years. The date and time value stored by GlideDateTime object is interpreted as being in the UTC time zone.
+     * @memberof GlideDateTime
+     * @param {number} years - The number of years to add. Use a negative value to subtract.
+     */
+    addYearsUTC(years: number): void;
+    /**
+     * Determines if the GlideDateTime object occurs after the specified GlideDateTime.
+     * @memberof GlideDateTime
+     * @param {GlideDateTime} gdt - The time to check against.
+     * @returns {boolean} Returns true if the GlideDateTime object's time is after the time specified by the parameter.
+     */
+    after(gdt: GlideDateTime): boolean;
+    /**
+     * Determines if the GlideDateTime object occurs before the specified GlideDateTime.
+     * @memberof GlideDateTime
+     * @param {GlideDateTime} gdt - The time to check against.
+     * @returns {boolean} Returns true if the GlideDateTime object's time is before the time specified by the parameter.
+     */
+    before(gdt: GlideDateTime): boolean;
+    /**
+     * Compares two date and time objects to determine whether they are equivalent or one occurs before or after the other.
+     * @memberof GlideDateTime
+     * @param {*} o - Date and time object in GlideDateTime format
+     * @returns {number} 0 = Dates are equal1 = The object's date is after the date specified in the parameter-1 = The object's date is before the date specified in the parameter.
+     */
+    compareTo(o: any): number;
+    /**
+     * Compares a datetime with an existing value for equality.
+     * @memberof GlideDateTime
+     * @param {GlideDateTime | string} dateTime - The datetime to compare.
+     * @returns {boolean} Returns true if they are equal; otherwise, false.
+     */
+    equals(dateTime: GlideDateTime | string): boolean;
+    /**
+     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the system time zone, UTC by default.
+     * @memberof GlideDateTime
+     * @returns {GlideDate} The date in the system time zone.
+     */
+    getDate(): GlideDate;
+    /**
+     * Gets the day of the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     * @memberof GlideDateTime
+     * @returns {number} The day of the month in the user's time zone, from 1 to 31.
+     */
+    getDayOfMonthLocalTime(): number;
+    /**
+     * Gets the day of the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     * @memberof GlideDateTime
+     * @returns {number} The day of the month in the UTC time zone, from 1 to 31.
+     */
+    getDayOfMonthUTC(): number;
+    /**
+     * Gets the day of the week stored by the GlideDateTime object, expressed in the user's time zone.
+     * @memberof GlideDateTime
+     * @returns {number} The day of week value, in the user's time zone, from 1 to 7. Monday equals 1, Sunday equals 7.
+     */
+    getDayOfWeekLocalTime(): number;
+    /**
+     * Gets the day of the week stored by the GlideDateTime object, expressed in the UTC time zone.
+     * @memberof GlideDateTime
+     * @returns {number} The day of week value from 1 to 7. Monday equals 1, Sunday equals 7.
+     */
+    getDayOfWeekUTC(): number;
+    /**
+     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     * @memberof GlideDateTime
+     * @returns {number} The number of days in the current month in the user's time zone.
+     */
+    getDaysInMonthLocalTime(): number;
+    /**
+     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     * @memberof GlideDateTime
+     * @returns {number} The number of days in the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getDaysInMonthUTC(): number;
+    /**
+     * Gets the date and time value in the current user's display format and time zone.
+     * @memberof GlideDateTime
+     * @returns {string} The date and time in the user's format and time zone. Keep in mind when designing business rules or script includes that this method may return values in different formats for different users.
+     */
+    getDisplayValue(): string;
+    /**
+     * Gets the display value in the internal format (yyyy-MM-dd HH:mm:ss).
+     * @memberof GlideDateTime
+     * @returns {string} The date and time values for the GlideDateTime object in the current user's time zone and the internal date and time format of yyyy-MM-dd HH:mm:ss.
+     */
+    getDisplayValueInternal(): string;
+    /**
+     * Gets the amount of time that daylight saving time is offset.
+     * @memberof GlideDateTime
+     * @returns {number} Amount of time, in milliseconds, that daylight saving is offset. Returns 0 if there is no offset or if the time is not during daylight saving time.
+     */
+    getDSTOffset(): number;
+    /**
+     * Gets the current error message.
+     * @memberof GlideDateTime
+     * @returns {string} The error message.
+     */
+    getErrorMsg(): string;
+    /**
+     * Returns the object's time in the local time zone and in the internal format.
+     * @memberof GlideDateTime
+     * @returns {string} The object's time in the local time zone and the internal format.
+     */
+    getInternalFormattedLocalTime(): string;
+    /**
+     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the current user's time zone.
+     * @memberof GlideDateTime
+     * @returns {GlideDate} The date in the user's time zone.
+     */
+    getLocalDate(): GlideDate;
+    /**
+     * Returns a GlideTime object that represents the time portion of the GlideDateTime object in the user's time zone.
+     * @memberof GlideDateTime
+     * @returns {GlideTime} The time in the user's time zone.
+     */
+    getLocalTime(): GlideTime;
+    /**
+     * Gets the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     * @memberof GlideDateTime
+     * @returns {number} The numerical value of the month.
+     */
+    getMonthLocalTime(): number;
+    /**
+     * Gets the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     * @memberof GlideDateTime
+     * @returns {number} The numerical value of the month.
+     */
+    getMonthUTC(): number;
+    /**
+     * Gets the number of milliseconds since January 1, 1970, 00:00:00 GMT.
+     * @memberof GlideDateTime
+     * @returns {number} The number of milliseconds since January 1, 1970, 00:00:00 GMT.
+     */
+    getNumericValue(): number;
+    /**
+     * Returns a GlideTime object that represents the time portion of the GlideDateTime object.
+     * @memberof GlideDateTime
+     * @returns {GlideTime} The Unix duration stamp in system format based on GMT time.
+     */
+    getTime(): GlideTime;
+    /**
+     * Gets the time zone offset in milliseconds.
+     * @memberof GlideDateTime
+     * @returns {number} The number of milliseconds of time zone offset.
+     */
+    getTZOffset(): number;
+    /**
+     * Returns the object's time in the local time zone and in the user's format.
+     * @memberof GlideDateTime
+     * @returns {string} The object's time in the local time zone and in the user's format.
+     */
+    getUserFormattedLocalTime(): string;
+    /**
+     * Gets the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default.
+     * @memberof GlideDateTime
+     * @returns {string} The date and time value in the internal format and system time zone.
+     */
+    getValue(): string;
+    /**
+     * Gets the number of the week stored by the GlideDateTime object, expressed in the current user's time zone. All weeks begin on Sunday. The first week of the year is the week that contains at least one day of the new year. The week beginning Sunday 2015-12-27 is considered the first week of 2016 as that week contains January 1 and 2.
+     * @memberof GlideDateTime
+     * @returns {number} The number of the current week in local time. The highest week number in a year is either 52 or 53.
+     */
+    getWeekOfYearLocalTime(): number;
+    /**
+     * Gets the number of the week stored by the GlideDateTime object, expressed in the UTC time zone. All weeks begin on Sunday. The first week of the year is the week that contains at least one day of the new year. The week beginning Sunday 2015-12-27 is considered the first week of 2016 as that week contains January 1 and 2.
+     * @memberof GlideDateTime
+     * @returns {number} The number of the current week in UTC time. The highest week number in a year is either 52 or 53.
+     */
+    getWeekOfYearUTC(): number;
+    /**
+     * Gets the year stored by the GlideDateTime object, expressed in the current user's time zone.
+     * @memberof GlideDateTime
+     * @returns {number} Four-digit year value in the user's time zone.
+     */
+    getYearLocalTime(): number;
+    /**
+     * Gets the year stored by the GlideDateTime object, expressed in the UTC time zone.
+     * @memberof GlideDateTime
+     * @returns {number} 4-digit year value in the UTC time zone.
+     */
+    getYearUTC(): number;
+    /**
+     * Determines if an object's date is set.
+     * @memberof GlideDateTime
+     * @returns {boolean} True if the object date is set; otherwise, returns false.
+     */
+    hasDate(): boolean;
+    /**
+     * Determines if an object's time uses a daylight saving offset.
+     * @memberof GlideDateTime
+     * @returns {boolean} True if the time is daylight saving; otherwise, returns false.
+     */
+    isDST(): boolean;
+    /**
+     * Determines if a value is a valid date and time.
+     * @memberof GlideDateTime
+     * @returns {boolean} True if value is valid; otherwise, returns false.
+     */
+    isValid(): boolean;
+    /**
+     * Determines if the GlideDateTime object occurs on or after the specified GlideDateTime.
+     * @memberof GlideDateTime
+     * @param {GlideDateTime} gdt - The time to check against.
+     * @returns {boolean} Returns true if the GlideDateTime object's time is on or after the time specified by the parameter.
+     */
+    onOrAfter(gdt: GlideDateTime): boolean;
+    /**
+     * Determines if the GlideDateTime object occurs on or before the specified GlideDateTime.
+     * @memberof GlideDateTime
+     * @param {GlideDateTime} gdt - The time to check against.
+     * @returns {boolean} Returns true if the GlideDateTime object's time is on or before the time specified by the parameter.
+     */
+    onOrBefore(gdt: GlideDateTime): boolean;
+    /**
+     * Sets the day of the month to a specified value in the current user's time zone.
+     * @memberof GlideDateTime
+     * @param {number} day - The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
+     */
+    setDayOfMonthLocalTime(day: number): void;
+    /**
+     * Sets the day of the month to a specified value in the UTC time zone.
+     * @memberof GlideDateTime
+     * @param {number} day - The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
+     */
+    setDayOfMonthUTC(day: number): void;
+    /**
+     * Sets a date and time value using the current user's display format and time zone.
+     * @memberof GlideDateTime
+     * @param {string} asDisplayed - The date and time in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as MM-dd-yyyy HH:mm:ss. To assign the current date and time to a variable in a workflow script, use variable.setDisplayValue(gs.nowDateTime);.
+     */
+    setDisplayValue(asDisplayed: string): void;
+    /**
+     * Sets a date and time value using the current user's time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in the?value?parameter does not match the?format?parameter. You can retrieve the error message by calling getErrorMsg() on the GlideDateTime object after the exception is caught.
+     * @memberof GlideDateTime
+     * @param {string} value - The date and time in the current user's time zone.
+     * @param {string} format - The date and time format to use to parse the value parameter.
+     */
+    setDisplayValue(value: string, format: string): void;
+    /**
+     * Sets a date and time value using the internal format (yyyy-MM-dd HH:mm:ss) and the current user's time zone.
+     * @memberof GlideDateTime
+     * @param {string} value - The date and time in internal format.
+     */
+    setDisplayValueInternal(value: string): void;
+    /**
+     * Sets the date and time of the current object using an existing GlideDateTime object. This method is equivalent to instantiating a new object with a GlideDateTime parameter.
+     * @memberof GlideDateTime
+     * @param {GlideDateTime} g - The object to use for setting the datetime value.
+     */
+    setGlideDateTime(g: GlideDateTime): void;
+    /**
+     * Sets the month stored by the GlideDateTime object to the specified value using the current user's time zone.
+     * @memberof GlideDateTime
+     * @param {number} month - The month to change to.
+     */
+    setMonthLocalTime(month: number): void;
+    /**
+     * Sets the month stored by the GlideDateTime object to the specified value using the UTC time zone.
+     * @memberof GlideDateTime
+     * @param {number} month - The month to change to.
+     */
+    setMonthUTC(month: number): void;
+    /**
+     * Sets the date and time of the GlideDateTime object.
+     * @memberof GlideDateTime
+     * @param {string} o - The date and time to use. This parameter may be one of several types:A string in the UTC time zone and the internal format of yyyy-MM-dd HH:mm:ss. Sets the value of the object to the specified date and time. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(String value) constructor. If the date and time format used does not match the internal format, the method attempts to set the date and time using other available formats. Resolving the date and time this way can lead to inaccurate data due to ambiguity in the day and month values. When using a non-standard date and time format, use etValueUTC(String dt, String format) instead.A GlideDateTime object. Sets the value of the object to the date and time stored by the GlideDateTime passed in the parameter. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(GlideDateTime g) constructor.A JavaScript Number. Sets the value of the object using the Number value as milliseconds past January 1, 1970 00:00:00 GMT.
+     */
+    setValue(o: string): void;
+    /**
+     * Sets a date and time value using the UTC time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in the?dt?parameter does not match the?format?parameter. You can retrieve the error message by calling?getErrorMsg()?on the GlideDateTime object after the exception is caught.
+     * @memberof GlideDateTime
+     * @param {string} dt - The date and time to use.
+     * @param {string} format - The date and time format to use.
+     */
+    setValueUTC(dt: string, format: string): void;
+    /**
+     * Sets the year stored by the GlideDateTime object to the specified value using the current user's time zone.
+     * @memberof GlideDateTime
+     * @param {number} year - The year to change to.
+     */
+    setYearLocalTime(year: number): void;
+    /**
+     * Sets the year stored by the GlideDateTime object to the specified value using the UTC time zone.
+     * @memberof GlideDateTime
+     * @param {number} year - The year to change to.
+     */
+    setYearUTC(year: number): void;
+    /**
+     * Gets the duration difference between two GlideDateTime values.
+     * @memberof GlideDateTime
+     * @param {GlideDateTime} Start - The start value.
+     * @param {GlideDateTime} End - The end value.
+     * @returns {GlideDuration} The duration between the two values.
+     */
+    subtract(Start: GlideDateTime, End: GlideDateTime): GlideDuration;
+    /**
+     * Subtracts a specified amount of time from the current GlideDateTime object.
+     * @memberof GlideDateTime
+     * @param {GlideTime} time - The time value to subtract.
+     */
+    subtract(time: GlideTime): void;
+    /**
+     * Subtracts the specified number of milliseconds from the GlideDateTime object.
+     * @memberof GlideDateTime
+     * @param {number} milliseconds - The number of milliseconds to subtract.
+     */
+    subtract(milliseconds: number): void;
+    /**
+     * Gets the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default. This method is equivalent to getValue().
+     * @memberof GlideDateTime
+     * @returns {string} The date and time stored by the GlideDateTime object in the system time zone and format.
+     */
+    toString(): string;
+}
+
+/**
+ * The scoped GlideDuration class provides methods for working with spans of time or durations.
+ * @class GlideDuration
+ * @description GlideDuration objects store the duration as a date and time from January 1, 1970, 00:00:00. As a result, setValue() and getValue() use the scoped GlideDateTime object for parameters and return values.
+ */
+declare class GlideDuration {
+    /**
+     * Add the specified duration to the object.
+     * @memberof GlideDuration
+     * @param {GlideDuration} duration - The value to add to the object.
+     * @returns {GlideDuration} The sum of the current and the added duration.
+     */
+    add(duration: GlideDuration): GlideDuration;
+    /**
+     * Instantiates a GlideDuration object.
+     * @constructor
+     */
+    constructor();
+    /**
+     * Instantiates a GlideDuration object by cloning the value of another GlideDuration object.
+     * @constructor
+     * @param {GlideDuration} another - Another scoped GlideDuration object.
+     */
+    constructor(another: GlideDuration);
+    /**
+     * Instantiates a GlideDuration object with the specified duration.
+     * @constructor
+     * @param {number} milliseconds - The duration value in milliseconds.
+     */
+    constructor(milliseconds: number);
+    /**
+     * Instantiates a GlideDuration object with the specified display value.
+     * @constructor
+     * @param {string} displayValue - The display value.
+     */
+    constructor(displayValue: string);
+    /**
+     * Gets the duration in the specified format.
+     * @memberof GlideDuration
+     * @param {string} format - The duration format.
+     * @returns {string} The current duration in the specified format.
+     */
+    getByFormat(format: string): string;
+    /**
+     * Gets the number of days.
+     * @memberof GlideDuration
+     * @returns {number} The number of days.
+     */
+    getDayPart(): number;
+    /**
+     * Gets the display value of the duration in number of days, hours, and minutes.
+     * @memberof GlideDuration
+     * @returns {string} The number of days, hours, and minutes.
+     */
+    getDisplayValue(): string;
+    /**
+     * Gets the duration value in "d HH:mm:ss" format.
+     * @memberof GlideDuration
+     * @returns {string} The duration value.
+     */
+    getDurationValue(): string;
+    /**
+     * Gets the rounded number of days. If the time part is more than 12 hours, the return value is rounded up. Otherwise, it is rounded down.
+     * @memberof GlideDuration
+     * @returns {number} The day part, rounded.
+     */
+    getRoundedDayPart(): number;
+    /**
+     * Gets the internal value of the GlideDuration object.
+     * @memberof GlideDuration
+     * @returns {string} The duration in the object's internal format, which is the date and time from January 1, 1970, 00:00:00.
+     * @description 
+     */
+    getValue(): string;
+    /**
+     * Sets the display value.
+     * @memberof GlideDuration
+     * @param {string} asDisplayed - The duration in "d HH:mm:ss" format.
+     */
+    setDisplayValue(asDisplayed: string): void;
+    /**
+     * Sets the internal value of the GlideDuration object.
+     * @memberof GlideDuration
+     * @param {*} o - The duration in the object's internal format, which is the date and time from January 1, 1970, 00:00:00.
+     * @description 
+     */
+    setValue(o: any): void;
+    /**
+     * Subtracts the specified duration from the current duration.
+     * @memberof GlideDuration
+     * @param {GlideDuration} duration - The duration to subtract.
+     */
+    subtract(duration: GlideDuration): void;
+}
+
+/**
+ * The scoped GlideTime class provides methods for performing operations on GlideTime objects, such as instantiating GlideTime objects or working with GlideTime fields.
+ * @class GlideTime
+ */
+declare class GlideTime {
+    /**
+     * Instantiates a GlideTime object with the current time.
+     * @constructor
+     */
+    constructor();
+    /**
+     * Instantiates a GlideTime object with the specified time.
+     * @constructor
+     * @param {number} milliseconds - The datetime in milliseconds.
+     */
+    constructor(milliseconds: number);
+    /**
+     * Gets the time in the specified format.
+     * @memberof GlideTime
+     * @param {string} format - The time format.
+     * @returns {string} The time in the specified format.
+     */
+    getByFormat(format: string): string;
+    /**
+     * Gets the time in the current user's display format and time zone.
+     * @memberof GlideTime
+     * @returns {string} The time in the user's format and time zone.
+     * @description 
+     */
+    getDisplayValue(): string;
+    /**
+     * Gets the display value in the current user's time zone and the internal format (HH:mm:ss).
+     * @memberof GlideTime
+     * @returns {string} The time value for the GlideTime object in the current user's time zone and the internal time format of HH:mm:ss.
+     */
+    getDisplayValueInternal(): string;
+    /**
+     * Returns the hours part of the time using the local time zone.
+     * @memberof GlideTime
+     * @returns {number} The hours using the local time zone.
+     */
+    getHourLocalTime(): number;
+    /**
+     * Returns the hours part of the time using the local time zone. The number of hours is based on a 24 hour clock.
+     * @memberof GlideTime
+     * @returns {number} The hours using the local time zone. The number of hours is based on a 24 hour clock.
+     */
+    getHourOfDayLocalTime(): number;
+    /**
+     * Returns the hours part of the time using the UTC time zone. The number of hours is based on a 24 hour clock.
+     * @memberof GlideTime
+     * @returns {number} The hours using the UTC time zone. The number of hours is based on a 24 hour clock.
+     */
+    getHourOfDayUTC(): number;
+    /**
+     * Returns the hours part of the time using the UTC time zone. The number of hours is based on a 12 hour clock. Noon and midnight are represented by 0, not 12.
+     * @memberof GlideTime
+     * @returns {number} The hours using the UTC time zone. The number of hours is based on a 12 hour clock. Noon and midnight are represented by 0, not 12.
+     */
+    getHourUTC(): number;
+    /**
+     * Returns the number of minutes using the local time zone.
+     * @memberof GlideTime
+     * @returns {number} The number of minutes using the local time zone.
+     */
+    getMinutesLocalTime(): number;
+    /**
+     * Returns the number of minutes in the hour based on the UTC time zone.
+     * @memberof GlideTime
+     * @returns {number} The number of minutes in the hour using the UTC time zone.
+     */
+    getMinutesUTC(): number;
+    /**
+     * Returns the number of seconds in the current minute.
+     * @memberof GlideTime
+     * @returns {number} The number of seconds in the minute.
+     */
+    getSeconds(): number;
+    /**
+     * Gets the time value stored in the database by the GlideTime object in the internal format, HH:mm:ss, and the system time zone.
+     * @memberof GlideTime
+     * @returns {string} The time value in the internal fomat and system time zone.
+     */
+    getValue(): string;
+    /**
+     * Sets a time value using the current user's display format and time zone.
+     * @memberof GlideTime
+     * @param {string} asDisplayed - The time in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as HH:mm:ss.
+     */
+    setDisplayValue(asDisplayed: string): void;
+    /**
+     * Sets the time of the GlideTime object in the internal time zone.
+     * @memberof GlideTime
+     * @param {string} o - The time in hh:mm:ss format.
+     */
+    setValue(o: string): void;
+    /**
+     * Gets the duration difference between two GlideTime object values.
+     * @memberof GlideTime
+     * @param {GlideTime} startTime - The start value.
+     * @param {GlideTime} endTime - The end value.
+     * @returns {GlideDuration} The duration between the two values.
+     */
+    subtract(startTime: GlideTime, endTime: GlideTime): GlideDuration;
+}
+
+/**
+ * The Scoped GlideElement API provides a number of convenient script methods for dealing with fields and their values. Scoped GlideElement methods are available for the fields of the current GlideRecord.
+ * @class GlideElement
+ */
+declare class GlideElement extends $$element.StringBased<string, GlideElement, string> { protected constructor(); }
+declare class GlideElementBoolean extends Packages.java.lang.Boolean implements $$element.IValueSpecific<boolean, GlideElementBoolean, $$rhino.BooleanString> {
+    protected constructor();
+
+    /**
+     * Determines if the user's role permits the creation of new records in this field.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the field can be created, false otherwise.
+     */
+    canCreate(): boolean;
+    /**
+     * Indicates whether the user's role permits them to read the associated GlideRecord.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the field can be read, false otherwise.
+     */
+    canRead(): boolean;
+    /**
+     * Determines whether the user's role permits them to write to the associated GlideRecord.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the user can write to the field, false otherwise.
+     */
+    canWrite(): boolean;
+    /**
+     * Determines if the current field has been modified. This functionality is available for all available data types, except Journal fields.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the fields have been changed, false if the field has not.
+     * @description 
+     */
+    changes(): boolean;
+    /**
+     * Determines if the previous value of the current field matches the specified object.
+     * @memberof GlideElementBoolean
+     * @param {$$rhino.Nilable<$$property.Boolean>} o - An object value to check against the previous value of the current field.
+     * @returns {boolean} True if the previous value matches, false if it does not.
+     * @description 
+     */
+    changesFrom(o: $$rhino.Nilable<$$property.Boolean>): boolean;
+    /**
+     * Determines if the new value of a field, after a change, matches the specified object.
+     * @memberof GlideElementBoolean
+     * @param {$$rhino.Nilable<$$property.Boolean>} o - An object value to check against the new value of the current field.
+     * @returns {boolean} True if the previous value matches, false if it does not.
+     * @description 
+     */
+    changesTo(o: $$rhino.Nilable<$$property.Boolean>): boolean;
+    /**
+     * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field. Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+     * @memberof GlideElementBoolean
+     * @returns {number} Number of milliseconds since January 1, 1970, 00:00:00 GMT.
+     */
+    dateNumericValue(): number;
+    /**
+     * Returns the value of the specified attribute from the dictionary.
+     * @memberof GlideElementBoolean
+     * @param {string} attributeName - Attribute name
+     * @returns {string} Attribute value.
+     * @description 
+     */
+    getAttribute(attributeName: string): string;
+    /**
+     * Returns the Boolean value of the specified attribute from the dictionary.
+     * @memberof GlideElementBoolean
+     * @param {string} attributeName - Attribute name
+     * @returns {boolean} Boolean value of the attribute. Returns false if the attribute does not exist.
+     * @description 
+     */
+    getBooleanAttribute(attributeName: string): boolean;
+    /**
+     * Generates a choice list for a field.
+     * @memberof GlideElementBoolean
+     * @param {string} [dependent] - A dependent value
+     * @returns {Array<*>} An array list of choices.
+     */
+    getChoices(dependent?: string): any[];
+    /**
+     * Returns the choice label for the current choice.
+     * @memberof GlideElementBoolean
+     * @returns {string} The selected choice's label.
+     * @description 
+     */
+    getChoiceValue(): string;
+    /**
+     * Returns the clear text value for Password (2 way encrypted) fields in scoped applications.
+     * @memberof GlideElementBoolean
+     * @returns {string} The clear text password.
+     */
+    getDecryptedValue(): string;
+    /**
+     * Gets the formatted display value of the field.
+     * @memberof GlideElementBoolean
+     * @param {number} [maxCharacters] - Maximum characters desired
+     * @returns {string} The display value of the field.
+     */
+    getDisplayValue(maxCharacters?: number): string;
+    /**
+     * Returns the element's descriptor.
+     * @memberof GlideElementBoolean
+     * @returns {GlideElementDescriptor} Element's descriptor.
+     */
+    getED(): GlideElementDescriptor;
+    /**
+     * Returns the phone number in international format.
+     * @memberof GlideElementBoolean
+     * @returns {string} The phone number in international format.
+     */
+    getGlobalDisplayValue(): string;
+    /**
+     * Returns the HTML value of a field.
+     * @memberof GlideElementBoolean
+     * @param {number} [maxChars] - Maximum number of characters to return.
+     * @returns {string} HTML value for the field.
+     */
+    getHTMLValue(maxChars?: number): string;
+    /**
+     * Returns either the most recent journal entry or all journal entries.
+     * @memberof GlideElementBoolean
+     * @param {number} mostRecent - If 1, returns the most recent entry. If -1, returns all journal entries.
+     * @returns {string} For the most recent entry, returns a string that contains the field label, timestamp, and user display name of the journal entry.For all journal entries, returns the same information for all journal entries ever entered as a single string with each entry delimited by "\n\n".
+     */
+    getJournalEntry(mostRecent: number): string;
+    /**
+     * Returns the object label.
+     * @memberof GlideElementBoolean
+     * @returns {string} Object label.
+     */
+    getLabel(): string;
+    /**
+     * Returns the name of the field.
+     * @memberof GlideElementBoolean
+     * @returns {string} Field name.
+     */
+    getName(): string;
+    /**
+     * Returns the name of the table on which the field resides.
+     * @memberof GlideElementBoolean
+     * @returns {string} Name of the table. The returned value may be different from the table Class that the record is in. See Tables and Classes in the product documentation.
+     */
+    getTableName(): string;
+    /**
+     * Determines if a field is null.
+     * @memberof GlideElementBoolean
+     * @returns {boolean} True if the field is null or an empty string, false if not.
+     */
+    nil(): boolean;
+    /**
+     * Sets the value of a date/time element to the specified number of milliseconds since January 1, 1970 00:00:00 GMT.
+     * @memberof GlideElementBoolean
+     * @param {number} milliseconds - Number of milliseconds since 1/1/1970
+     * @description 
+     */
+    setDateNumericValue(milliseconds: number): void;
+    /**
+     * Sets the display value of the field.
+     * @memberof GlideElementBoolean
+     * @param {*} value - The value to set for the field.
+     */
+    setDisplayValue(value: any): void;
+    /**
+     * Adds an error message. Available in Fuji patch 3.
+     * @memberof GlideElementBoolean
+     * @param {string} errorMessage - The error message.
+     */
+    setError(errorMessage: string): void;
+    /**
+     * Sets the field to the specified phone number.
+     * @memberof GlideElementBoolean
+     * @param {*} phoneNumber - The phone number to set. This can be in either the international or local format.
+     * @param {boolean} strict - When true, specifies that the number specified must match the correct format. When false, the system attempts to correct an improperly formatted phone number.
+     * @returns {boolean} True if the value was set.
+     * @description 
+     */
+    setPhoneNumber(phoneNumber: any, strict: boolean): boolean;
+    /**
+     * Sets the value of a field.
+     * @memberof GlideElementBoolean
+     * @param {$$rhino.Nilable<$$property.Boolean>} value - Object value to set the field to.
+     * @description 
+     */
+    setValue(value: $$rhino.Nilable<$$property.Boolean>): void;
+}
+declare class GlideElementBreakdownElement extends $$element.StringBased<string, GlideElementBreakdownElement, string> { protected constructor(); }
+declare class GlideElementCompressed extends $$element.StringBased<string, GlideElementCompressed, string> { protected constructor(); }
+declare class GlideElementConditions extends $$element.StringBased<string, GlideElementConditions, string> { protected constructor(); }
+declare class GlideElementCounter extends $$element.StringBased<number, GlideElementCounter, string> { protected constructor(); }
+declare class GlideElementCurrency extends $$element.StringBased<string, GlideElementCurrency, string> { protected constructor(); }
+declare class GlideElementDataObject extends $$element.StringBased<string, GlideElementDataObject, string> { protected constructor(); }
+declare class GlideElementDocumentation extends $$element.StringBased<string, GlideElementDocumentation, string> { protected constructor(); }
+declare class GlideElementDocumentId extends $$element.StringBased<string, GlideElementDocumentId, string> { protected constructor(); }
+declare class GlideElementDomainId extends $$element.StringBased<string, GlideElementDomainId, string> { protected constructor(); }
+declare class GlideElementFullUTF8 extends $$element.StringBased<string, GlideElementFullUTF8, string> { protected constructor(); }
+declare class GlideElementGlideObject extends $$element.StringBased<string, GlideElementGlideObject, string> { protected constructor(); }
+declare class GlideElementGlideVar extends $$element.StringBased<string, GlideElementGlideVar, string> { protected constructor(); }
+declare class GlideElementIcon extends $$element.StringBased<string, GlideElementIcon, string> { protected constructor(); }
+declare class GlideElementInternalType extends $$element.StringBased<string, GlideElementInternalType, string> { protected constructor(); }
+declare class GlideElementNameValue extends $$element.StringBased<string, GlideElementNameValue, string> { protected constructor(); }
+declare class GlideElementNumeric extends $$element.StringBased<number, GlideElementNumeric, string> implements $$element.IValueSpecific<number, GlideElementNumeric, string> { protected constructor(); }
+declare class GlideElementPassword extends $$element.StringBased<string, GlideElementPassword, string> { protected constructor(); }
+declare class GlideElementPassword2 extends $$element.StringBased<string, GlideElementPassword2, string> { protected constructor(); }
+declare class GlideElementPrice extends $$element.StringBased<number, GlideElementPrice, string> { protected constructor(); }
+
+/**
+ * A Glide element that references another GlideRecord.
+ * @class GlideElementReference
+ * @todo Verify whether Packages.com.glide.script.glide_elements.GlideReference exists
+ */
+declare class GlideElementReference extends $$element.StringBased<string, GlideElementReference, string> implements $$element.IReference<IGlideTableProperties, GlideRecord>, IGlideTableProperties {
+    protected constructor();
+    /**
+     * Created by
+     * @type {$$property.Element}
+     * @memberof GlideElementReference
+     */
+    sys_created_by: $$property.Element;
+
+    /**
+     * Created
+     * @type {$$property.GlideObject}
+     * @memberof GlideElementReference
+     * @description Internal type is "glide_date_time"
+     */
+    sys_created_on: $$property.GlideObject;
+
+    /**
+     * Sys ID
+     * @type {$$property.Element}
+     * @memberof GlideElementReference
+     * @description Internal type is "GUID"
+     */
+    sys_id: $$property.Element;
+
+    /**
+     * Updates
+     * @type {$$property.Numeric}
+     * @memberof GlideElementReference
+     */
+    sys_mod_count: $$property.Numeric;
+
+    /**
+     * Updated by
+     * @type {$$property.Element}
+     * @memberof GlideElementReference
+     */
+    sys_updated_by: $$property.Element;
+
+    /**
+     * Updated
+     * @type {$$property.GlideObject}
+     * @memberof GlideElementReference
+     * @description Internal type is "glide_date_time"
+     */
+    sys_updated_on: $$property.GlideObject;
+    /**
+     * Gets the table name for a reference element.
+     * @memberof GlideElementReference
+     * @returns {string} The table name of the reference.
+     */
+    getReferenceTable(): string;
+    /**
+     * Returns a GlideRecord object for a given reference element.
+     * @memberof GlideElementReference
+     * @returns {GlideRecord} A GlideRecord object.
+     * @description
+     */
+    getRefRecord(): GlideRecord | null | undefined;
+    /**
+     * Determines if the previous value of the current field matches the specified object.
+     * @memberof GlideElementReference
+     * @param {GlideRecord | $$rhino.Nilable<$$property.Reference>} o - An object value to check against the previous value of the current field.
+     * @returns {boolean} True if the previous value matches, false if it does not.
+     * @description 
+     */
+    changesFrom(o: GlideRecord | $$rhino.Nilable<$$property.Reference>): boolean;
+    /**
+     * Determines if the new value of a field, after a change, matches the specified object.
+     * @memberof GlideElementReference
+     * @param {GlideRecord | $$rhino.Nilable<$$property.Reference>} o - An object value to check against the new value of the current field.
+     * @returns {boolean} True if the previous value matches, false if it does not.
+     * @description 
+     */
+    changesTo(o: GlideRecord | $$rhino.Nilable<$$property.Reference>): boolean;
+    /**
+     * Sets the value of a field.
+     * @memberof GlideElementReference
+     * @param {GlideRecord | $$rhino.Nilable<$$property.Reference>} value - Object value to set the field to.
+     * @description
+     */
+    setValue(value: GlideRecord | $$rhino.Nilable<$$property.Reference>): void;
+}
+
+declare class GlideElementScript extends $$element.StringBased<string, GlideElementScript, string> { protected constructor(); }
+declare class GlideElementShortFieldName extends $$element.StringBased<string, GlideElementShortFieldName, string> { protected constructor(); }
+declare class GlideElementShortTableName extends $$element.StringBased<string, GlideElementShortTableName, string> { protected constructor(); }
+declare class GlideElementSourceId extends $$element.StringBased<string, GlideElementSourceId, string> { protected constructor(); }
+declare class GlideElementSourceName extends $$element.StringBased<string, GlideElementSourceName, string> { protected constructor(); }
+declare class GlideElementSourceTable extends $$element.StringBased<string, GlideElementSourceTable, string> { protected constructor(); }
+declare class GlideElementSysClassName extends $$element.StringBased<string, GlideElementSysClassName, string> { protected constructor(); }
+declare class GlideElementTranslatedField extends $$element.StringBased<string, GlideElementTranslatedField, string> { protected constructor(); }
+declare class GlideElementTranslatedHTML extends $$element.StringBased<string, GlideElementTranslatedHTML, string> { protected constructor(); }
+declare class GlideElementTranslatedText extends $$element.StringBased<string, GlideElementTranslatedText, string> { protected constructor(); }
+declare class GlideElementURL extends $$element.StringBased<string, GlideElementURL, string> { protected constructor(); }
+declare class GlideElementUserImage extends $$element.StringBased<string, GlideElementUserImage, string> { protected constructor(); }
+declare class GlideElementVariableConditions extends $$element.StringBased<string, GlideElementVariableConditions, string> { protected constructor(); }
+declare class GlideElementVariables extends $$element.StringBased<string, GlideElementVariables, string> { protected constructor(); }
+declare class GlideElementWikiText extends $$element.StringBased<string, GlideElementWikiText, string> { protected constructor(); }
+declare class GlideElementWorkflow extends $$element.StringBased<string, GlideElementWorkflow, string> { protected constructor(); }
+declare class GlideElementWorkflowConditions extends $$element.StringBased<string, GlideElementWorkflowConditions, string> { protected constructor(); }
+
+/**
+ * Scoped GlideRecord is used for database operations.
+ * @class GlideRecord
+ * @description A GlideRecord contains both records and fields. For information about GlideRecordSecure, which is a class inherited from GlideRecord that performs the same functions as GlideRecord, and also enforces ACLs, see the GlideServer APIs .Always test queries on a sub-production instance prior to deploying them on a production instance. An incorrectly constructed encoded query, such as including an invalid field name, produces an invalid query. When the invalid query is run, the invalid part of the query condition is dropped, and the results are based on the valid part of the query, which may return all records from the table. Using an insert(), update(), deleteRecord(), or deleteMultiple() method on bad query results can result in data loss.You can set the glide.invalid_query.returns_no_rows system property to true to have queries with invalid encoded queries return no records.
+ */
+declare class GlideRecord implements IGlideTableProperties, $$element.IDbObject {
+    /**
+     * Created by
+     * @type {$$property.Element}
+     * @memberof GlideRecord
+     */
+    sys_created_by: $$property.Element;
+
+    /**
+     * Created
+     * @type {$$property.GlideObject}
+     * @memberof GlideRecord
+     * @description Internal type is "glide_date_time"
+     */
+    sys_created_on: $$property.GlideObject;
+
+    /**
+     * Sys ID
+     * @type {$$property.Element}
+     * @memberof GlideRecord
+     * @description Internal type is "GUID"
+     */
+    sys_id: $$property.Element;
+
+    /**
+     * Updates
+     * @type {$$property.Numeric}
+     * @memberof GlideRecord
+     */
+    sys_mod_count: $$property.Numeric;
+
+    /**
+     * Updated by
+     * @type {$$property.Element}
+     * @memberof GlideRecord
+     */
+    sys_updated_by: $$property.Element;
+
+    /**
+     * Updated
+     * @type {$$property.GlideObject}
+     * @memberof GlideRecord
+     * @description Internal type is "glide_date_time"
+     */
+    sys_updated_on: $$property.GlideObject;
+    /**
+     * Adds a filter to return active records.
+     * @memberof GlideRecord
+     * @returns {GlideQueryCondition} Filter to return active records.
+     */
+    addActiveQuery(): GlideQueryCondition;
+    /**
+     * Adds an encoded query to other queries that may have been set.
+     * @memberof GlideRecord
+     * @param {string} query - An encoded query string.
+     * @description 
+     */
+    addEncodedQuery(query: string): void;
+    /**
+     * Applies a pre-defined GlideDBFunctionBuilder object to a record.
+     * @memberof GlideRecord
+     * @param {*} function - A GlideDBFunctionBuilder object that defines a SQL operation.
+     * @description 
+     */
+    addFunction(functionBuilder: any): void;
+    /**
+     * Creates an instance of the GlideRecord class for the specified table.
+     * @constructor
+     * @param {string} tableName - The table to be used.
+     */
+    constructor(tableName: string);
+    /**
+     * Adds a filter to return records based on a relationship in a related table.
+     * @memberof GlideRecord
+     * @param {string} joinTable - Table name
+     * @param {*} [primaryField] - If other than sys_id, the primary field
+     * @param {*} [joinTableField] - If other than sys_id, the field that joins the tables.
+     * @returns {GlideQueryCondition} A filter that lists records where the relationships match.
+     * @description 
+     */
+    addJoinQuery(joinTable: string, primaryField?: any, joinTableField?: any): GlideQueryCondition;
+    /**
+     * A filter that specifies records where the value of the field passed in the parameter is not null.
+     * @memberof GlideRecord
+     * @param {string} fieldName - Name of the field to check.
+     * @returns {GlideQueryCondition} A filter that specifies records where the value of the field passed in the parameter is not null.
+     * @description 
+     */
+    addNotNullQuery(fieldName: string): GlideQueryCondition;
+    /**
+     * Adds a filter to return records where the value of the specified field is null.
+     * @memberof GlideRecord
+     * @param {string} fieldName - Name of the field to check.
+     * @returns {GlideQueryCondition} Query condition added to the GlideRecord.
+     * @description 
+     */
+    addNullQuery(fieldName: string): GlideQueryCondition;
+    /**
+     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+     * @memberof GlideRecord
+     */
+    addQuery(): GlideQueryCondition;
+    /**
+     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+     * @memberof GlideRecord
+     * @param {string} name - Table field name.
+     * @param {string} operator - Query operator. The available values are dependent on the data type of the value parameter.Numbers:=!=&gt;&gt;=&lt;&lt;=Strings (must be in upper case):=!=INNOT INSTARTSWITHENDSWITHCONTAINSDOES NOT CONTAININSTANCEOF
+     * @param {*} value - Value on which to query (not case-sensitive).
+     * @returns {GlideQueryCondition} The query condition that was added to the GlideRecord.
+     */
+    addQuery(name: string, operator: string, value: any): GlideQueryCondition;
+    /**
+     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+     * @memberof GlideRecord
+     * @param {string} name - Table field name.
+     * @param {*} value - Value on which to query (not case-sensitive).
+     * @returns {GlideQueryCondition} The query condition that was added to the GlideRecord.
+     */
+    addQuery(name: string, value: any): GlideQueryCondition;
+    /**
+     * Adds a filter to return records using an encoded query string.
+     * @memberof GlideRecord
+     * @param {string} encodedQuery - Encoded query string.
+     * @returns {GlideQueryCondition} The query condition added to the GlideRecord.
+     * @description 
+     */
+    addQuery(encodedQuery: string): GlideQueryCondition;
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit inserting new records in this table.
+     * @memberof GlideRecord
+     * @returns {boolean} True if the user's roles permit creation of new records in this table.
+     */
+    canCreate(): boolean;
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit deleting records in this table.
+     * @memberof GlideRecord
+     * @returns {boolean} Flag that indicates whether the user's roles permit deletions of records in this table.Valid values:true: Deletions permittedfalse: Deletions are not permitted.
+     */
+    canDelete(): boolean;
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit reading records in this table.
+     * @memberof GlideRecord
+     * @returns {boolean} Flag that indicates whether the user's roles permit reading of records in this table.Valid values:true: Reading permittedfalse: Reading is not permitted.
+     */
+    canRead(): boolean;
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit editing records in this table.
+     * @memberof GlideRecord
+     * @returns {boolean} Flag that indicates whether the user's roles permit writing of records in this table.Valid values:true: Writing permittedfalse: Writing is not permitted.
+     */
+    canWrite(): boolean;
+    /**
+     * Sets a range of rows to be returned by subsequent queries.
+     * @memberof GlideRecord
+     * @param {number} firstRow - The first row to include. Because the index starts at 0, a value of 0 returns the first row.
+     * @param {number} lastRow - The last row to include in the range. Because the index starts at 0, use the value n - 1, in which n equals the actual row number.
+     * @param {boolean} forceCount - If true, the getRowCount() method will return all possible records.
+     */
+    chooseWindow(firstRow: number, lastRow: number, forceCount: boolean): void;
+    /**
+     * Deletes multiple records that satisfy the query condition.
+     * @memberof GlideRecord
+     * @description 
+     */
+    deleteMultiple(): void;
+    /**
+     * Deletes the current record.
+     * @memberof GlideRecord
+     * @returns {boolean} Flag that indicates whether the record was successfully deleted.Valid values:true: Record was deleted.false: No record was found to delete.
+     */
+    deleteRecord(): boolean;
+    /**
+     * Returns the specified record in an instantiated GlideRecord object.
+     * @memberof GlideRecord
+     * @param {$$property.Element} sys_id - sys_id to match.
+     * @returns {boolean} Flag that indicates whether the requested record was located - true: Record was found; false: Record was not found.
+     * @description 
+     */
+    get(sys_id: $$property.Element): boolean;
+    /**
+     * Returns the specified record in an instantiated GlideRecord object.
+     * @memberof GlideRecord
+     * @param {GLIDE.String} name - Name of the instantiated GlideRecord column to search for the specified value parameter.
+     * @param {*} value - Value to match.
+     * @returns {boolean} Flag that indicates whether the requested record was located.true: Record was foundfalse: Record was not found.
+     * @description 
+     */
+    get(name: $$rhino.String, value: any): boolean;
+    /**
+     * Returns the dictionary attributes for the specified field.
+     * @memberof GlideRecord
+     * @param {string} fieldName - Field name for which to return the dictionary attributes
+     * @returns {string} Dictionary attributes.
+     */
+    getAttribute(fieldName: string): string;
+    /**
+     * Returns the table's label.
+     * @memberof GlideRecord
+     * @returns {string} Table's label.
+     */
+    getClassDisplayValue(): string;
+    /**
+     * Retrieves the display value for the current record.
+     * @memberof GlideRecord
+     * @returns {string} The display value for the current record.
+     */
+    getDisplayValue(): string;
+    /**
+     * Returns the element's descriptor.
+     * @memberof GlideRecord
+     * @returns {GlideElementDescriptor} Element's descriptor.
+     */
+    getED(): GlideElementDescriptor;
+    /**
+     * Retrieves the GlideElement object for the specified field.
+     * @memberof GlideRecord
+     * @param {string} columnName - Name of the column to get the element from.
+     * @returns {GlideElement} The GlideElement for the specified column of the current record.
+     */
+    getElement(columnName: string): GlideElement;
+    /**
+     * Retrieves the query condition of the current result set as an encoded query string.
+     * @memberof GlideRecord
+     * @returns {string} The encoded query as a string.
+     */
+    getEncodedQuery(): string;
+    /**
+     * Returns the field's label.
+     * @memberof GlideRecord
+     * @returns {string} Field's label.
+     */
+    getLabel(): string;
+    /**
+     * Retrieves the last error message. If there is no last error message, null is returned.
+     * @memberof GlideRecord
+     * @returns {string} The last error message as a string.
+     */
+    getLastErrorMessage(): string;
+    /**
+     * Retrieves a link to the current record.
+     * @memberof GlideRecord
+     * @param {boolean} noStack - If true, the sysparm_stack parameter is not appended to the link. The parameter sysparm_stack specifies the page to visit after closing the current link.
+     * @returns {string} A link to the current record as a string.
+     */
+    getLink(noStack: boolean): string;
+    /**
+     * Retrieves the class name for the current record.
+     * @memberof GlideRecord
+     * @returns {string} The class name.
+     */
+    getRecordClassName(): string;
+    /**
+     * Retrieves the number of rows in the query result.
+     * @memberof GlideRecord
+     * @returns {number} Number of rows.
+     */
+    getRowCount(): number;
+    /**
+     * Retrieves the name of the table associated with the GlideRecord.
+     * @memberof GlideRecord
+     * @returns {string} The table name.
+     */
+    getTableName(): string;
+    /**
+     * Gets the primary key of the record, which is usually the sys_id unless otherwise specified.
+     * @memberof GlideRecord
+     * @returns {string} The unique primary key as a String, or null if the key is null.
+     */
+    getUniqueValue(): string;
+    /**
+     * Retrieves the string value of an underlying element in a field.
+     * @memberof GlideRecord
+     * @param {string} name - The name of the field to get the value from.
+     * @returns {string} The value of the field.
+     */
+    getValue(name: string): string;
+    /**
+     * Determines if there are any more records in the GlideRecord object.
+     * @memberof GlideRecord
+     * @returns {boolean} True if there are more records in the query result set.
+     */
+    hasNext(): boolean;
+    /**
+     * Creates an empty record suitable for population before an insert.
+     * @memberof GlideRecord
+     */
+    initialize(): void;
+    /**
+     * Inserts a new record using the field values that have been set for the current record.
+     * @memberof GlideRecord
+     * @returns {string} Unique ID of the inserted record, or null if the record is not inserted.
+     */
+    insert(): string;
+    /**
+     * Checks to see if the current database action is to be aborted.
+     * @memberof GlideRecord
+     * @returns {boolean} Flag that indicates whether the current database action is to be aborted.Valid values:true: Action is to be aborted.false: Action is not to be aborted.
+     * @description 
+     */
+    isActionAborted(): boolean;
+    /**
+     * Checks if the current record is a new record that has not yet been inserted into the database.
+     * @memberof GlideRecord
+     * @returns {boolean} True if the record is new and has not been inserted into the database.
+     */
+    isNewRecord(): boolean;
+    /**
+     * Determines if the table exists.
+     * @memberof GlideRecord
+     * @returns {boolean} True if table is valid or if record was successfully retrieved. False if table is invalid or record was not successfully retrieved.
+     */
+    isValid(): boolean;
+    /**
+     * Determines if the specified field is defined in the current table.
+     * @memberof GlideRecord
+     * @param {string} columnName - The name of the the field.
+     * @returns {boolean} True if the field is defined for the current table.
+     */
+    isValidField(columnName: string): boolean;
+    /**
+     * Determines if a record was actually returned by the query/get record operation.
+     * @memberof GlideRecord
+     * @returns {boolean} Flag that indicates whether a record was actually returned by the query/get operation.Valid values:true: Record returned by query/get operation.false: End of record set, no record returned.
+     */
+    isValidRecord(): boolean;
+    /**
+     * Creates a new GlideRecord record, sets the default values for the fields, and assigns a unique ID to the record.
+     * @memberof GlideRecord
+     */
+    newRecord(): void;
+    /**
+     * Moves to the next record in the GlideRecord object.
+     * @memberof GlideRecord
+     * @returns {boolean} Flag that indicates if there is a "next" record in the GlideRecord.Valid values:true: Move to the next record was successful.false: No more records in the result set.
+     * @description 
+     */
+    next(): boolean;
+    /**
+     * Retrieves the current operation being performed, such as insert, update, or delete.
+     * @memberof GlideRecord
+     * @returns {string} The current operation.
+     */
+    operation(): string;
+    /**
+     * Specifies an orderBy column.
+     * @memberof GlideRecord
+     * @param {string} name - The column name used to order the records in this GlideRecord object.
+     */
+    orderBy(name: string): void;
+    /**
+     * Specifies a decending orderBy column.
+     * @memberof GlideRecord
+     * @param {string} name - The column name to be used to order the records in a GlideRecord object.
+     */
+    orderByDesc(name: string): void;
+    /**
+     * Runs the query against the table based on the filters specified by addQuery, addEncodedQuery, etc.
+     * @memberof GlideRecord
+     * @param {*} field - Column name to query on.
+     * @param {*} value - Value to query for.
+     */
+    query(field: any, value: any): void;
+    /**
+     * Runs the query against the table based on the filters specified by addQuery, addEncodedQuery, etc.
+     * @memberof GlideRecord
+     */
+    query(): void;
+    /**
+     * Sets a flag to indicate if the next database action (insert, update, delete) is to be aborted. This is often used in business rules.
+     * @memberof GlideRecord
+     * @param {boolean} b - True to abort the next action. False if the action is to be allowed.
+     */
+    setAbortAction(b: boolean): void;
+    /**
+     * Sets the limit for number of records are fetched by the GlideRecord query.
+     * @memberof GlideRecord
+     * @param {number} maxNumRecords - The maximum number of records to fetch.
+     */
+    setLimit(maxNumRecords: number): void;
+    /**
+     * Sets sys_id value for the current record.
+     * @memberof GlideRecord
+     * @param {string} guid - The GUID to be assigned to the current record.
+     */
+    setNewGuidValue(guid: string): void;
+    /**
+     * Sets the value of the field with the specified name to the specified value.
+     * @memberof GlideRecord
+     * @param {string} name - Name of the field.
+     * @param {*} value - The value to assign to the field.
+     * @description 
+     */
+    setValue(name: string, value: any): void;
+    /**
+     * Enables or disables the running of business rules, script engines, and audit.
+     * @memberof GlideRecord
+     * @param {boolean} enable - If true (default), enables business rules. If false, disables business rules.
+     */
+    setWorkflow(enable: boolean): void;
+    /**
+     * Updates the GlideRecord with any changes that have been made. If the record does not already exist, it is inserted.
+     * @memberof GlideRecord
+     * @param {string} [reason] - Reason for the update. The reason appears in the audit record.
+     * @returns {string} The sys_id of the new or updated record. Returns null if the update fails.
+     */
+    update(reason?: string): string;
+    /**
+     * Updates each GlideRecord in a stated query with a specified set of changes.
+     * @memberof GlideRecord
+     * @description 
+     */
+    updateMultiple(): void;
+    /**
+     * Moves to the next record in the GlideRecord. Provides the same functionality as next(), it is intended to be used in cases where the GlideRecord has a column named next.
+     * @memberof GlideRecord
+     * @returns {boolean} True if there are more records in the query set.
+     */
+    _next(): boolean;
+    /**
+     * Identical to query(). This method is intended to be used on tables where there is a column named query, which would interfere with using the query() method.
+     * @memberof GlideRecord
+     * @param {*} name - Column name on which to query
+     * @param {*} value - Value for which to query
+     * @description 
+     */
+    _query(name: any, value: any): void;
+}
+
+/**
+ * The scoped GlideElementDescriptor API provides information about individual fields.
+ * @class GlideElementDescriptor
+ * @description There is no constructor for this class. Use the GlideElement getED() method to obtain a ElementDescriptor object.
+ */
+declare class GlideElementDescriptor {
+    protected constructor();
+    /**
+     * Returns the encryption type used for attachments on the element's table.
+     * @memberof GlideElementDescriptor
+     * @returns {string | Packages.java.lang.String} The encryption type used on attachments. Returns null if attachments on the element's table are not being encrypted.
+     * @description 
+     */
+    getAttachmentEncryptionType(): string | Packages.java.lang.String;
+    /**
+     * Returns the element's encryption type.
+     * @memberof GlideElementDescriptor
+     * @returns {string | Packages.java.lang.String} The element's encryption type. Returns null if the element is not encrypted.
+     * @description 
+     */
+    getEncryptionType(): string | Packages.java.lang.String;
+    /**
+     * Returns the element's internal data type.
+     * @memberof GlideElementDescriptor
+     * @returns {string | Packages.java.lang.String} The element's internal data type.
+     */
+    getInternalType(): string | Packages.java.lang.String;
+    /**
+     * Returns the element's label.
+     * @memberof GlideElementDescriptor
+     * @returns {string | Packages.java.lang.String} The element's label.
+     */
+    getLabel(): string | Packages.java.lang.String;
+    /**
+     * Returns the element's length.
+     * @memberof GlideElementDescriptor
+     * @returns {number} The element's size.
+     */
+    getLength(): number;
+    /**
+     * Returns the element's name.
+     * @memberof GlideElementDescriptor
+     * @returns {string} The element's name.
+     */
+    getName(): string | Packages.java.lang.String;
+    /**
+     * Returns the element's plural label.
+     * @memberof GlideElementDescriptor
+     * @returns {string} The element's plural label.
+     */
+    getPlural(): string | Packages.java.lang.String;
+    /**
+     * Returns true if an encrypted attachment has been added to the table.
+     * @memberof GlideElementDescriptor
+     * @returns {boolean} Returns true if an encrypted attachment has been added to the table.
+     * @description 
+     */
+    hasAttachmentsEncrypted(): boolean;
+    /**
+     * Returns true if the element is an automatically generated or system field.
+     * @memberof GlideElementDescriptor
+     * @returns {boolean} True if the element is automatically generated or a system field.
+     * @description 
+     */
+    isAutoOrSysID(): boolean;
+    /**
+     * Returns true if the element is defined as a dropdown choice in its dictionary definition.
+     * @memberof GlideElementDescriptor
+     * @returns {boolean} Returns true if the element is defined as a dropdown choice. Returns true even if there are no entries defined in the choice table. The last choice type, suggestion, does not return true.
+     * @description 
+     */
+    isChoiceTable(): boolean;
+    /**
+     * Returns true if an element is encrypted.
+     * @memberof GlideElementDescriptor
+     * @returns {boolean} Returns true if the element is encrypted, false otherwise.
+     * @description 
+     */
+    isEdgeEncrypted(): boolean;
+    /**
+     * Returns true if the element is a virtual element.
+     * @memberof GlideElementDescriptor
+     * @returns {boolean} Returns true if the element is a virtual element.
+     * @description 
+     */
+    isVirtual(): boolean;
+}
+
+declare class GlideXMLDocument {
+    setNamespaceAware(value: boolean): void;
+    parse(text: string): void;
+    getDocumentElement(): Packages.org.w3c.dom.Element;
+    createElement(name: string, value: any): Packages.org.w3c.dom.Element;
+    createCDATAElement(name: string, value: any): Packages.org.w3c.dom.Element;
+    getDocumentElement(): Packages.org.w3c.dom.Element;
+    selectSingleNodeText(xpath: string): Packages.java.lang.String;
+    load(f: string): void;
+    toIndentedString(): Packages.java.lang.String;
+    toString(): Packages.java.lang.String;
+}
+declare class XMLDocument {
+    constructor(xml: $$rhino.String, nsAware?: $$rhino.Boolean);
+    createElement(name: string, value?: any): Packages.org.w3c.dom.Element;
+    setCurrent(el: Packages.org.w3c.dom.Element): void;
+    setAttribute(name: string, value?: any): void;
+    getChildTextByTagName(parent: Packages.org.w3c.dom.Element, tagName: string): Packages.java.lang.String;
+    getElementByTagName(ptagName: string): Packages.org.w3c.dom.Element;
+    getElementValueByTagName(tagName: string): Packages.java.lang.String;
+    getDocument(): GlideXMLDocument;
+    getDocumentElement(): Packages.org.w3c.dom.Element;
+    getNodeText(xpath: string): Packages.java.lang.String;
+    getNodeInt(xpath: string): Packages.java.lang.Integer;
+    getNode(xpath: string): Packages.org.w3c.dom.Node;
+    getNodeName(xpath: string): Packages.java.lang.String;
+    getNodeType(xpath: string): Packages.java.lang.String;
+    getNodes(xpath): Packages.org.w3c.dom.NodeList;
+    getAttribute(xpath: string, attributeName: string): Packages.java.lang.String;
+    isValid(): Packages.java.lang.Boolean;
+    load(f: string): void;
+    toIndentedString(): Packages.java.lang.String;
+    toString(): Packages.java.lang.String;
+}
+
+declare class GlideEmail {
+    /**
+     * Adds the address to either the cc or bcc list.
+     * @memberof GlideEmail
+     * @param {"cc"|"bcc"} type - Either cc or bcc, determines the list to which the address is added.
+     * @param {string} address - The recipient's email address.
+     */
+    addAddress(type: string, address: string): void;
+    /**
+     * Adds the recipient to either the cc or bcc list, but uses the display name instead of the address when showing the recipient.
+     * @memberof GlideEmail
+     * @param {"cc"|"bcc"} type - Either cc or bcc, determines the list to which the address is added.
+     * @param {string} address - The recipient's email address.
+     * @param {string} displayName - The name to be shown instead of the email address.
+     */
+    addAddress(type: string, address: string, displayName: string): void;
+    /**
+     * 
+     * @param address 
+     */
+    addRecipient(address: string): void;
+    /**
+     * Instantiates a scoped GlideEmail object.
+     * @constructor
+     * @param {string} [body] Body of message
+     */
+    constructor(body?: string);
+    /**
+     * 
+     */
+    getSMSText(): string;
+    /**
+     * Returns the email's subject line.
+     * @memberof GlideEmail
+     * @returns {string} The email's subject line.
+     */
+    getSubject(): string;
+    getTextBody(): string;
+    /**
+     * Returns the email's watermark.
+     * @memberof GlideEmail
+     * @returns {string} The email's watermark.
+     */
+    getWatermark(): string;
+    /**
+     * Sets the body of the email.
+     * @memberof GlideEmail
+     * @param {string} bodyText - The body of the email.
+     */
+    setBody(bodyText: string): void;
+    /**
+     * Sets the sender's address.
+     * @memberof GlideEmail
+     * @param {string} address - The sender's email address.
+     */
+    setFrom(address: string): void;
+    setRecipients(recipients: string): void;
+    /**
+     * Sets the reply to address.
+     * @memberof GlideEmail
+     * @param {string} address - The reply to email address.
+     */
+    setReplyTo(address: string): void;
+    /**
+     * Sets the email's subject line.
+     * @memberof GlideEmail
+     * @param {string} subject - Text for the subject line.
+     */
+    setSubject(subject: string): void;
+}
+
+declare class EmailWatermark {
+    getWatermark(): string;
+}
+
+/**
+ * The scoped GlideEmailOutbound class implements the email object for scoped applications.
+ * @class GlideEmailOutbound
+* @description You can use the GlideEmailOutbound methods with the email global object available in mail scripts.The email object behaves identically for global and scoped applications.
+ */
+declare class EmailOutbound extends GlideEmail {
+    constructor(actionType_OR_action?: string | GlideRecord, m?: EmailWatermark);
+    save(): void;
+}
+
+/**
+ * The Scoped GlideTableHierarchy API provides methods for handling information about table relationships.
+ * @class GlideTableHierarchy
+ */
+declare class GlideTableHierarchy {
+    /**
+     * Instantiates a GlideTableHierarchy object.
+     * @constructor
+     * @param {string} tableName - The name of the table.
+     */
+    constructor(tableName: string);
+    /**
+     * Returns an array of strings containing all tables that extend the current table and includes the current table.
+     * @memberof GlideTableHierarchy
+     * @returns {Array<*>} An array of strings containing the tables in the hierarchy that includes the current table.
+     */
+    getAllExtensions(): any[];
+    /**
+     * Returns the parent class.
+     * @memberof GlideTableHierarchy
+     * @returns {string} The parent class.
+     */
+    getBase(): string;
+    /**
+     * Returns an array of strings containing all classes in the hierarchy of the current table.
+     * @memberof GlideTableHierarchy
+     * @returns {Array<*>} An array of strings of the classes in the hierarchy.
+     */
+    getHierarchy(): any[];
+    /**
+     * Returns the table's name.
+     * @memberof GlideTableHierarchy
+     * @returns {string} The table's name.
+     */
+    getName(): string;
+    /**
+     * Returns the top level class in the hierarchy.
+     * @memberof GlideTableHierarchy
+     * @returns {string} The root class.
+     */
+    getRoot(): string;
+    /**
+     * Returns an array of strings containing all tables that extend the current table.
+     * @memberof GlideTableHierarchy
+     * @returns {Array<*>} An array of strings containing the tables that extend the current table.
+     */
+    getTableExtensions(): any[];
+    /**
+     * Returns an array of strings of the table names in the hierarchy.
+     * @memberof GlideTableHierarchy
+     * @returns {Array<*>} An array of strings containing the names of tables in the hierarchy.
+     */
+    getTables(): any[];
+    /**
+     * Returns true of this class has been extended.
+     * @memberof GlideTableHierarchy
+     * @returns {boolean} True if the current table has extensions.
+     */
+    hasExtensions(): boolean;
+    /**
+     * Returns true if this is a base class.
+     * @memberof GlideTableHierarchy
+     * @returns {boolean} True if the current table has no parent and has extensions.
+     */
+    isBaseClass(): boolean;
+    /**
+     * Returns true if this table is not in a hierarchy.
+     * @memberof GlideTableHierarchy
+     * @returns {boolean} True if the current table has no parent and no extensions.
+     */
+    isSoloClass(): boolean;
+}
+
+/**
+ * The scoped Workflow API provides methods that can be used in an activity definition script.
+ * @class Workflow
+ * @description There are no constructors for creating an instance of a scoped workflow object. Instead, use the global workflow object available in activity scripts. This workflow object is available in any script location inside a workflow.
+ */
+declare class Workflow {
+    protected constructor();
+    /**
+     * Returns the workflow variables.
+     * @memberof Workflow
+     * @param {*} inputs - Workflow variables as name value pairs.
+     */
+    inputs(inputs: any): any;
+    /**
+     * Returns the workflow's result.
+     * @memberof Workflow
+     * @param {string} result - Workflow results
+     */
+    result(result: string): any;
+    /**
+     * Adds a debug message to the log.
+     * @memberof Workflow
+     * @param {string} message - The message to add to the log.
+     * @param {*} args - Arguments to add to the message.
+     * @returns {string} The message added to the log.
+     */
+    debug(message: string, args: any): string;
+    /**
+     * Adds an error message to the log.
+     * @memberof Workflow
+     * @param {string} message - The message to add to the log.
+     * @param {*} args - Arguments to add to the message.
+     * @returns {string} The logged message.
+     */
+    error(message: string, args: any): string;
+    /**
+     * Returns the specified variable's value.
+     * @memberof Workflow
+     * @param {string} name - The variable name
+     * @returns {*} The variable's value.
+     */
+    getVariable(name: string): any;
+    /**
+     * Adds an informational message to the log.
+     * @memberof Workflow
+     * @param {string} message - The message to add to the log.
+     * @param {*} args - Arguments to add to the message.
+     * @returns {string} The message that is logged.
+     */
+    info(message: string, args: any): string;
+    /**
+     * Returns the workflow name.
+     * @memberof Workflow
+     * @returns {string} The workflow name.
+     */
+    name(): string;
+    /**
+     * Removes the specified variable from the workflow.
+     * @memberof Workflow
+     * @param {string} name - The variable name
+     */
+    removeVariable(name: string): void;
+    /**
+     * Returns the workflow's scratchpad object.
+     * @memberof Workflow
+     * @returns {*} The scratchpad object.
+     */
+    scratchpad(): any;
+    /**
+     * Sets the workflow's result.
+     * @memberof Workflow
+     * @param {string} result - The workflow's result
+     */
+    setResult(result: string): void;
+    /**
+     * Sets the specified variable to the specified value.
+     * @memberof Workflow
+     * @param {string} name - The variable name
+     * @param {*} value - The value to be assigned to the variable.
+     */
+    setVariable(name: string, value: any): void;
+    /**
+     * Adds a warning message to the log.
+     * @memberof Workflow
+     * @param {string} message - The message to add to the log.
+     * @param {*} args - Arguments to add to the message.
+     * @returns {string} The logged message.
+     */
+    warn(message: string, args: any): string;
+}
+
+/**
+ * The scoped GlideSystem (referred to by the variable name 'gs' in any server-side JavaScript) API provides a number of convenient methods to get information about the system, the current logged in user, etc.
+ * @class GlideSystem
+ * @description Many of the GlideSystem methods facilitate the easy inclusion of dates in query ranges, and are most often used in filters and reporting.
+ */
+declare class GlideSystem {
+    protected constructor();
+    /**
+     * Adds an error message for the current session.
+     * @memberof GlideSystem
+     * @param {*} message - The message to add.
+     */
+    addErrorMessage(message: any): void;
+    /**
+     * Adds an info message for the current session. This method is not supported for asynchronous business rules.
+     * @memberof GlideSystem
+     * @param {*} message - An info message object.
+     */
+    addInfoMessage(message: any): void;
+    /**
+     * Returns an ASCII string from the specified base64 string.
+     * @memberof GlideSystem
+     * @param {string} source - A base64 encoded string.
+     * @returns {string} The decoded string..
+     */
+    base64Decode(source: string): string;
+    /**
+     * Creates a base64 string from the specified string.
+     * @memberof GlideSystem
+     * @param {string} source - The string to be encoded.
+     * @returns {string} The base64 string..
+     */
+    base64Encode(source: string): string;
+    /**
+     * Returns the date and time for the beginning of last month in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT beginning of last month, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    beginningOfLastMonth(): string;
+    /**
+     * Returns the date and time for the beginning of last week in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT beginning of last week, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    beginningOfLastWeek(): string;
+    /**
+     * Returns the date and time for the beginning of next month in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT beginning of next month, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    beginningOfNextMonth(): string;
+    /**
+     * Returns the date and time for the beginning of next week in GMT.
+     * @memberof GlideSystem
+     * @returns {string} The GMT beginning of next week, in the format yyyy-mm-dd hh:mm:ss..
+     */
+    beginningOfNextWeek(): string;
+    /**
+     * Returns the date and time for the beginning of next year in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT beginning of next year, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    beginningOfNextYear(): string;
+    /**
+     * Returns the date and time for the beginning of this month in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT beginning of this month, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    beginningOfThisMonth(): string;
+    /**
+     * Returns the date and time for the beginning of this quarter in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT beginning of this quarter, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    beginningOfThisQuarter(): string;
+    /**
+     * Returns the date and time for the beginning of this week in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT beginning of this week, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    beginningOfThisWeek(): string;
+    /**
+     * Returns the date and time for the beginning of this year in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT beginning of this year, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    beginningOfThisYear(): string;
+    /**
+     * Generates a date and time for the specified date in GMT.
+     * @memberof GlideSystem
+     * @param {string} date - Format: yyyy-mm-dd
+     * @param {string} range - Start, end, or a time in the 24 hour format hh:mm:ss.
+     * @returns {string} A date and time in the format yyyy-mm-dd hh:mm:ss. If range is start, the returned value is yyyy-mm-dd 00:00:00; If range is end the return value is yyyy-mm-dd 23:59:59..
+     */
+    dateGenerate(date: string, range: string): string;
+    /**
+     * Returns the date and time for a specified number of days ago.
+     * @memberof GlideSystem
+     * @param {number} days - Integer number of days
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    daysAgo(days: number): string;
+    /**
+     * Returns the date and time for the end of the day a specified number of days ago.
+     * @memberof GlideSystem
+     * @param {number} days - Integer number of days
+     * @returns {string} GMT end of the day in the format yyyy-mm-dd hh:mm:ss.
+     */
+    daysAgoEnd(days: number): string;
+    /**
+     * Returns the date and time for the beginning of the day a specified number of days ago.
+     * @memberof GlideSystem
+     * @param {string} days - Integer number of days
+     * @returns {string} GMT start of the day in the format yyyy-mm-dd hh:mm:ss.
+     */
+    daysAgoStart(days: string): string;
+    /**
+     * Writes a debug message to the system log.
+     * @memberof GlideSystem
+     * @param {string} message - The log message with place holders for any variable arguments.
+     * @param {*} [param1] - First variable argument.
+     * @param {*} [param2] - Second variable argument.
+     * @param {*} [param3] - Third variable argument.
+     * @param {*} [param4] - Fourth variable argument.
+     * @param {*} [param5] - Fifth variable argument.
+     */
+    debug(message: string, param1?: any, param2?: any, param3?: any, param4?: any, param5?: any): void;
+    /**
+     * Returns the date and time for the end of last month in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT end of last month, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfLastMonth(): string;
+    /**
+     * Returns the date and time for the end of last week in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT end of last week, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfLastWeek(): string;
+    /**
+     * Returns the date and time for the end of last year in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT in format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfLastYear(): string;
+    /**
+     * Returns the date and time for the end of next month in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfNextMonth(): string;
+    /**
+     * Returns the date and time for the end of next week in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfNextWeek(): string;
+    /**
+     * Returns the date and time for the end of next year in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfNextYear(): string;
+    /**
+     * Returns the date and time for the end of this month in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfThisMonth(): string;
+    /**
+     * Returns the date and time for the end of this quarter in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfThisQuarter(): string;
+    /**
+     * Returns the date and time for the end of this week in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfThisWeek(): string;
+    /**
+     * Returns the date and time for the end of this year in GMT.
+     * @memberof GlideSystem
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    endOfThisYear(): string;
+    /**
+     * Writes an error message to the system log.
+     * @memberof GlideSystem
+     * @param {string} message - The log message with place holders for any variable arguments.
+     * @param {*} [param1] - First variable argument.
+     * @param {*} [param2] - Second variable argument.
+     * @param {*} [param3] - Third variable argument.
+     * @param {*} [param4] - Fourth variable argument.
+     * @param {*} [param5] - Fifth variable argument.
+     * @description 
+     */
+    error(message: string, param1?: any, param2?: any, param3?: any, param4?: any, param5?: any): void;
+    /**
+     * Queues an event for the event manager.
+     * @memberof GlideSystem
+     * @param {string} name - Name of the event being queued.
+     * @param {*} instance - GlideRecord object, such as "current".
+     * @param {string} [parm1] - Saved with the instance if specified.
+     * @param {string} [parm2] - Saved with the instance if specified.
+     * @param {string} [queue] - Name of the queue.
+     */
+    eventQueue(name: string, instance: any, parm1?: string, parm2?: string, queue?: string): void;
+    /**
+     * Queues an event for the event manager at a specified date and time.
+     * @memberof GlideSystem
+     * @param {string} name - Name of the event being queued.
+     * @param {*} instance - GlideRecord object, such as "current".
+     * @param {string} [parm1] - Saved with the instance if specified.
+     * @param {string} [parm2] - Saved with the instance if specified.
+     * @param {*} [expiration] - Date and time to process this event..
+     */
+    eventQueueScheduled(name: string, instance: any, parm1?: string, parm2?: string, expiration?: any): void;
+    /**
+     * Executes a job for a scoped application.
+     * @memberof GlideSystem
+     * @param {GlideRecord} job - The job to be run.
+     * @returns {string} Returns the sysID of the scheduled job. Returns null if the job is global..
+     * @description 
+     */
+    executeNow(job: GlideRecord): string;
+    /**
+     * Generates a GUID that can be used when a unique identifier is required.
+     * @memberof GlideSystem
+     * @returns {string} A 32-character hexadecimal GUID..
+     */
+    generateGUID(): string;
+    /**
+     * Gets the caller scope name; returns null if there is no caller.
+     * @memberof GlideSystem
+     * @returns {string} The caller's scope name, or null if there is no caller..
+     */
+    getCallerScopeName(): string;
+    /**
+     * Gets a string representing the cache version for a CSS file.
+     * @memberof GlideSystem
+     * @returns {string} The CSS cache version..
+     */
+    getCssCacheVersionString(): string;
+    /**
+     * Gets the ID of the current application as set using the Application Picker.
+     * @memberof GlideSystem
+     * @returns {string} The current application's sys_id, or global in none is set..
+     */
+    getCurrentApplicationId(): string;
+    /**
+     * Gets the name of the current scope.
+     * @memberof GlideSystem
+     * @returns {string} The current scope name..
+     */
+    getCurrentScopeName(): string;
+    /**
+     * Returns the list of error messages for the session that were added by addErrorMessage().
+     * @memberof GlideSystem
+     * @returns {string} List of error messages.
+     */
+    getErrorMessages(): string;
+    /**
+     * Retrieves a message from UI messages that has HTML special characters, and replaces them with escape sequences. For example, &amp; becomes &amp;amp;.
+     * @memberof GlideSystem
+     * @param {string} id - ID of the message.
+     * @param {any[]} [args] - List of strings or other values defined by java.text.MessageFormat, which allows you to produce language-neutral messages for display to users.
+     * @returns {string} The UI message with HTML special characters replaced with escape sequences..
+     */
+    getEscapedMessage(id: string, args?: any[]): string;
+    /**
+     * Retrieves a message from UI messages.
+     * @memberof GlideSystem
+     * @param {string} id - The ID of the message.
+     * @param {any[]} [args] - A list of strings or other values defined by java.text.MessageFormat, which allows you to produce language-neutral messages for display to users.
+     * @returns {string} The UI message..
+     */
+    getMessage(id: string, args?: any[]): string;
+    /**
+     * Gets the value of a Glide property. If the property is not found, returns an alternate value.
+     * @memberof GlideSystem
+     * @param {string} key - The key for the property whose value should be returned.
+     * @param {*} [alt] -  Alternate object to return if the property is not found.
+     * @returns {string} The value of the Glide property, or the alternate object defined above..
+     */
+    getProperty(key: string, alt?: any): string;
+    /**
+     * Gets a reference to the current Glide session.
+     * @memberof GlideSystem
+     * @returns {string} A reference for the current session..
+     */
+    getSession(): string;
+    /**
+     * Retrieves the GlideSession session ID.
+     * @memberof GlideSystem
+     * @returns {string} The session ID..
+     */
+    getSessionID(): string;
+    /**
+     * This method is no longer available. Instead, use gs.getSession().getSessionToken().
+     * @memberof GlideSystem
+     * @returns {string} The session token..
+     */
+    getSessionToken(): string;
+    /**
+     * Returns the name of the time zone associated with the current user.
+     * @memberof GlideSystem
+     * @returns {string} The time zone name..
+     * @description 
+     */
+    getTimeZoneName(): string;
+    /**
+     * Gets the current URI for the session.
+     * @memberof GlideSystem
+     * @returns {string} The URI..
+     */
+    getUrlOnStack(): string;
+    /**
+     * Returns a reference to the scoped GlideUser object for the current user.
+     * @memberof GlideSystem
+     * @returns {GlideUser} Reference to a scoped user object..
+     * @description 
+     */
+    getUser(): GlideUser;
+    /**
+     * Gets the display name of the current user.
+     * @memberof GlideSystem
+     * @returns {string} The name field of the current user. Returns Abel Tuter, as opposed to abel.tuter..
+     */
+    getUserDisplayName(): string;
+    /**
+     * Gets the sys_id of the current user.
+     * @memberof GlideSystem
+     * @returns {string} The sys_id of the current user..
+     */
+    getUserID(): string;
+    /**
+     * Gets the user name, or user id, of the current user.
+     * @memberof GlideSystem
+     * @returns {string} The user name of the current user..
+     */
+    getUserName(): string;
+    /**
+     * Determines if the current user has the specified role.
+     * @memberof GlideSystem
+     * @param {*} role - The role to check.
+     * @returns {boolean} True if the user had the role. Returns true for users with the administrator role..
+     */
+    hasRole(role: any): boolean;
+    /**
+     * Returns the date and time for a specified number of hours ago.
+     * @memberof GlideSystem
+     * @param {number} hours - Integer number of hours
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    hoursAgo(hours: number): string;
+    /**
+     * Returns the date and time for the end of the hour a specified number of hours ago.
+     * @memberof GlideSystem
+     * @param {number} hours - Integer number of hours
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    hoursAgoEnd(hours: number): string;
+    /**
+     * Returns the date and time for the start of the hour a specified number of hours ago.
+     * @memberof GlideSystem
+     * @param {number} hours - Integer number of hours
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    hoursAgoStart(hours: number): string;
+    /**
+     * Provides a safe way to call from the sandbox, allowing only trusted scripts to be included.
+     * @memberof GlideSystem
+     * @param {string} name - The name fo the script to include.
+     * @returns {boolean} True if the include worked..
+     */
+    include(name: string): boolean;
+    /**
+     * Writes an info message to the system log.
+     * @memberof GlideSystem
+     * @param {string} message - The log message with place holders for any variable arguments.
+     * @param {*} [param1] - First variable argument.
+     * @param {*} [param2] - Second variable argument.
+     * @param {*} [param3] - Third variable argument.
+     * @param {*} [param4] - Fourth variable argument.
+     * @param {*} [param5] - Fifth variable argument.
+     */
+    info(message: string, param1?: any, param2?: any, param3?: any, param4?: any, param5?: any): void;
+    /**
+     * Determines if debugging is active for a specific scope.
+     * @memberof GlideSystem
+     * @returns {boolean} True if either session debugging is active or the log level is set to debug for the specified scope..
+     */
+    isDebugging(): boolean;
+    /**
+     * Checks if the current session is interactive. An example of an interactive session is when a user logs in normally. An example of a non-interactive session is using a SOAP request to retrieve data.
+     * @memberof GlideSystem
+     * @returns {boolean} True if the session is interactive..
+     */
+    isInteractive(): boolean;
+    /**
+     * Determines if the current user is currently logged in.
+     * @memberof GlideSystem
+     * @returns {boolean} True if the current user is logged in..
+     */
+    isLoggedIn(): boolean;
+    /**
+     * You can determine if a request comes from a mobile device.
+     * @memberof GlideSystem
+     * @returns {boolean} True if the request comes from a mobile device; otherwise, false..
+     * @description 
+     */
+    isMobile(): boolean;
+    /**
+     * Returns the date and time for the end of the minute a specified number of minutes ago.
+     * @memberof GlideSystem
+     * @param {number} minutes - Integer number of minutes
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    minutesAgoEnd(minutes: number): string;
+    /**
+     * Returns the date and time for the start of the minute a specified number of minutes ago.
+     * @memberof GlideSystem
+     * @param {number} minutes - Integer number of minutes
+     * @returns {string} GMT in the format yyyy-mm-dd hh:mm:ss.
+     */
+    minutesAgoStart(minutes: number): string;
+    /**
+     * Returns the date and time for a specified number of months ago.
+     * @memberof GlideSystem
+     * @param {number} months - Integer number of months
+     * @returns {string} GMT on today's date of the specified month, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    monthsAgo(months: number): string;
+    /**
+     * Returns the date and time for the start of the month a specified number of months ago.
+     * @memberof GlideSystem
+     * @param {number} months - Integer number of months
+     * @returns {string} GMT start of the month the specified number of months ago, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    monthsAgoStart(months: number): string;
+    /**
+     * Queries an object and returns true if the object is null, undefined, or contains an empty string.
+     * @memberof GlideSystem
+     * @param {*} o - The object to be checked.
+     * @returns {boolean} True if the object is null, undefined, or contains an empty string; otherwise, returns false..
+     */
+    nil(o: any): boolean;
+    /**
+     * Returns the date and time for the last day of the quarter for a specified number of quarters ago.
+     * @memberof GlideSystem
+     * @param {number} quarters - Integer number of quarters
+     * @returns {string} GMT end of the quarter that was the specified number of quarters ago, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    quartersAgoEnd(quarters: number): string;
+    /**
+     * Returns the date and time for the first day of the quarter for a specified number of quarters ago.
+     * @memberof GlideSystem
+     * @param {number} quarters - Integer number of quarters
+     * @returns {string} GMT end of the month that was the specified number of quarters ago, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    quartersAgoStart(quarters: number): string;
+    /**
+     * Sets the specified key to the specified value if the property is within the script's scope.
+     * @memberof GlideSystem
+     * @param {string} key - The key for the property to be set.
+     * @param {string} value - The value of the property to be set.
+     * @param {string} description - A description of the property.
+     * @description 
+     */
+    setProperty(key: string, value: string, description: string): void;
+    /**
+     * Sets the redirect URI for this transaction, which then determines the next page the user will see.
+     * @memberof GlideSystem
+     * @param {*} o - URI object or URI string to set as the redirect
+     */
+    setRedirect(o: any): void;
+    /**
+     * Determines if a database table exists.
+     * @memberof GlideSystem
+     * @param {string} name - Name of the table to check for existence.
+     * @returns {boolean} True if the table exists. False if the table was not found..
+     */
+    tableExists(name: string): boolean;
+    /**
+     * Replaces UTF-8 encoded characters with ASCII characters.
+     * @memberof GlideSystem
+     * @param {string} url - A string with UTF-8 percent (%) encoded characters.
+     * @returns {string} A string with encoded characters replaced with ASCII characters..
+     */
+    urlDecode(url: string): string;
+    /**
+     * Encodes non-ASCII characters, unsafe ASCII characters, and spaces so the returned string can be used on the Internet. Uses UTF-8 encoding. Uses percent (%) encoding.
+     * @memberof GlideSystem
+     * @param {string} url - The string to be encoded.
+     * @returns {string} A string with non-ASCII characters, unsafe ASCII characters, and spaces encoded..
+     */
+    urlEncode(url: string): string;
+    /**
+     * Writes a warning message to the system log.
+     * @memberof GlideSystem
+     * @param {string} message - The log message with place holders for any variable arguments.
+     * @param {*} [param1] - First variable argument.
+     * @param {*} [param2] - Second variable argument.
+     * @param {*} [param3] - Third variable argument.
+     * @param {*} [param4] - Fourth variable argument.
+     * @param {*} [param5] - Fifth variable argument.
+     */
+    warn(message: string, param1?: any, param2?: any, param3?: any, param4?: any, param5?: any): void;
+    /**
+     * Takes an XML string and returns a JSON object.
+     * @memberof GlideSystem
+     * @param {string} xmlString - The XML string to be converted.
+     * @returns {*} A JSON object representing the XML string. Null if unable to process the XML string..
+     */
+    xmlToJSON(xmlString: string): any;
+    /**
+     * Returns a date and time for a certain number of years ago.
+     * @memberof GlideSystem
+     * @param {number} years - An integer number of years
+     * @returns {string} GMT beginning of the year that is the specified number of years ago, in the format yyyy-mm-dd hh:mm:ss..
+     */
+    yearsAgo(years: number): string;
+    /**
+     * Returns yesterday's time (24 hours ago).
+     * @memberof GlideSystem
+     * @returns {string} GMT for 24 hours ago, in the format yyyy-mm-dd hh:mm:ss.
+     */
+    yesterday(): string;
+}
+
+declare class GlideUser {
+    /**
+     * Returns the current user's company sys_id.
+     * @memberof GlideUser
+     * @returns {string} Company sys_id.
+     * @description 
+     */
+    getCompanyID(): string;
+    /**
+     * Returns the current user's display name.
+     * @memberof GlideUser
+     * @returns {string} User's display name.
+     * @description 
+     */
+    getDisplayName(): string;
+    /**
+     * Returns the display value of the user's session domain.
+     * @memberof GlideUser
+     * @returns {string} The display value of the user's session domain..
+     * @description 
+     */
+    getDomainDisplayValue(): string;
+    /**
+     * Returns the user's email address.
+     * @memberof GlideUser
+     * @returns {string} User's email address.
+     * @description 
+     */
+    getEmail(): string;
+    /**
+     * Returns the user's first name.
+     * @memberof GlideUser
+     * @returns {string} User's first name.
+     * @description 
+     */
+    getFirstName(): string;
+    /**
+     * Returns the sys_id of the current user.
+     * @memberof GlideUser
+     * @returns {string} User's sys_id.
+     * @description 
+     */
+    getID(): string;
+    /**
+     * Returns the user's last name.
+     * @memberof GlideUser
+     * @returns {string} User's last name.
+     * @description 
+     */
+    getLastName(): string;
+    /**
+     * Returns an iterator containing the list of all groups to which the user belongs. Only active groups are returned.
+     * @memberof GlideUser
+     * @returns {Packages.java.util.Iterator<$$rhino.String>} A list of sys_ids for the active groups to which the user belongs..
+     * @description 
+     */
+    getMyGroups(): Packages.java.util.Iterator<$$rhino.String>;
+    /**
+     * Returns the user ID, or login name, of the current user.
+     * @memberof GlideUser
+     * @returns {string} User ID or login name..
+     * @description 
+     */
+    getName(): string;
+    /**
+     * Returns a list of roles that includes explicitly granted roles, inherited roles, and roles acquired by group membership.
+     * @memberof GlideUser
+     * @returns {Array<*>} List of all roles available to the user.
+     * @description 
+     */
+    getRoles(): any[];
+    /**
+     * Returns the user object associated with the passed-in user ID (sys_id in sys_user) or user_name.
+     * @memberof GlideUser
+     * @param {string} id - Unique ID (sys_id) or user_name of the desired user record.
+     * @returns {*} User object associated with the specified sys_id or user_name..
+     */
+    getUserByID(id: string): any;
+    /**
+     * Returns the list of roles explicitly granted to the user.
+     * @memberof GlideUser
+     * @returns {Array<*>} List of roles explicitly assigned to the user.
+     * @description 
+     */
+    getUserRoles(): any[];
+    /**
+     * Determines if the current user has the specified role.
+     * @memberof GlideUser
+     * @param {string} role - Role to check
+     * @returns {boolean} True if the user has the role..
+     * @description 
+     */
+    hasRole(role: string): boolean;
+    /**
+     * Determines if the current user is a member of the specified group.
+     * @memberof GlideUser
+     * @param {string} group - Group to check
+     * @returns {boolean} True if the user is a member of the group..
+     * @description 
+     */
+    isMemberOf(group: string): boolean;
+}
+
+declare var gs: GlideSystem;
+
+//#region Class.create
+
+//#region Base definitions
+
+declare interface ICustomClassBase<B extends ICustomClassBase<B, N>, N extends string> {
+    /**
+     * The type name of the class.
+     * @type {N}
+     * @memberof ICustomClass
+     */
+    type: N;
+}
+
+// #endregion
+
+//#region Prototype definitions
+
+/**
+ * Prototype for objects whose constructor has no arguments.
+ * @interface ICustomClassPrototype0
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype (self-referencing type)
+ * @template N - The value of the name property for objects constructed with this prototype.
+ */
+declare interface ICustomClassPrototype0<B extends ICustomClassBase<B, N>, P extends B & ICustomClassPrototype0<B, P, N>, N extends string> extends ICustomClassBase<B, N> {
+    /**
+     * Called by {@see Class#create} to initialize the newly instantiated object
+     * @this {P} The current "this" object.
+     * @memberof ICustomClassPrototype0
+     */
+    initialize(this: P): void;
+}
+
+/**
+ * Prototype for objects whose constructor has one argument.
+ * @interface ICustomClassPrototype1
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype (self-referencing type)
+ * @template N - The value of the type property for objects constructed with this prototype.
+ * @template A - The argument type.
+ */
+declare interface ICustomClassPrototype1<B extends ICustomClassBase<B, N>, P extends B & ICustomClassPrototype1<B, P, N, A>, N extends string, A> extends ICustomClassBase<B, N> {
+    /**
+     * Called by {@see Class#create} to initialize the newly instantiated object
+     * @this {P} The current "this" object.
+     * @param {A} arg - The argument provided to the constructor.
+     * @memberof ICustomClassPrototype1
+     */
+    initialize(this: P, arg: A): void;
+}
+
+/**
+ * Prototype for objects whose constructor has 2 arguments.
+ * @interface ICustomClassPrototype2
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype (self-referencing type)
+ * @template N - The value of the type property for objects constructed with this prototype.
+ * @template A0 - The first argument type.
+ * @template A1 - The second argument type.
+ */
+declare interface ICustomClassPrototype2<B extends ICustomClassBase<B, N>, P extends B & ICustomClassPrototype2<B, P, N, A0, A1>, N extends string, A0, A1> extends ICustomClassBase<B, N> {
+    /**
+     * Called by {@see Class#create} to initialize the newly instantiated object
+     * @this {P} The current "this" object.
+     * @param {A0} arg0 - The first argument provided to the constructor.
+     * @param {A1} arg1 - The second argument provided to the constructor.
+     * @memberof ICustomClassPrototype2
+     */
+    initialize(this: P, arg0: A0, arg1: A1): void;
+}
+
+/**
+ * Prototype for objects whose constructor has 3 arguments.
+ * @interface ICustomClassPrototype3
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype (self-referencing type)
+ * @template N - The value of the type property for objects constructed with this prototype.
+ * @template A0 - The first argument type.
+ * @template A1 - The second argument type.
+ * @template A2 - The third argument type.
+ */
+declare interface ICustomClassPrototype3<B extends ICustomClassBase<B, N>, P extends B & ICustomClassPrototype3<B, P, N, A0, A1, A2>, N extends string, A0, A1, A2> extends ICustomClassBase<B, N> {
+    /**
+     * Called by {@see Class#create} to initialize the newly instantiated object
+     * @this {P} The current "this" object.
+     * @param {A0} arg0 - The first argument provided to the constructor.
+     * @param {A1} arg1 - The second argument provided to the constructor.
+     * @param {A2} arg2 - The third argument provided to the constructor.
+     * @memberof ICustomClassPrototype3
+     */
+    initialize(this: P, arg0: A0, arg1: A1, arg2: A2): void;
+}
+
+/**
+ * Prototype for objects whose constructor has 4 arguments.
+ * @interface ICustomClassPrototype4
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype (self-referencing type)
+ * @template N - The value of the type property for objects constructed with this prototype.
+ * @template A0 - The first argument type.
+ * @template A1 - The second argument type.
+ * @template A2 - The third argument type.
+ * @template A3 - The fourth argument type.
+ */
+declare interface ICustomClassPrototype4<B extends ICustomClassBase<B, N>, P extends B & ICustomClassPrototype4<B, P, N, A0, A1, A2, A3>, N extends string, A0, A1, A2, A3> extends ICustomClassBase<B, N> {
+    /**
+     * Called by {@see Class#create} to initialize the newly instantiated object
+     * @this {P} The current "this" object.
+     * @param {A0} arg0 - The first argument provided to the constructor.
+     * @param {A1} arg1 - The second argument provided to the constructor.
+     * @param {A2} arg2 - The third argument provided to the constructor.
+     * @param {A3} arg3 - The fourth argument provided to the constructor.
+     * @memberof ICustomClassPrototype4
+     */
+    initialize(this: P, arg0: A0, arg1: A1, arg2: A2, arg3: A3): void;
+}
+
+/**
+ * Prototype for objects whose constructor has a variable nubmer of arguments.
+ * @interface ICustomClassPrototypeN
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype (self-referencing type)
+ * @template N - The value of the type property for objects constructed with this prototype.
+ */
+declare interface ICustomClassPrototypeN<B extends ICustomClassBase<B, N>, P extends B & ICustomClassPrototypeN<B, P, N>, N extends string> extends ICustomClassBase<B, N> {
+    /**
+     * Called by {@see Class#create} to initialize the newly instantiated object
+     * @this {P} The current "this" object.
+     * @param {...any[]} args- The arguments provided to the constructor.
+     * @memberof ICustomClassPrototypeN
+     */
+    initialize(this: P, ...args: any[]): void;
+}
+
+// #endregion
+
+//#region Constructor definitions
+
+/**
+ * A class constructor that has no arguments.
+ * @interface CustomClassConstructor0
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype.
+ * @template I - The constructed object type.
+ */
+declare interface CustomClassConstructor0<B extends ICustomClassBase<B, string>, P extends B & ICustomClassPrototype0<B, P, string>, I extends B> {
+    /**
+     * Creates an instance of CustomClassConstructor0.
+     * @param {A} arg - The constructor argument.
+     * @memberof CustomClassConstructor0
+     */
+    new(): I;
+
+    /**
+     * Creates an instance of CustomClassConstructor0.
+     * @param {A} arg - The constructor argument.
+     * @memberof CustomClassConstructor0
+     */
+    (): I;
+
+    /**
+     * The prototype that will be used to create the new object.
+     * @type {P}
+     * @memberof CustomClassConstructor0
+     */
+    prototype: P;
+}
+
+/**
+ * A class constructor that has 1 argument.
+ * @interface CustomClassConstructor1
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype.
+ * @template I - The constructed object type.
+ * @template A - The constructor argument type.
+ */
+declare interface CustomClassConstructor1<B extends ICustomClassBase<B, string>, P extends B & ICustomClassPrototype1<B, P, string, A>, I extends B, A> {
+    /**
+     * Creates an instance of CustomClassConstructor1.
+     * @param {A} arg - The constructor argument.
+     * @memberof CustomClassConstructor1
+     * @returns {I} - The new object instance.
+     */
+    new(arg: A): I;
+
+    /**
+     * Creates an instance of CustomClassConstructor1.
+     * @param {A} arg - The constructor argument.
+     * @memberof CustomClassConstructor1
+     * @returns {I} - The new object instance.
+     */
+    (arg: A): I;
+
+    /**
+     * The prototype that will be used to create the new object.
+     * @type {P}
+     * @memberof CustomClassConstructor1
+     */
+    prototype: P;
+}
+
+/**
+ * A class constructor that has 2 arguments.
+ * @interface CustomClassConstructor2
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype.
+ * @template I - The constructed object type.
+ * @template A0 - The argument type for the first constructor argument.
+ * @template A1 - The argument type for the second constructor argument.
+ */
+declare interface CustomClassConstructor2<B extends ICustomClassBase<B, string>, P extends B & ICustomClassPrototype2<B, P, string, A0, A1>, I extends B, A0, A1> {
+    /**
+     * Creates an instance of CustomClassConstructor2.
+     * @param {A0} arg0 - The first constructor argument.
+     * @param {A1} arg1 - The second constructor argument.
+     * @memberof CustomClassConstructor2
+     * @returns {I} - The new object instance.
+     */
+    new(arg0: A0, arg1: A1): I;
+
+    /**
+     * Creates an instance of CustomClassConstructor2.
+     * @param {A0} arg0 - The first constructor argument.
+     * @param {A1} arg1 - The second constructor argument.
+     * @memberof CustomClassConstructor2
+     * @returns {I} - The new object instance.
+     */
+    (arg0: A0, arg1: A1): I;
+
+    /**
+     * The prototype that will be used to create the new object.
+     * @type {P}
+     * @memberof CustomClassConstructor2
+     */
+    prototype: P;
+}
+
+/**
+ * A class constructor that has 3 arguments.
+ * @interface CustomClassConstructor3
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype.
+ * @template I - The constructed object type.
+ * @template A0 - The argument type for the first constructor argument.
+ * @template A1 - The argument type for the second constructor argument.
+ * @template A2 - The argument type for the third constructor argument.
+ */
+declare interface CustomClassConstructor3<B extends ICustomClassBase<B, string>, P extends B & ICustomClassPrototype3<B, P, string, A0, A1, A2>, I extends B, A0, A1, A2> {
+    /**
+     * Creates an instance of CustomClassConstructor3.
+     * @param {A0} arg0 - The first constructor argument.
+     * @param {A1} arg1 - The second constructor argument.
+     * @param {A2} arg2 - The third constructor argument.
+     * @memberof CustomClassConstructor3
+     * @returns {I} - The new object instance.
+     */
+    new(arg0: A0, arg1: A1, arg2: A2): I;
+
+    /**
+     * Creates an instance of CustomClassConstructor3.
+     * @param {A0} arg0 - The first constructor argument.
+     * @param {A1} arg1 - The second constructor argument.
+     * @param {A2} arg2 - The third constructor argument.
+     * @memberof CustomClassConstructor3
+     * @returns {I} - The new object instance.
+     */
+    (arg0: A0, arg1: A1, arg2: A2): I;
+
+    /**
+     * The prototype that will be used to create the new object.
+     * @type {P}
+     * @memberof CustomClassConstructor3
+     */
+    prototype: P;
+}
+
+/**
+ * A class constructor that has 4 arguments.
+ * @interface CustomClassConstructor4
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype.
+ * @template I - The constructed object type.
+ * @template A0 - The argument type for the first constructor argument.
+ * @template A1 - The argument type for the second constructor argument.
+ * @template A2 - The argument type for the third constructor argument.
+ * @template A3 - The argument type for the fourth constructor argument.
+ */
+declare interface CustomClassConstructor4<B extends ICustomClassBase<B, string>, P extends B & ICustomClassPrototype4<B, P, string, A0, A1, A2, A3>, I extends B, A0, A1, A2, A3> {
+    /**
+     * Creates an instance of CustomClassConstructor4.
+     * @param {A0} arg0 - The first constructor argument.
+     * @param {A1} arg1 - The second constructor argument.
+     * @param {A2} arg2 - The third constructor argument.
+     * @param {A3} arg3 - The fourth constructor argument.
+     * @memberof CustomClassConstructor4
+     * @returns {I} - The new object instance.
+     */
+    new(arg0: A0, arg1: A1, arg2: A2, arg3: A3): I;
+
+    /**
+     * Creates an instance of CustomClassConstructor4.
+     * @param {A0} arg0 - The first constructor argument.
+     * @param {A1} arg1 - The second constructor argument.
+     * @param {A2} arg2 - The third constructor argument.
+     * @param {A3} arg3 - The fourth constructor argument.
+     * @memberof CustomClassConstructor4
+     * @returns {I} - The new object instance.
+     */
+    (arg0: A0, arg1: A1, arg2: A2, arg3: A3): I;
+
+    /**
+     * The prototype that will be used to create the new object.
+     * @type {P}
+     * @memberof CustomClassConstructor4
+     */
+    prototype: P;
+}
+
+/**
+ * A class constructor that has a variable number arguments.
+ * @interface CustomClassConstructorN
+ * @template B - The base type shared by the prototype and the object instance.
+ * @template P - The type of prototype.
+ * @template I - The constructed object type.
+ */
+declare interface CustomClassConstructorN<B extends ICustomClassBase<B, string>, P extends B & ICustomClassPrototypeN<B, P, string>, I extends B> {
+    /**
+     * Creates an instance of CustomClassConstructorN.
+     * @param {...any[]} args - The constructor arguments.
+     * @memberof CustomClassConstructorN
+     * @returns {I} - The new object instance.
+     */
+    new(...args: any[]): I;
+
+    /**
+     * Creates an instance of CustomClassConstructorN.
+     * @param {...any[]} args - The constructor arguments.
+     * @memberof CustomClassConstructorN
+     * @returns {I} - The new object instance.
+     */
+    (): I;
+
+    /**
+     * The prototype that will be used to create the new object.
+     * @type {P}
+     * @memberof CustomClassConstructorN
+     */
+    prototype: P;
+}
+
+// #endregion
+
+declare var Class: {
+    /**
+     * Creates a ServiceNow-compatible object constructor.
+     * @template B - The base type shared by the prototype and the object instance.
+     * @template C - The constructor type.
+     * @returns {C} - The ServiceNow-compatible object constructor.
+     */
+    create<B extends ICustomClassBase<B, string>, C extends CustomClassConstructor0<B, any, any> | CustomClassConstructor1<B, any, any, any> |
+        CustomClassConstructor2<B, any, any, any, any> | CustomClassConstructor3<B, any, any, any, any, any> | CustomClassConstructor4<B, any, any, any, any, any, any> |
+        CustomClassConstructorN<B, any, any>>(): C;
+    create2<C extends CustomClassConstructor0<any, ICustomClassPrototype0<any, any, string>, ICustomClassPrototype0<any, any, string>> |
+        CustomClassConstructor1<any, ICustomClassPrototype1<any, any, string, any>, ICustomClassPrototype1<any, any, string, any>, any> |
+        CustomClassConstructor2<any, ICustomClassPrototype2<any, any, string, any, any>, ICustomClassPrototype2<any, any, string, any, any>, any, any> |
+        CustomClassConstructor3<any, ICustomClassPrototype3<any, any, string, any, any, any>, ICustomClassPrototype3<any, any, string, any, any, any>, any, any, any> |
+        CustomClassConstructor4<any, ICustomClassPrototype4<any, any, string, any, any, any, any>, ICustomClassPrototype4<any, any, string, any, any, any, any>, any, any, any, any> |
+        CustomClassConstructorN<any, ICustomClassPrototypeN<any, any, string>, ICustomClassPrototypeN<any, any, string>>>(): C;
+};
+
+declare interface ObjectConstructor {
+    extendsObject<B, E extends Omit<ICustomClassPrototype0<any, any, string>, "initialize">, P extends Omit<B, "type"> & E>(base: B, proto: E): P;
+}
+
+declare interface IAbstractAjaxProcessor {
+    CALLABLE_PREFIX: 'ajaxFunction_';
+    process(): any;
+    newItem(name: string): Packages.org.w3c.dom.Element;
+    getParameter(name: string): $$rhino.String;
+    getDocument(): XMLDocument;
+    getRootElement(): Packages.org.w3c.dom.Element;
+    getName(): $$rhino.String;
+    getType(): $$rhino.String;
+    getChars(): $$rhino.String;
+    setAnswer(value: any): void;
+    setError(error: any): void;
+    type: "AbstractAjaxProcessor";
+}
+declare interface AbstractAjaxProcessorConstructor {
+    new(value?: any): IAbstractAjaxProcessor;
+    (): any;
+    (value: any): any;
+}
+
+// #endregion
+
+/**
+ *
+ * @type {("not requested" | "cancelled" | "requested" | "duplicate" | "not_required" | "approved" | "rejected")}
+ */
+declare type TaskAppproval = "not requested" | "cancelled" | "requested" | "duplicate" | "not_required" | "approved" | "rejected";
+
+/**
+ * email=Email; endpoint_security=Endpoint Security; ids_ips=IDS/IPS; network_monitoring=Network Monitoring; phone=Phone; self-service=Self-service; siem=SIEM; virtual_agent=Virtual Agent; vulnerability_response=Vulnerability Response; walk-in=Walk-in
+ * @type {("email" | "endpoint_security" | "ids_ips" | "network_monitoring" | "phone" | "self-service" | "siem" | "virtual_agent" | "vulnerability_response" | "walk-in")}
+ */
+declare type TaskContactType = "email" | "endpoint_security" | "ids_ips" | "network_monitoring" | "phone" | "self-service" | "siem" | "virtual_agent" | "vulnerability_response" | "walk-in";
+
+/**
+ *
+ */
+declare type TaskEscalationValue = 0 | 1 | 2 | 3;
+declare type TaskEscalationString = "0" | "1" | "2" | "3";
+declare type TaskEscalation = TaskEscalationValue | TaskEscalationString;
+
+/**
+ *
+ * @description 1="1 - High"; 2="2 - Medium"; 3="3 - Low"
+ */
+declare type Task3ScaleValue = 1 | 2 | 3;
+declare type Task3ScaleString = "1" | "2" | "3";
+declare type Task3Scale = Task3ScaleValue | Task3ScaleString;
+
+/**
+ *
+ */
+declare type TaskPriorityValue = 1 | 2 | 3 | 4 | 5;
+declare type TaskPriorityString = "1" | "2" | "3" | "4" | "5";
+declare type TaskPriority = TaskPriorityValue | TaskPriorityString;
+
+/**
+ *
+ * @description -5="Pending"; 1="Open"; 2="Work in Progress"; 3="Closed Complete"; 4="Closed Incomplete"; 7="Closed Skipped"
+ */
+declare type TaskStateValue = -5 | 1 | 2 | 3 | 4 | 7;
+declare type TaskStateString = "-5" | "1" | "2" | "3" | "4" | "7";
+declare type TaskState = TaskStateValue | TaskStateString;
+
+/**
+ *
+ * @type {("Solved (Work Around)" | "Solved (Permanently)" | "Solved Remotely (Work Around)" | "Solved Remotely (Permanently)" | "Not Solved (Not Reproducible)" | "Not Solved (Too Costly)" | "Closed/Resolved by Caller")}
+ */
+declare type IncidentCloseCode = "Solved (Work Around)" | "Solved (Permanently)" | "Solved Remotely (Work Around)" | "Solved Remotely (Permanently)" | "Not Solved (Not Reproducible)" | "Not Solved (Too Costly)" | "Closed/Resolved by Caller";
+
+/**
+ *
+ * @description 1="Awaiting Caller"; 5="Awaiting Change"; 3="Awaiting Problem"; 4="Awaiting Vendor"
+ */
+declare type IncidentHoldReasonValue = 1 | 5 | 3 | 4;
+declare type IncidentHoldReasonString = "1" | "5" | "3" | "4";
+declare type IncidentHoldReason = IncidentHoldReasonValue | IncidentHoldReasonString;
+
+/**
+ *
+ * @description 1="New"; 2="In Progress"; 3="On Hold"; 6="Resolved"; 7="Closed"; 8="Canceled"
+ */
+declare type IncidentStateValue = 1 | 2 | 3 | 6 | 7 | 8;
+declare type IncidentStateString = "1" | "2" | "3" | "6" | "7" | "8";
+declare type IncidentState = IncidentStateValue | IncidentStateString;
+
+/**
+ *
+ */
+declare type IncidentNotifyValue = 1 | 2 | 3;
+declare type IncidentNotifyString = "1" | "2" | "3";
+declare type IncidentNotify = IncidentNotifyValue | IncidentNotifyString;
+
+/**
+ *
+ * @description 1="Success"; 2="Fail"
+ */
+declare type ChangeReviewStatusValue = 1 | 2;
+declare type ChangeReviewStatusString = "1" | "2";
+declare type ChangeReviewStatus = ChangeReviewStatusValue | ChangeReviewStatusString;
+
+/**
+ *
+ * @description 2="High"; 3="Moderate"; 4="Low"
+ */
+declare type ChangeRiskValue = 2 | 3 | 4;
+declare type ChangeRiskString = "2" | "3" | "4";
+declare type ChangeRisk = ChangeRiskValue | ChangeRiskString;
+
+/**
+ *
+ * @description 1="Massive"; 2="Large"; 3="Medium"; 4="Small"; 5="Tiny"
+ */
+declare type ChangeScopeValue = 1 | 2 | 3 | 4 | 5;
+declare type ChangeScopeString = "1" | "2" | "3" | "4" | "5";
+declare type ChangeScope = ChangeScopeValue | ChangeScopeString;
+
+/**
+ *
+ */
+declare type ChangeType = "standard" | "normal" | "emergency";
+
+/**
+ *
+ * @type {("successful" | "successful_issues" | "unsuccessful")}
+ * @description "successful"="Successful"; "successful_issues"="Successful with issues"; "unsuccessful"="Unsuccessful"
+ */
+declare type ChangeCloseCode = "successful" | "successful_issues" | "unsuccessful";
+
+/**
+ *
+ * @description 1="Open"; 3="Pending Change"; 2="Known Error"; 4="Closed/Resolved"
+ */
+declare type ProblemStateValue = 1 | 3 | 2 | 4;
+declare type ProblemStateString = "1" | "3" | "2" | "4";
+declare type ProblemState = ProblemStateValue | ProblemStateString;
+
+/**
+ *
+ * @type {("starting" | "running" | "complete" | "cancelled" | "unknown")}
+ */
+declare type GlideProgressWorkerState = "starting" | "running" | "complete" | "cancelled" | "unknown";
+
+/**
+ *
+ * @type {("success" | "cancelled" | "error")}
+ */
+declare type GlideProgressWorkerCompletionCode = "success" | "cancelled" | "error";
+
+/**
+ *
+ * @type {("requested" | "in_process" | "closed_complete" | "closed_incomplete" | "closed_cancelled" | "closed_rejected" | "closed_skipped")}
+ * @description "requested"="Pending Approval"; "in_process"="Approved"; "closed_complete"="Closed Complete"; "closed_incomplete"="Closed Incomplete"; "closed_cancelled"="Closed Cancelled"; "closed_rejected"="Closed Rejected"; "closed_skipped"="Closed Skipped"
+ */
+declare type IRequestState = "requested" | "in_process" | "closed_complete" | "closed_incomplete" | "closed_cancelled" | "closed_rejected" | "closed_skipped";
+
+/**
+ * Fields common to all tables.
+ * @interface IGlideTableProperties
+ */
+declare interface IGlideTableProperties {
+    /**
+     * Created by
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof IGlideTablePropertiesFields
+     */
+    sys_created_by: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Created
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof IGlideTablePropertiesFields
+     */
+    sys_created_on: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Sys ID
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof IGlideTablePropertiesFields
+     * @description Internal type is "GUID"
+     */
+    sys_id: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Updates
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof IGlideTablePropertiesFields
+     */
+    sys_mod_count: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Updated by
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof IGlideTablePropertiesFields
+     */
+    sys_updated_by: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Updated
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof IGlideTablePropertiesFields
+     */
+    sys_updated_on: $$rhino.Nilable<$$property.GlideObject>;
+}
+
+/**
+ * Fields common to all extendable tables.
+ * @interface IExtendedGlideTableProperties
+ * @extends {}
+ */
+declare interface IExtendedGlideTableProperties extends IGlideTableProperties {
+    /**
+     * Class
+     * @type {$$rhino.Nilable<$$property.SysClassName>}
+     * @memberof IExtendedGlideTablePropertiesFields
+     */
+    sys_class_name: $$rhino.Nilable<$$property.SysClassName>;
+}
+
+/**
+ * GlideElement values from the Application File table.
  * @interface sys_metadataFields
  * @extends {IExtendedGlideTableProperties}
  */
@@ -7771,33 +7171,44 @@ declare interface sys_metadataFields extends IExtendedGlideTableProperties {
     /**
      * Display name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_metadataFields
      */
     sys_name: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Package
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_packageFields, sys_packageGlideRecord>>}
+     * @memberof sys_metadataFields
+     * @description Refers to sys_package (Package)
      */
     sys_package: $$rhino.Nilable<$$property.generic.Reference<sys_packageFields, sys_packageGlideRecord>>;
+
     /**
      * Protection policy
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_metadataFields
      */
     sys_policy: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Application
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_scopeFields, sys_scopeGlideRecord>>}
+     * @memberof sys_metadataFields
+     * @description Refers to sys_scope (Application)
      */
     sys_scope: $$rhino.Nilable<$$property.generic.Reference<sys_scopeFields, sys_scopeGlideRecord>>;
+
     /**
      * Update name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_metadataFields
      */
     sys_update_name: $$rhino.Nilable<$$property.Element>;
 }
 declare type sys_metadataGlideRecord = GlideRecord & sys_metadataFields;
-declare type sys_metadataReferenceElement = $$element.Reference<sys_metadataFields, sys_metadataGlideRecord>;
+
 /**
- * Table
+ * GlideElement values from the Table table.
  * @interface sys_db_objectFields
  * @extends {sys_metadataFields}
  */
@@ -7805,124 +7216,171 @@ declare interface sys_db_objectFields extends sys_metadataFields {
     /**
      * Accessible from
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_db_objectFields
      */
     access: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Allow UI actions
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     actions_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Allow new fields
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     alter_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Caller Access
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_db_objectFields
      */
     caller_access: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Allow client scripts
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     client_scripts_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Allow configuration
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     configuration_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Can create
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     create_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Create access controls
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     create_access_controls: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Can delete
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     delete_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Extension model
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_db_objectFields
      */
     extension_model: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Extensible
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     is_extendable: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Label
      * @type {$$rhino.Nilable<$$property.Documentation>}
+     * @memberof sys_db_objectFields
      */
     label: $$rhino.Nilable<$$property.Documentation>;
+
     /**
      * Live feed
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     live_feed_enabled: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_db_objectFields
      */
     name: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Auto number
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_numberFields, sys_numberGlideRecord>>}
+     * @memberof sys_db_objectFields
+     * @description Refers to sys_number (Number)
      */
     number_ref: $$rhino.Nilable<$$property.generic.Reference<sys_numberFields, sys_numberGlideRecord>>;
+
     /**
      * Provider class
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_db_objectFields
      */
     provider_class: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Can read
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     read_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Extends table
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>>}
+     * @memberof sys_db_objectFields
+     * @description Refers to sys_db_object (Table)
      */
     super_class: $$rhino.Nilable<$$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>>;
+
     /**
      * Sys class code
-     * @type {IGlideElement}
-     * @description Internal type is undefined
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_db_objectFields
      */
-    sys_class_code: IGlideElement;
+    sys_class_code: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Sys class path
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_db_objectFields
      */
     sys_class_path: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Can update
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     update_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * User role
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_roleFields, sys_user_roleGlideRecord>>}
+     * @memberof sys_db_objectFields
+     * @description Refers to sys_user_role (Role)
      */
     user_role: $$rhino.Nilable<$$property.generic.Reference<sys_user_roleFields, sys_user_roleGlideRecord>>;
+
     /**
      * Allow access to this table via web services
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_db_objectFields
      */
     ws_access: $$rhino.Nilable<$$property.Boolean>;
 }
 declare type sys_db_objectGlideRecord = sys_metadataGlideRecord & sys_db_objectFields;
-declare type sys_db_objectReferenceElement = $$element.Reference<sys_db_objectFields, sys_db_objectGlideRecord>;
+
 /**
- * Dictionary Entry
+ * GlideElement values from the Dictionary Entry table.
  * @interface sys_dictionaryFields
  * @extends {sys_metadataFields}
  */
@@ -7930,283 +7388,396 @@ declare interface sys_dictionaryFields extends sys_metadataFields {
     /**
      * Active
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     active: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Array
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     array: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Array denormalized
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     array_denormalized: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Attributes
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     attributes: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Audit
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     audit: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Calculation
      * @type {$$rhino.Nilable<$$property.Script>}
+     * @memberof sys_dictionaryFields
      */
     calculation: $$rhino.Nilable<$$property.Script>;
+
     /**
      * Choice
      * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_dictionaryFields
      */
     choice: $$rhino.Nilable<$$property.Numeric>;
+
     /**
      * Choice field
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     choice_field: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Choice table
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     choice_table: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Column label
      * @type {$$rhino.Nilable<$$property.Documentation>}
+     * @memberof sys_dictionaryFields
      */
     column_label: $$rhino.Nilable<$$property.Documentation>;
+
     /**
      * Comments
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     comments: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Create roles
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     create_roles: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Defaultsort
      * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_dictionaryFields
      */
     defaultsort: $$rhino.Nilable<$$property.Numeric>;
+
     /**
      * Default value
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     default_value: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Delete roles
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     delete_roles: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Dependent
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     dependent: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Dependent on field
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     dependent_on_field: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Display
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     display: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Dynamic creation
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     dynamic_creation: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Dynamic creation script
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     dynamic_creation_script: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Dynamic default value
-     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_filter_option_dynamicFields, sys_filter_option_dynamicGlideRecord>>}
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sys_dictionaryFields
+     * @description Refers to sys_filter_option_dynamic (Dynamic Filter Options)
      */
-    dynamic_default_value: $$rhino.Nilable<$$property.generic.Reference<GlideRecord, GlideRecord>>;
+    dynamic_default_value: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
     /**
      * Dynamic ref qual
-     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_filter_option_dynamicFields, sys_filter_option_dynamicGlideRecord>>}
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sys_dictionaryFields
+     * @description Refers to sys_filter_option_dynamic (Dynamic Filter Options)
      */
-    dynamic_ref_qual: $$rhino.Nilable<$$property.generic.Reference<GlideRecord, GlideRecord>>;
+    dynamic_ref_qual: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
     /**
      * Column name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     element: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Element reference
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     element_reference: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Foreign database
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     foreign_database: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Function definition
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     function_definition: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Function field
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     function_field: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Type
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_glide_objectFields, sys_glide_objectGlideRecord>>}
+     * @memberof sys_dictionaryFields
+     * @description Refers to sys_glide_object (Field class)
      */
     internal_type: $$rhino.Nilable<$$property.generic.Reference<sys_glide_objectFields, sys_glide_objectGlideRecord>>;
+
     /**
      * Mandatory
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     mandatory: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Max length
      * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_dictionaryFields
      */
     max_length: $$rhino.Nilable<$$property.Numeric>;
+
     /**
      * Table
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     name: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Next element
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     next_element: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Primary
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     primary: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Read only
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     read_only: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Read roles
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     read_roles: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Reference
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>>}
+     * @memberof sys_dictionaryFields
+     * @description Refers to sys_db_object (Table)
      */
     reference: $$rhino.Nilable<$$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>>;
+
     /**
      * Reference cascade rule
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     reference_cascade_rule: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Reference floats
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     reference_floats: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Reference key
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     reference_key: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Reference qual
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     reference_qual: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Reference qual condition
      * @type {$$rhino.Nilable<$$property.Conditions>}
+     * @memberof sys_dictionaryFields
      */
     reference_qual_condition: $$rhino.Nilable<$$property.Conditions>;
+
     /**
      * Reference type
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     reference_type: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Sizeclass
      * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_dictionaryFields
      */
     sizeclass: $$rhino.Nilable<$$property.Numeric>;
+
     /**
      * Spell check
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     spell_check: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Staged
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     staged: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Table reference
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     table_reference: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Text index
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     text_index: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Unique
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     unique: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Use dependent field
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     use_dependent_field: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Use dynamic default
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     use_dynamic_default: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Use reference qualifier
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     use_reference_qualifier: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Calculated
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     virtual: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Widget
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     widget: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Write roles
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionaryFields
      */
     write_roles: $$rhino.Nilable<$$property.Element>;
+
     /**
      * XML view
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionaryFields
      */
     xml_view: $$rhino.Nilable<$$property.Boolean>;
 }
 declare type sys_dictionaryGlideRecord = sys_metadataGlideRecord & sys_dictionaryFields;
-declare type sys_dictionaryReferenceElement = $$element.Reference<sys_dictionaryFields, sys_dictionaryGlideRecord>;
+
 /**
- * Field class
+ * GlideElement values from the Field class table.
  * @interface sys_glide_objectFields
  * @extends {sys_metadataFields}
  */
@@ -8214,48 +7785,63 @@ declare interface sys_glide_objectFields extends sys_metadataFields {
     /**
      * Attributes
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_glide_objectFields
      */
     attributes: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Class name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_glide_objectFields
      */
     class_name: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Label
-     * @type {$$rhino.Nilable<$$property.ranslatedField>}
+     * @type {$$rhino.Nilable<$$property.TranslatedField>}
+     * @memberof sys_glide_objectFields
      */
     label: $$rhino.Nilable<$$property.TranslatedField>;
+
     /**
      * Name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_glide_objectFields
      */
     name: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Length
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_glide_objectFields
      */
     scalar_length: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Extends
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_glide_objectFields
      */
     scalar_type: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Use original value
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_glide_objectFields
      */
     use_original_value: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Visible
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_glide_objectFields
      */
     visible: $$rhino.Nilable<$$property.Boolean>;
 }
 declare type sys_glide_objectGlideRecord = sys_metadataGlideRecord & sys_glide_objectFields;
-declare type sys_glide_objectReferenceElement = $$element.Reference<sys_glide_objectFields, sys_glide_objectGlideRecord>;
+
 /**
- * Number
+ * GlideElement values from the Number table.
  * @interface sys_numberFields
  * @extends {sys_metadataFields}
  */
@@ -8263,28 +7849,255 @@ declare interface sys_numberFields extends sys_metadataFields {
     /**
      * Table
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>>}
+     * @memberof sys_numberFields
+     * @description Refers to sys_db_object (Table)
      */
     category: $$rhino.Nilable<$$property.generic.Reference<sys_db_objectFields, sys_db_objectGlideRecord>>;
+
     /**
      * Number of digits
      * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_numberFields
      */
     maximum_digits: $$rhino.Nilable<$$property.Numeric>;
+
     /**
      * Number
      * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_numberFields
      */
     number: $$rhino.Nilable<$$property.Numeric>;
+
     /**
      * Prefix
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_numberFields
      */
     prefix: $$rhino.Nilable<$$property.Element>;
 }
 declare type sys_numberGlideRecord = sys_metadataGlideRecord & sys_numberFields;
-declare type sys_numberReferenceElement = $$element.Reference<sys_numberFields, sys_numberGlideRecord>;
+
 /**
- * Package
+ * GlideElement values from the Number table.
+ * @interface sys_choiceFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface sys_choiceFields extends IGlideTableProperties {
+    /**
+     * Dependent value
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_choiceFields
+     */
+    dependent_value: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Element
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_choiceFields
+     */
+    element: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Hint
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_choiceFields
+     */
+    hint: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Inactive
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_choiceFields
+     */
+    inactive: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Label
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_choiceFields
+     */
+    label: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Language
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_choiceFields
+     */
+    language: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Table
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_choiceFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Sequence
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_choiceFields
+     */
+    sequence: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Domain
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     * @memberof sys_choiceFields
+     */
+    sys_domain: $$rhino.Nilable<$$property.DomainId>;
+
+    /**
+     * Domain Path
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     * @memberof sys_choiceFields
+     */
+    sys_domain_path: $$rhino.Nilable<$$property.DomainId>;
+
+    /**
+     * Value
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_choiceFields
+     */
+    value: $$rhino.Nilable<$$property.Element>;
+}
+declare type sys_choiceGlideRecord = GlideRecord & sys_choiceFields;
+
+/**
+ * GlideElement values from the Dictionary Entry Override table.
+ * @interface sys_dictionary_overrideFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_dictionary_overrideFields extends sys_metadataFields {
+    /**
+     * Attributes
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    attributes: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Override attributes
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    attributes_override: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Base table
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    base_table: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Calculation
+     * @type {$$rhino.Nilable<$$property.Script>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    calculation: $$rhino.Nilable<$$property.Script>;
+
+    /**
+     * Override calculation
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    calculation_override: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Default value
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    default_value: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Override default value
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    default_value_override: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Dependent
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    dependent: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Override dependent
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    dependent_override: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Override display value
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    display_override: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Column name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    element: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Mandatory
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    mandatory: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Override mandatory
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    mandatory_override: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Table
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Read only
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    read_only: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Override read only
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    read_only_override: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Reference qual
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    reference_qual: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Override reference qualifier
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_dictionary_overrideFields
+     */
+    reference_qual_override: $$rhino.Nilable<$$property.Boolean>;
+}
+declare type sys_dictionary_overrideGlideRecord = sys_metadataGlideRecord & sys_dictionary_overrideFields;
+
+/**
+ * GlideElement values from the Package table.
  * @interface sys_packageFields
  * @extends {IExtendedGlideTableProperties}
  */
@@ -8292,53 +8105,70 @@ declare interface sys_packageFields extends IExtendedGlideTableProperties {
     /**
      * Active
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_packageFields
      */
     active: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Subscription requirement
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_packageFields
      */
     enforce_license: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Licensable
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_packageFields
      */
     licensable: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Subscription Category
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_packageFields
      */
     license_category: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Subscription Model
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_packageFields
      */
     license_model: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_packageFields
      */
     name: $$rhino.Nilable<$$property.Element>;
+
     /**
      * ID
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_packageFields
      */
     source: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Trackable
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_packageFields
      */
     trackable: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Version
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_packageFields
      */
     version: $$rhino.Nilable<$$property.Element>;
 }
 declare type sys_packageGlideRecord = GlideRecord & sys_packageFields;
-declare type sys_packageReferenceElement = $$element.Reference<sys_packageFields, sys_packageGlideRecord>;
+
 /**
- * Application
+ * GlideElement values from the Application table.
  * @interface sys_scopeFields
  * @extends {sys_packageFields}
  */
@@ -8346,63 +8176,84 @@ declare interface sys_scopeFields extends sys_packageFields {
     /**
      * JavaScript Mode
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_scopeFields
      */
     js_level: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Logo
-     * @type {GLIDE.NilableUserImageProperty}
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sys_scopeFields
      */
     logo: $$rhino.Nilable<$$property.UserImage>;
+
     /**
      * Private
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_scopeFields
      */
     private: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Restrict Table Choices
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_scopeFields
      */
     restrict_table_access: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Runtime Access Tracking
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_scopeFields
      */
     runtime_access_tracking: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Scope
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_scopeFields
      */
     scope: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Application administration
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_scopeFields
      */
     scoped_administration: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Short description
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_scopeFields
      */
     short_description: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Template
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_scopeFields
      */
     template: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Vendor
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_scopeFields
      */
     vendor: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Vendor prefix
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_scopeFields
      */
     vendor_prefix: $$rhino.Nilable<$$property.Element>;
 }
 declare type sys_scopeGlideRecord = sys_packageGlideRecord & sys_scopeFields;
-declare type sys_scopeReferenceElement = $$element.Reference<sys_scopeFields, sys_scopeGlideRecord>;
+
 /**
- * Role
+ * GlideElement values from the Role table.
  * @interface sys_user_roleFields
  * @extends {sys_metadataFields}
  */
@@ -8410,82 +8261,5540 @@ declare interface sys_user_roleFields extends sys_metadataFields {
     /**
      * Assignable by
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_roleFields, sys_user_roleGlideRecord>>}
+     * @memberof sys_user_roleFields
+     * @description Refers to sys_user_role (Role)
      */
     assignable_by: $$rhino.Nilable<$$property.generic.Reference<sys_user_roleFields, sys_user_roleGlideRecord>>;
+
     /**
      * Can delegate
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_user_roleFields
      */
     can_delegate: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Description
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_roleFields
      */
     description: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Elevated privilege
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_user_roleFields
      */
     elevated_privilege: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Encryption context
      * @type {$$rhino.Nilable<$$property.generic.Reference<sys_encryption_contextFields, sys_encryption_contextGlideRecord>>}
+     * @memberof sys_user_roleFields
+     * @description Refers to sys_encryption_context (Encryption Context)
      */
     encryption_context: $$rhino.Nilable<$$property.generic.Reference<sys_encryption_contextFields, sys_encryption_contextGlideRecord>>;
+
     /**
      * Grantable
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_user_roleFields
      */
     grantable: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Includes roles
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_roleFields
      */
     includes_roles: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_roleFields
      */
     name: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Requires Subscription
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_roleFields
      */
     requires_subscription: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Application Administrator
      * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_user_roleFields
      */
     scoped_admin: $$rhino.Nilable<$$property.Boolean>;
+
     /**
      * Suffix
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_roleFields
      */
     suffix: $$rhino.Nilable<$$property.Element>;
 }
 declare type sys_user_roleGlideRecord = sys_metadataGlideRecord & sys_user_roleFields;
-declare type sys_user_roleReferenceElement = $$element.Reference<sys_user_roleFields, sys_user_roleGlideRecord>;
+
 /**
- * Encryption Context
+ * GlideElement values from the Encryption Context table.
  * @interface sys_encryption_contextFields
  * @extends {sys_metadataFields}
  */
 declare interface sys_encryption_contextFields extends sys_metadataFields {
     /**
      * Encryption key
-     * @type {GLIDE.NilablePassword2Property}
+     * @type {$$rhino.Nilable<$$property.Password2>}
+     * @memberof sys_encryption_contextFields
      */
     encryption_key: $$rhino.Nilable<$$property.Password2>;
+
     /**
      * Name
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_encryption_contextFields
      */
     name: $$rhino.Nilable<$$property.Element>;
+
     /**
      * Type
      * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_encryption_contextFields
      */
     type: $$rhino.Nilable<$$property.Element>;
 }
 declare type sys_encryption_contextGlideRecord = sys_metadataGlideRecord & sys_encryption_contextFields;
-declare type sys_encryption_contextReferenceElement = $$element.Reference<sys_encryption_contextFields, sys_encryption_contextGlideRecord>;
+
+/**
+ * GlideElement values from the Calendar table.
+ * @interface sys_calendarFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sys_calendarFields extends sys_metadataFields {
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_calendarFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+}
+declare type sys_calendarGlideRecord = sys_metadataGlideRecord & sys_calendarFields;
+
+/**
+ * GlideElement values from the Agreement table.
+ * @interface slaFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface slaFields extends IGlideTableProperties {
+    /**
+     * Accountable user
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_user (User)
+     */
+    accountable_user: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Active
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof slaFields
+     */
+    active: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Avail pct
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof slaFields
+     * @description Internal type is "decimal"
+     */
+    avail_pct: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Begins
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof slaFields
+     * @description Internal type is "glide_date"
+     */
+    begins: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Business lead
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_user (User)
+     */
+    business_lead: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Business unit
+     * @type {$$rhino.Nilable<$$property.generic.Element<("Operations" | "Sales")>>}
+     * @memberof slaFields
+     */
+    business_unit: $$rhino.Nilable<$$property.generic.Element<("Operations" | "Sales")>>;
+
+    /**
+     * Calendar
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_calendarFields, sys_calendarGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_calendar (Calendar)
+     */
+    calendar: $$rhino.Nilable<$$property.generic.Reference<sys_calendarFields, sys_calendarGlideRecord>>;
+
+    /**
+     * Change procedures
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    change_procedures: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Consultant user
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_user (User)
+     */
+    consultant_user: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Contract
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to ast_contract (Contract)
+     */
+    contract: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Department
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to cmn_department (Department)
+     */
+    department: $$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Disaster recovery
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    disaster_recovery: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Ends
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof slaFields
+     * @description Internal type is "glide_date"
+     */
+    ends: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Functional area
+     * @type {$$rhino.Nilable<$$property.generic.Element<("Data Management" | "Network" | "Security")>>}
+     * @memberof slaFields
+     */
+    functional_area: $$rhino.Nilable<$$property.generic.Element<("Data Management" | "Network" | "Security")>>;
+
+    /**
+     * Incident procedures
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    incident_procedures: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Informed user
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_user (User)
+     */
+    informed_user: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Maintenance
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_calendarFields, sys_calendarGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_calendar (Calendar)
+     */
+    maintenance: $$rhino.Nilable<$$property.generic.Reference<sys_calendarFields, sys_calendarGlideRecord>>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Next review
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof slaFields
+     * @description Internal type is "glide_date"
+     */
+    next_review: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Notes
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    notes: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     */
+    number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Reponsibilities
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    reponsibilities: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Response time
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof slaFields
+     * @description Internal type is "decimal"
+     */
+    response_time: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Responsible user
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_user (User)
+     */
+    responsible_user: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Security notes
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    security_notes: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Service goals
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    service_goals: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Short description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     */
+    short_description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Signatures
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof slaFields
+     * @description Internal type is "html"
+     */
+    signatures: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Technical lead
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_user (User)
+     */
+    technical_lead: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Transaction load
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof slaFields
+     * @description Internal type is "decimal"
+     */
+    transaction_load: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Users
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof slaFields
+     * @description Refers to sys_user_group (Group)
+     */
+    users: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+}
+declare type slaGlideRecord = GlideRecord & slaFields;
+
+/**
+ * GlideElement values from the Task table.
+ * @interface taskFields
+ * @extends {IExtendedGlideTableProperties}
+ */
+declare interface taskFields extends IExtendedGlideTableProperties {
+    /**
+     * Active
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof taskFields
+     */
+    active: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Activity due
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     * @description Internal type is "due_date"
+     */
+    activity_due: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Additional assignee list
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "glide_list"
+     */
+    additional_assignee_list: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Approval
+     * @type {$$rhino.Nilable<$$property.generic.Element<TaskAppproval>>}
+     * @memberof taskFields
+     */
+    approval: $$rhino.Nilable<$$property.generic.Element<TaskAppproval>>;
+
+    /**
+     * Approval history
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "journal"
+     */
+    approval_history: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Approval set
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     */
+    approval_set: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Assigned to
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to sys_user (User)
+     */
+    assigned_to: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Assignment group
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to sys_user_group (Group)
+     */
+    assignment_group: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+
+    /**
+     * Business duration
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     * @description Internal type is "glide_duration"
+     */
+    business_duration: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Business service
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_ci_serviceFields, cmdb_ci_serviceGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to cmdb_ci_service (Business Service)
+     */
+    business_service: $$rhino.Nilable<$$property.generic.Reference<cmdb_ci_serviceFields, cmdb_ci_serviceGlideRecord>>;
+
+    /**
+     * Duration
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     * @description Internal type is "glide_duration"
+     */
+    calendar_duration: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Closed
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     */
+    closed_at: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Closed by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to sys_user (User)
+     */
+    closed_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Close notes
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof taskFields
+     */
+    close_notes: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Configuration item
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to cmdb_ci (Configuration Item)
+     */
+    cmdb_ci: $$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>;
+
+    /**
+     * Additional comments
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "journal_input"
+     */
+    comments: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Comments and Work notes
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "journal_list"
+     */
+    comments_and_work_notes: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Company
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to core_company (Company)
+     */
+    company: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Contact type
+     * @type {$$rhino.Nilable<$$property.generic.Element<TaskContactType>>}
+     * @memberof taskFields
+     */
+    contact_type: $$rhino.Nilable<$$property.generic.Element<TaskContactType>>;
+
+    /**
+     * Contract
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to ast_contract (Contract)
+     */
+    contract: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Correlation display
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof taskFields
+     */
+    correlation_display: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Correlation ID
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof taskFields
+     */
+    correlation_id: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * delivery_plan
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to sc_cat_item_delivery_plan (Execution Plan)
+     */
+    delivery_plan: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Delivery task
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to sc_cat_item_delivery_task (Execution Plan Task)
+     */
+    delivery_task: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof taskFields
+     */
+    description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Due date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     */
+    due_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Escalation
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof taskFields
+     */
+    escalation: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Expected start
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     */
+    expected_start: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Follow up
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     */
+    follow_up: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Group list
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "glide_list"
+     */
+    group_list: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Impact
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof taskFields
+     */
+    impact: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Knowledge
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof taskFields
+     */
+    knowledge: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Location
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to cmn_location (Location)
+     */
+    location: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Made SLA
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof taskFields
+     */
+    made_sla: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof taskFields
+     */
+    number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Opened
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     */
+    opened_at: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Opened by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to sys_user (User)
+     */
+    opened_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Order
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof taskFields
+     */
+    order: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<taskFields, taskGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to task (Task)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<taskFields, taskGlideRecord>>;
+
+    /**
+     * Priority
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof taskFields
+     */
+    priority: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Reassignment count
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof taskFields
+     */
+    reassignment_count: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Rejection goto
+     * @type {$$rhino.Nilable<$$property.generic.Reference<taskFields, taskGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to task (Task)
+     */
+    rejection_goto: $$rhino.Nilable<$$property.generic.Reference<taskFields, taskGlideRecord>>;
+
+    /**
+     * Service offering
+     * @type {$$rhino.Nilable<$$property.generic.Reference<service_offeringFields, service_offeringGlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to service_offering (Service Offering)
+     */
+    service_offering: $$rhino.Nilable<$$property.generic.Reference<service_offeringFields, service_offeringGlideRecord>>;
+
+    /**
+     * Short description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof taskFields
+     */
+    short_description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Skills
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "glide_list"
+     */
+    skills: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * SLA due
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     * @description Internal type is "due_date"
+     */
+    sla_due: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * State
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof taskFields
+     */
+    state: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Domain
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     * @memberof taskFields
+     */
+    sys_domain: $$rhino.Nilable<$$property.DomainId>;
+
+    /**
+     * Domain Path
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof taskFields
+     * @description Internal type is "domain_path"
+     */
+    sys_domain_path: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Time worked
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     * @description Internal type is "timer"
+     */
+    time_worked: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Upon approval
+     * @type {$$rhino.Nilable<$$property.generic.Element<("proceed" | "do_nothing")>>}
+     * @memberof taskFields
+     * @description "proceed"="Proceed to Next Task"; "do_nothing"="Wait for a User to Close this task"
+     */
+    upon_approval: $$rhino.Nilable<$$property.generic.Element<("proceed" | "do_nothing")>>;
+
+    /**
+     * Upon reject
+     * @type {$$rhino.Nilable<$$property.generic.Element<("cancel" | "goto")>>}
+     * @memberof taskFields
+     * @description "cancel"="Cancel all future Tasks"; "goto"="Go to a previous Task"
+     */
+    upon_reject: $$rhino.Nilable<$$property.generic.Element<("cancel" | "goto")>>;
+
+    /**
+     * Urgency
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof taskFields
+     */
+    urgency: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * User input
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "user_input"
+     */
+    user_input: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Variables
+     * @type {$$rhino.Nilable<$$property.Variables>}
+     * @memberof taskFields
+     */
+    variables: $$rhino.Nilable<$$property.Variables>;
+
+    /**
+     * Watch list
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "glide_list"
+     */
+    watch_list: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Workflow activity
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof taskFields
+     * @description Refers to wf_activity (Workflow Activity)
+     */
+    wf_activity: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Actual end
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     */
+    work_end: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Work notes
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "journal_input"
+     */
+    work_notes: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Work notes list
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof taskFields
+     * @description Internal type is "glide_list"
+     */
+    work_notes_list: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Actual start
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof taskFields
+     */
+    work_start: $$rhino.Nilable<$$property.GlideObject>;
+}
+declare type taskGlideRecord = GlideRecord & taskFields;
+
+/**
+ * GlideElement values from the Incident table.
+ * @interface incidentFields
+ * @extends {taskFields}
+ */
+declare interface incidentFields extends taskFields {
+    /**
+     * Business resolve time
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof incidentFields
+     */
+    business_stc: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Resolve time
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof incidentFields
+     */
+    calendar_stc: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Caller
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof incidentFields
+     * @description Refers to sys_user (User)
+     */
+    caller_id: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Category
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof incidentFields
+     */
+    category: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Caused by Change
+     * @type {$$rhino.Nilable<$$property.generic.Reference<change_requestFields, change_requestGlideRecord>>}
+     * @memberof incidentFields
+     * @description Refers to change_request (Change Request)
+     */
+    caused_by: $$rhino.Nilable<$$property.generic.Reference<change_requestFields, change_requestGlideRecord>>;
+
+    /**
+     * Child Incidents
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof incidentFields
+     */
+    child_incidents: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Close code
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof incidentFields
+     */
+    close_code: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * On hold reason
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof incidentFields
+     */
+    hold_reason: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Incident state
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof incidentFields
+     */
+    incident_state: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Notify
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof incidentFields
+     */
+    notify: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Parent Incident
+     * @type {$$rhino.Nilable<$$property.generic.Reference<incidentFields, incidentGlideRecord>>}
+     * @memberof incidentFields
+     * @description Refers to incident (Incident)
+     */
+    parent_incident: $$rhino.Nilable<$$property.generic.Reference<incidentFields, incidentGlideRecord>>;
+
+    /**
+     * Problem
+     * @type {$$rhino.Nilable<$$property.generic.Reference<problemFields, problemGlideRecord>>}
+     * @memberof incidentFields
+     * @description Refers to problem (Problem)
+     */
+    problem_id: $$rhino.Nilable<$$property.generic.Reference<problemFields, problemGlideRecord>>;
+
+    /**
+     * Last reopened by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof incidentFields
+     * @description Refers to sys_user (User)
+     */
+    reopened_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Last reopened at
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof incidentFields
+     */
+    reopened_time: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Reopen count
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof incidentFields
+     */
+    reopen_count: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Resolved
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof incidentFields
+     */
+    resolved_at: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Resolved by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof incidentFields
+     * @description Refers to sys_user (User)
+     */
+    resolved_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Change Request
+     * @type {$$rhino.Nilable<$$property.generic.Reference<change_requestFields, change_requestGlideRecord>>}
+     * @memberof incidentFields
+     * @description Refers to change_request (Change Request)
+     */
+    rfc: $$rhino.Nilable<$$property.generic.Reference<change_requestFields, change_requestGlideRecord>>;
+
+    /**
+     * Severity
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof incidentFields
+     */
+    severity: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Subcategory
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof incidentFields
+     */
+    subcategory: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Is Mission Related
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof incidentFields
+     */
+    u_is_mission_related: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Network
+     * @type {$$rhino.Nilable<$$property.generic.Reference<x_44813_phys_net_networkFields, x_44813_phys_net_networkGlideRecord>>}
+     * @memberof incidentFields
+     * @description Refers to x_44813_phys_net_network (Physical Network)
+     */
+    u_network: $$rhino.Nilable<$$property.generic.Reference<x_44813_phys_net_networkFields, x_44813_phys_net_networkGlideRecord>>;
+
+    /**
+     * VIP Priority
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof incidentFields
+     */
+    u_vip_priority: $$rhino.Nilable<$$property.Boolean>;
+}
+declare type incidentGlideRecord = taskGlideRecord & incidentFields;
+
+/**
+ * GlideElement values from the Change Request table.
+ * @interface change_requestFields
+ * @extends {taskFields}
+ */
+declare interface change_requestFields extends taskFields {
+    /**
+     * Backout plan
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    backout_plan: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * CAB date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof change_requestFields
+     * @description Internal type is "glide_date"
+     */
+    cab_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * CAB delegate
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof change_requestFields
+     * @description Refers to sys_user (User)
+     */
+    cab_delegate: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * CAB recommendation
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    cab_recommendation: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * CAB required
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof change_requestFields
+     */
+    cab_required: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Category
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    category: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Change plan
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    change_plan: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * CI class
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     * @description Internal type is "table_name"
+     */
+    ci_class: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Close code
+     * @type {$$rhino.Nilable<$$property.generic.Element<IncidentCloseCode>>}
+     * @memberof change_requestFields
+     */
+    close_code: $$rhino.Nilable<$$property.generic.Element<IncidentCloseCode>>;
+
+    /**
+     * Conflict last run
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof change_requestFields
+     */
+    conflict_last_run: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Conflict status
+     * @type {$$rhino.Nilable<$$property.generic.Element<("Not Run" | "Conflict" | "No Conflict")>>}
+     * @memberof change_requestFields
+     */
+    conflict_status: $$rhino.Nilable<$$property.generic.Element<("Not Run" | "Conflict" | "No Conflict")>>;
+
+    /**
+     * Planned end date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof change_requestFields
+     */
+    end_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Implementation plan
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    implementation_plan: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Justification
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    justification: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * On hold
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof change_requestFields
+     */
+    on_hold: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * On hold reason
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    on_hold_reason: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * On Hold Change Tasks
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof change_requestFields
+     * @description Internal type is "glide_list"
+     */
+    on_hold_task: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Outside maintenance schedule
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof change_requestFields
+     */
+    outside_maintenance_schedule: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Phase
+     * @type {$$rhino.Nilable<$$property.generic.Element<("requested" | "plan" | "build" | "accept")>>}
+     * @memberof change_requestFields
+     */
+    phase: $$rhino.Nilable<$$property.generic.Element<("requested" | "plan" | "build" | "accept")>>;
+
+    /**
+     * Phase state
+     * @type {$$rhino.Nilable<$$property.generic.Element<("open" | "work in progress" | "approved" | "rejected" | "testing" | "implementation" | "on hold" | "complete")>>}
+     * @memberof change_requestFields
+     */
+    phase_state: $$rhino.Nilable<$$property.generic.Element<("open" | "work in progress" | "approved" | "rejected" | "testing" | "implementation" | "on hold" | "complete")>>;
+
+    /**
+     * Production system
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof change_requestFields
+     */
+    production_system: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Proposed change
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof change_requestFields
+     * @description Internal type is "template_value"
+     */
+    proposed_change: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Reason
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    reason: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Requested by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof change_requestFields
+     * @description Refers to sys_user (User)
+     */
+    requested_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Requested by date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof change_requestFields
+     */
+    requested_by_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Review comments
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    review_comments: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Review date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof change_requestFields
+     * @description Internal type is "glide_date"
+     */
+    review_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Review status
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof change_requestFields
+     */
+    review_status: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Risk
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof change_requestFields
+     */
+    risk: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Risk and impact analysis
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    risk_impact_analysis: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Risk value
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof change_requestFields
+     */
+    risk_value: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Scope
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof change_requestFields
+     */
+    scope: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Planned start date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof change_requestFields
+     */
+    start_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Standard Change Template version
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof change_requestFields
+     * @description Refers to std_change_producer_version (Standard Change Template Version)
+     */
+    std_change_producer_version: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Test plan
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    test_plan: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Type
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_requestFields
+     */
+    type: $$rhino.Nilable<$$property.Element>;
+}
+declare type change_requestGlideRecord = taskGlideRecord & change_requestFields;
+
+/**
+ * GlideElement values from the Change Task table.
+ * @interface change_taskFields
+ * @extends {taskFields}
+ */
+declare interface change_taskFields extends taskFields {
+    /**
+     * Change request
+     * @type {$$rhino.Nilable<$$property.generic.Reference<change_requestFields, change_requestGlideRecord>>}
+     * @memberof change_taskFields
+     * @description Refers to change_request (Change Request)
+     */
+    change_request: $$rhino.Nilable<$$property.generic.Reference<change_requestFields, change_requestGlideRecord>>;
+
+    /**
+     * Type
+     * @type {$$rhino.Nilable<$$property.generic.Element<("planning" | "implementation" | "testing" | "review")>>}
+     * @memberof change_taskFields
+     */
+    change_task_type: $$rhino.Nilable<$$property.generic.Element<("planning" | "implementation" | "testing" | "review")>>;
+
+    /**
+     * Close code
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_taskFields
+     */
+    close_code: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Created from
+     * @type {$$rhino.Nilable<$$property.generic.Element<("workflow" | "manual")>>}
+     * @memberof change_taskFields
+     * @description "workflow"=""; "manual"=""
+     */
+    created_from: $$rhino.Nilable<$$property.generic.Element<("workflow" | "manual")>>;
+
+    /**
+     * On hold
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof change_taskFields
+     */
+    on_hold: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * On hold reason
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof change_taskFields
+     */
+    on_hold_reason: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Planned end date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof change_taskFields
+     */
+    planned_end_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Planned start date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof change_taskFields
+     */
+    planned_start_date: $$rhino.Nilable<$$property.GlideObject>;
+}
+declare type change_taskGlideRecord = taskGlideRecord & change_taskFields;
+
+/**
+ * GlideElement values from the Problem table.
+ * @interface problemFields
+ * @extends {taskFields}
+ */
+declare interface problemFields extends taskFields {
+    /**
+     * Known error
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof problemFields
+     */
+    known_error: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Major problem
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof problemFields
+     */
+    major_problem: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Problem state
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof problemFields
+     */
+    problem_state: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Related Incidents
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof problemFields
+     */
+    related_incidents: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Review outcome
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof problemFields
+     */
+    review_outcome: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Change request
+     * @type {$$rhino.Nilable<$$property.generic.Reference<change_requestFields, change_requestGlideRecord>>}
+     * @memberof problemFields
+     * @description Refers to change_request (Change Request)
+     */
+    rfc: $$rhino.Nilable<$$property.generic.Reference<change_requestFields, change_requestGlideRecord>>;
+
+    /**
+     * Workaround
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof problemFields
+     * @description Internal type is "journal_input"
+     */
+    work_around: $$rhino.Nilable<IGlideElement>;
+}
+declare type problemGlideRecord = taskGlideRecord & problemFields;
+
+/**
+ * GlideElement values from the Problem Task table.
+ * @interface problem_taskFields
+ * @extends {taskFields}
+ */
+declare interface problem_taskFields extends taskFields {
+    /**
+     * Problem
+     * @type {$$rhino.Nilable<$$property.generic.Reference<problemFields, problemGlideRecord>>}
+     * @memberof problem_taskFields
+     * @description Refers to problem (Problem)
+     */
+    problem: $$rhino.Nilable<$$property.generic.Reference<problemFields, problemGlideRecord>>;
+}
+declare type problem_taskGlideRecord = taskGlideRecord & problem_taskFields;
+
+/**
+ * GlideElement values from the User table.
+ * @interface sys_userFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface sys_userFields extends IGlideTableProperties {
+    /**
+     * Accumulated roles
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    accumulated_roles: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Active
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_userFields
+     */
+    active: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Work agent status
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sys_userFields
+     * @description Internal type is "choice"
+     */
+    agent_status: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Average Daily FTE Hours/Hours Per Person Day
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_userFields
+     * @description Internal type is "decimal"
+     */
+    average_daily_fte: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Building
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_buildingFields, cmn_buildingGlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to cmn_building (Building)
+     */
+    building: $$rhino.Nilable<$$property.generic.Reference<cmn_buildingFields, cmn_buildingGlideRecord>>;
+
+    /**
+     * Business impact
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_userFields
+     */
+    business_criticality: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Calendar integration
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_userFields
+     */
+    calendar_integration: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * City
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    city: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Company
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to core_company (Company)
+     */
+    company: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Cost center
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to cmn_cost_center (Cost Center)
+     */
+    cost_center: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Country code
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    country: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Date format
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    date_format: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Default perspective
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to sys_perspective (Menu List)
+     */
+    default_perspective: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Department
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to cmn_department (Department)
+     */
+    department: $$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>;
+
+    /**
+     * EDU Status
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    edu_status: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Email
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     * @description Internal type is "email"
+     */
+    email: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Employee number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    employee_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Enable Multifactor Authentication
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_userFields
+     */
+    enable_multifactor_authn: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Failed login attempts
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_userFields
+     */
+    failed_attempts: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * First name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    first_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Gender
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    gender: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Geolocation tracked
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_userFields
+     */
+    geolocation_tracked: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Home phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     * @description Internal type is "ph_number"
+     */
+    home_phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Internal Integration User
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_userFields
+     */
+    internal_integration_user: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Prefix
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    introduction: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Last login
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sys_userFields
+     * @description Internal type is "glide_date"
+     */
+    last_login: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Last login device
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    last_login_device: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Last login time
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sys_userFields
+     */
+    last_login_time: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Last name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    last_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Last password
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    last_password: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Last position update
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sys_userFields
+     */
+    last_position_update: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Latitude
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_userFields
+     * @description Internal type is "float"
+     */
+    latitude: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * LDAP server
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to ldap_server_config (LDAP server)
+     */
+    ldap_server: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Location
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to cmn_location (Location)
+     */
+    location: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Locked out
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_userFields
+     */
+    locked_out: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Longitude
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_userFields
+     * @description Internal type is "float"
+     */
+    longitude: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Manager
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to sys_user (User)
+     */
+    manager: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Middle name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    middle_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Mobile phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     * @description Internal type is "ph_number"
+     */
+    mobile_phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Notification
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_userFields
+     */
+    notification: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * On schedule
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sys_userFields
+     * @description Internal type is "choice"
+     */
+    on_schedule: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Password needs reset
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_userFields
+     */
+    password_needs_reset: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Black phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     * @description Internal type is "ph_number"
+     */
+    phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Photo
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sys_userFields
+     */
+    photo: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Language
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    preferred_language: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Roles
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sys_userFields
+     * @description Internal type is "user_roles"
+     */
+    roles: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Schedule
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_scheduleFields, cmn_scheduleGlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to cmn_schedule (Schedule)
+     */
+    schedule: $$rhino.Nilable<$$property.generic.Reference<cmn_scheduleFields, cmn_scheduleGlideRecord>>;
+
+    /**
+     * Source
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    source: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * State / Province
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    state: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Street
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sys_userFields
+     * @description Internal type is "multi_two_lines"
+     */
+    street: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Class
+     * @type {$$rhino.Nilable<$$property.SysClassName>}
+     * @memberof sys_userFields
+     */
+    sys_class_name: $$rhino.Nilable<$$property.SysClassName>;
+
+    /**
+     * Domain
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     * @memberof sys_userFields
+     */
+    sys_domain: $$rhino.Nilable<$$property.DomainId>;
+
+    /**
+     * Domain Path
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     * @description Internal type is "domain_path"
+     */
+    sys_domain_path: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Time format
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    time_format: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Time sheet policy
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sys_userFields
+     * @description Refers to time_sheet_policy (Time Sheet Policy)
+     */
+    time_sheet_policy: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Time zone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    time_zone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Title
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    title: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * User ID
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    user_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Password
+     * @type {$$rhino.Nilable<$$property.Password>}
+     * @memberof sys_userFields
+     */
+    user_password: $$rhino.Nilable<$$property.Password>;
+
+    /**
+     * Grey Phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    u_grey_phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Rank
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    u_rank: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Red Phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    u_red_phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * VIP
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_userFields
+     */
+    vip: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Web service access only
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_userFields
+     */
+    web_service_access_only: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Zip / Postal code
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_userFields
+     */
+    zip: $$rhino.Nilable<$$property.Element>;
+}
+declare type sys_userGlideRecord = GlideRecord & sys_userFields;
+
+/**
+ * GlideElement values from the Group table.
+ * @interface sys_user_groupFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface sys_user_groupFields extends IGlideTableProperties {
+    /**
+     * Active
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_user_groupFields
+     */
+    active: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Average Daily FTE Hours/Hours Per Person Day
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_user_groupFields
+     * @description Internal type is "decimal"
+     */
+    average_daily_fte: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Cost center
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sys_user_groupFields
+     * @description Refers to cmn_cost_center (Cost Center)
+     */
+    cost_center: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Default assignee
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof sys_user_groupFields
+     * @description Refers to sys_user (User)
+     */
+    default_assignee: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_groupFields
+     */
+    description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Group email
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_groupFields
+     * @description Internal type is "email"
+     */
+    email: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Exclude manager
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_user_groupFields
+     */
+    exclude_manager: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Hourly rate
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof sys_user_groupFields
+     */
+    hourly_rate: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Include members
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_user_groupFields
+     */
+    include_members: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Manager
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof sys_user_groupFields
+     * @description Refers to sys_user (User)
+     */
+    manager: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_groupFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof sys_user_groupFields
+     * @description Refers to sys_user_group (Group)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+
+    /**
+     * Points
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_user_groupFields
+     */
+    points: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Roles
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sys_user_groupFields
+     * @description Internal type is "user_roles"
+     */
+    roles: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Source
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_user_groupFields
+     */
+    source: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Type
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sys_user_groupFields
+     * @description Internal type is "glide_list"
+     */
+    type: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Vendors
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sys_user_groupFields
+     * @description Internal type is "glide_list"
+     */
+    vendors: $$rhino.Nilable<IGlideElement>;
+}
+declare type sys_user_groupGlideRecord = GlideRecord & sys_user_groupFields;
+
+/**
+ * GlideElement values from the Schedule table.
+ * @interface cmn_scheduleFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface cmn_scheduleFields extends IGlideTableProperties {
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_scheduleFields
+     */
+    description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Document
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_scheduleFields
+     */
+    document: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Document key
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_scheduleFields
+     */
+    document_key: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_scheduleFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_scheduleFields, cmn_scheduleGlideRecord>>}
+     * @memberof cmn_scheduleFields
+     * @description Refers to cmn_schedule (Schedule)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<cmn_scheduleFields, cmn_scheduleGlideRecord>>;
+
+    /**
+     * Read only
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmn_scheduleFields
+     */
+    read_only: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Time zone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_scheduleFields
+     */
+    time_zone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Type
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_scheduleFields
+     */
+    type: $$rhino.Nilable<$$property.Element>;
+}
+declare type cmn_scheduleGlideRecord = GlideRecord & cmn_scheduleFields;
+
+/**
+ * GlideElement values from the Location table.
+ * @interface cmn_locationFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface cmn_locationFields extends IGlideTableProperties {
+    /**
+     * City
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    city: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Company
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof cmn_locationFields
+     * @description Refers to core_company (Company)
+     */
+    company: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Contact
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmn_locationFields
+     * @description Refers to sys_user (User)
+     */
+    contact: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Country
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    country: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Fax phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    fax_phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Full name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    full_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Latitude
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmn_locationFields
+     * @description Internal type is "float"
+     */
+    latitude: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Lat long error
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    lat_long_error: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Longitude
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmn_locationFields
+     * @description Internal type is "float"
+     */
+    longitude: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof cmn_locationFields
+     * @description Refers to cmn_location (Location)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Phone territory
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof cmn_locationFields
+     * @description Refers to sys_phone_territory (Sys Phone Territory)
+     */
+    phone_territory: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * State / Province
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    state: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Stock room
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmn_locationFields
+     */
+    stock_room: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Street
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof cmn_locationFields
+     * @description Internal type is "multi_two_lines"
+     */
+    street: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Time zone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    time_zone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Zip / Postal Code
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_locationFields
+     */
+    zip: $$rhino.Nilable<$$property.Element>;
+}
+declare type cmn_locationGlideRecord = GlideRecord & cmn_locationFields;
+
+/**
+ * GlideElement values from the Department table.
+ * @interface cmn_departmentFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface cmn_departmentFields extends IGlideTableProperties {
+    /**
+     * Business unit
+     * @type {$$rhino.Nilable<$$property.generic.Reference<business_unitFields, business_unitGlideRecord>>}
+     * @memberof cmn_departmentFields
+     * @description Refers to business_unit (Business Unit)
+     */
+    business_unit: $$rhino.Nilable<$$property.generic.Reference<business_unitFields, business_unitGlideRecord>>;
+
+    /**
+     * Code
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_departmentFields
+     */
+    code: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Company
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof cmn_departmentFields
+     * @description Refers to core_company (Company)
+     */
+    company: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Cost center
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof cmn_departmentFields
+     * @description Refers to cmn_cost_center (Cost Center)
+     */
+    cost_center: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Department head
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmn_departmentFields
+     * @description Refers to sys_user (User)
+     */
+    dept_head: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_departmentFields
+     */
+    description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Head count
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmn_departmentFields
+     */
+    head_count: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * ID
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_departmentFields
+     */
+    id: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_departmentFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>}
+     * @memberof cmn_departmentFields
+     * @description Refers to cmn_department (Department)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>;
+
+    /**
+     * Primary contact
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmn_departmentFields
+     * @description Refers to sys_user (User)
+     */
+    primary_contact: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+}
+declare type cmn_departmentGlideRecord = GlideRecord & cmn_departmentFields;
+
+/**
+ * GlideElement values from the Company table.
+ * @interface core_companyFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface core_companyFields extends IGlideTableProperties {
+    /**
+     * Apple icon
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof core_companyFields
+     */
+    apple_icon: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Banner image
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof core_companyFields
+     */
+    banner_image: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * UI16 Banner Image
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof core_companyFields
+     */
+    banner_image_light: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Banner text
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    banner_text: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * City
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    city: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Contact
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof core_companyFields
+     * @description Refers to sys_user (User)
+     */
+    contact: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Country
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    country: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Customer
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof core_companyFields
+     */
+    customer: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Discount
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof core_companyFields
+     * @description Internal type is "decimal"
+     */
+    discount: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Fax phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     * @description Internal type is "ph_number"
+     */
+    fax_phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Fiscal year
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof core_companyFields
+     * @description Internal type is "glide_date"
+     */
+    fiscal_year: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Latitude
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof core_companyFields
+     * @description Internal type is "float"
+     */
+    latitude: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Lat long error
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    lat_long_error: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Longitude
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof core_companyFields
+     * @description Internal type is "float"
+     */
+    longitude: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Manufacturer
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof core_companyFields
+     */
+    manufacturer: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Market cap
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof core_companyFields
+     */
+    market_cap: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Notes
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    notes: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Number of employees
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof core_companyFields
+     */
+    num_employees: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof core_companyFields
+     * @description Refers to core_company (Company)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Phone
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     * @description Internal type is "ph_number"
+     */
+    phone: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Primary
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof core_companyFields
+     */
+    primary: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Profits
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof core_companyFields
+     */
+    profits: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Publicly traded
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof core_companyFields
+     */
+    publicly_traded: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Rank tier
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    rank_tier: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Revenue per year
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof core_companyFields
+     */
+    revenue_per_year: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * State / Province
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    state: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Stock price
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    stock_price: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Stock symbol
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    stock_symbol: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Street
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof core_companyFields
+     * @description Internal type is "multi_two_lines"
+     */
+    street: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Theme
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof core_companyFields
+     * @description Refers to sys_ui_theme (Theme)
+     */
+    theme: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Vendor
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof core_companyFields
+     */
+    vendor: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Vendor manager
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof core_companyFields
+     * @description Internal type is "glide_list"
+     */
+    vendor_manager: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Vendor type
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof core_companyFields
+     * @description Internal type is "glide_list"
+     */
+    vendor_type: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Website
+     * @type {$$rhino.Nilable<$$property.URL>}
+     * @memberof core_companyFields
+     */
+    website: $$rhino.Nilable<$$property.URL>;
+
+    /**
+     * Zip / Postal code
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof core_companyFields
+     */
+    zip: $$rhino.Nilable<$$property.Element>;
+}
+declare type core_companyGlideRecord = GlideRecord & core_companyFields;
+
+/**
+ * GlideElement values from the Building table.
+ * @interface cmn_buildingFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface cmn_buildingFields extends IGlideTableProperties {
+    /**
+     * Contact
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmn_buildingFields
+     * @description Refers to sys_user (User)
+     */
+    contact: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Floors
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmn_buildingFields
+     */
+    floors: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Location
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof cmn_buildingFields
+     * @description Refers to cmn_location (Location)
+     */
+    location: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_buildingFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Notes
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmn_buildingFields
+     */
+    notes: $$rhino.Nilable<$$property.Element>;
+}
+declare type cmn_buildingGlideRecord = GlideRecord & cmn_buildingFields;
+
+/**
+ * GlideElement values from the Business Unit table.
+ * @interface business_unitFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface business_unitFields extends IGlideTableProperties {
+    /**
+     * Business Unit Head
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof business_unitFields
+     * @description Refers to sys_user (User)
+     */
+    bu_head: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Company
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof business_unitFields
+     * @description Refers to core_company (Company)
+     */
+    company: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof business_unitFields
+     * @description Internal type is "wide_text"
+     */
+    description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Hierarchy level
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof business_unitFields
+     */
+    hierarchy_level: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof business_unitFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<business_unitFields, business_unitGlideRecord>>}
+     * @memberof business_unitFields
+     * @description Refers to business_unit (Business Unit)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<business_unitFields, business_unitGlideRecord>>;
+
+    /**
+     * Domain
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     * @memberof business_unitFields
+     */
+    sys_domain: $$rhino.Nilable<$$property.DomainId>;
+
+    /**
+     * Domain Path
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof business_unitFields
+     * @description Internal type is "domain_path"
+     */
+    sys_domain_path: $$rhino.Nilable<$$property.Element>;
+}
+declare type business_unitGlideRecord = GlideRecord & business_unitFields;
+
+/**
+ * GlideElement values from the GlideRecord that contains values from a record in the Progress Worker table.
+ * @interface sys_progress_workerFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface sys_progress_workerFields extends IGlideTableProperties {
+    /**
+     * Error message
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_progress_workerFields
+     */
+    error_message: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Message
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_progress_workerFields
+     */
+    message: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_progress_workerFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Output summary
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_progress_workerFields
+     */
+    output_summary: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Queued Time
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sys_progress_workerFields
+     * @description Internal type is "glide_duration"
+     */
+    queued_time: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Run in background
+     * @type {$$rhino.Nilable<$$property.generic.Element<("true" | "false")>>}
+     * @memberof sys_progress_workerFields
+     */
+    run_in_background: $$rhino.Nilable<$$property.generic.Element<("true" | "false")>>;
+
+    /**
+     * State
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_progress_workerFields
+     */
+    state: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Completion code
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_progress_workerFields
+     */
+    state_code: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Total Execute Time
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sys_progress_workerFields
+     * @description Internal type is "glide_duration"
+     */
+    total_execute_time: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Total Run Time
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sys_progress_workerFields
+     * @description Internal type is "glide_duration"
+     */
+    total_run_time: $$rhino.Nilable<$$property.GlideObject>;
+}
+declare type sys_progress_workerGlideRecord = GlideRecord & sys_progress_workerFields;
+
+/**
+ * GlideElement values from the Attachment table.
+ * @interface sys_attachmentFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface sys_attachmentFields extends IGlideTableProperties {
+    /**
+     * Average image color
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sys_attachmentFields
+     * @description Internal type is "color"
+     */
+    average_image_color: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Chunk size bytes
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_attachmentFields
+     */
+    chunk_size_bytes: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Compressed
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sys_attachmentFields
+     */
+    compressed: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Content type
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_attachmentFields
+     */
+    content_type: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Encryption context
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_encryption_contextFields, sys_encryption_contextGlideRecord>>}
+     * @memberof sys_attachmentFields
+     * @description Refers to sys_encryption_context (Encryption Context)
+     */
+    encryption_context: $$rhino.Nilable<$$property.generic.Reference<sys_encryption_contextFields, sys_encryption_contextGlideRecord>>;
+
+    /**
+     * File name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_attachmentFields
+     */
+    file_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Image height
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_attachmentFields
+     */
+    image_height: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Image width
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_attachmentFields
+     */
+    image_width: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Size bytes
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_attachmentFields
+     * @description Internal type is "longint"
+     */
+    size_bytes: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Size compressed
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sys_attachmentFields
+     * @description Internal type is "longint"
+     */
+    size_compressed: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * State
+     * @type {$$rhino.Nilable<$$property.generic.Element<("pending" | "available" | "not_available" | "available_conditionally")>>}
+     * @memberof sys_attachmentFields
+     */
+    state: $$rhino.Nilable<$$property.generic.Element<("pending" | "available" | "not_available" | "available_conditionally")>>;
+
+    /**
+     * Table name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_attachmentFields
+     */
+    table_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Table sys ID
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sys_attachmentFields
+     * @description Internal type is "char"
+     */
+    table_sys_id: $$rhino.Nilable<$$property.Element>;
+}
+declare type sys_attachmentGlideRecord = GlideRecord & sys_attachmentFields;
+
+/**
+ * GlideElement values from the GlideRecord that contains values from a record in the System Plugin table.
+ * @interface v_pluginFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface v_pluginFields extends IGlideTableProperties {
+    /**
+     * Status
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    active: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Available version
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    available_version: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Definition
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    definition: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Entitled
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    entitled: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Has demo data
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof v_pluginFields
+     */
+    has_demo_data: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Help
+     * @type {$$rhino.Nilable<$$property.URL>}
+     * @memberof v_pluginFields
+     */
+    help: $$rhino.Nilable<$$property.URL>;
+
+    /**
+     * ID
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    id: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Licensable
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof v_pluginFields
+     */
+    licensable: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Subscription Category
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    license_category: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Subscription Model
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    license_model: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Path
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    path: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Provider
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    provider: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Requires
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof v_pluginFields
+     * @description Internal type is "glide_list"
+     */
+    requires: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Scope
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    scope: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * State
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    state: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Supports Rollback
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof v_pluginFields
+     */
+    supports_rollback: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Trackable
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof v_pluginFields
+     */
+    trackable: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Type
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    type: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Version
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof v_pluginFields
+     */
+    version: $$rhino.Nilable<$$property.Element>;
+}
+declare type v_pluginGlideRecord = GlideRecord & v_pluginFields;
+
+/**
+ * GlideElement values from the Category table.
+ * @interface sc_categoryFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sc_categoryFields extends sys_metadataFields {
+    /**
+     * Active
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_categoryFields
+     */
+    active: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.TranslatedText>}
+     * @memberof sc_categoryFields
+     */
+    description: $$rhino.Nilable<$$property.TranslatedText>;
+
+    /**
+     * Entitlement script
+     * @type {$$rhino.Nilable<$$property.Script>}
+     * @memberof sc_categoryFields
+     */
+    entitlement_script: $$rhino.Nilable<$$property.Script>;
+
+    /**
+     * Header icon
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sc_categoryFields
+     */
+    header_icon: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Homepage image
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sc_categoryFields
+     */
+    homepage_image: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Homepage renderer
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_categoryFields
+     * @description Refers to sc_homepage_renderer (Homepage Category Renderer)
+     */
+    homepage_renderer: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Icon
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sc_categoryFields
+     */
+    icon: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Image
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_categoryFields
+     * @description Internal type is "image"
+     */
+    image: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Location
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof sc_categoryFields
+     * @description Refers to cmn_location (Location)
+     */
+    location: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Hide description (mobile browsing)
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_categoryFields
+     */
+    mobile_hide_description: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Mobile Picture
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sc_categoryFields
+     */
+    mobile_picture: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Mobile Subcategory Render Type
+     * @type {$$rhino.Nilable<$$property.generic.Element<("list" | "card")>>}
+     * @memberof sc_categoryFields
+     * @description "list"=""; "card"=""
+     */
+    mobile_subcategory_render_type: $$rhino.Nilable<$$property.generic.Element<("list" | "card")>>;
+
+    /**
+     * Module link
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_categoryFields
+     * @description Refers to sys_app_module (Module)
+     */
+    module: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Order
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sc_categoryFields
+     */
+    order: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_categoryFields, sc_categoryGlideRecord>>}
+     * @memberof sc_categoryFields
+     * @description Refers to sc_category (Category)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<sc_categoryFields, sc_categoryGlideRecord>>;
+
+    /**
+     * Roles
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_categoryFields
+     * @description Internal type is "user_roles"
+     */
+    roles: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Catalog
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_catalogFields, sc_catalogGlideRecord>>}
+     * @memberof sc_categoryFields
+     * @description Refers to sc_catalog (Catalog)
+     */
+    sc_catalog: $$rhino.Nilable<$$property.generic.Reference<sc_catalogFields, sc_catalogGlideRecord>>;
+
+    /**
+     * Show in CMS
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_categoryFields
+     */
+    show_in_cms: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Title
+     * @type {$$rhino.Nilable<$$property.TranslatedText>}
+     * @memberof sc_categoryFields
+     */
+    title: $$rhino.Nilable<$$property.TranslatedText>;
+}
+declare type sc_categoryGlideRecord = sys_metadataGlideRecord & sc_categoryFields;
+
+/**
+ * GlideElement values from the Catalog table.
+ * @interface sc_catalogFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sc_catalogFields extends sys_metadataFields {
+    /**
+     * Active
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_catalogFields
+     */
+    active: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Background Color
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_catalogFields
+     * @description Internal type is "color"
+     */
+    background_color: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.TranslatedText>}
+     * @memberof sc_catalogFields
+     */
+    description: $$rhino.Nilable<$$property.TranslatedText>;
+
+    /**
+     * 'Continue Shopping' page
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sc_catalogFields
+     */
+    desktop_continue_shopping: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * 'Catalog Home' Page
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sc_catalogFields
+     */
+    desktop_home_page: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Desktop image
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sc_catalogFields
+     */
+    desktop_image: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Editors
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_catalogFields
+     * @description Internal type is "glide_list"
+     */
+    editors: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Enable Wish List
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_catalogFields
+     */
+    enable_wish_list: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Manager
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof sc_catalogFields
+     * @description Refers to sys_user (User)
+     */
+    manager: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Title
+     * @type {$$rhino.Nilable<$$property.TranslatedField>}
+     * @memberof sc_catalogFields
+     */
+    title: $$rhino.Nilable<$$property.TranslatedField>;
+}
+declare type sc_catalogGlideRecord = sys_metadataGlideRecord & sc_catalogFields;
+
+/**
+ * GlideElement values from the Catalog Item table.
+ * @interface sc_cat_itemFields
+ * @extends {sys_metadataFields}
+ */
+declare interface sc_cat_itemFields extends sys_metadataFields {
+    /**
+     * Active
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    active: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Availability
+     * @type {$$rhino.Nilable<$$property.generic.Element<("on_both" | "on_desktop" | "on_mobile")>>}
+     * @memberof sc_cat_itemFields
+     * @description "on_both"=""; "on_desktop"=""; "on_mobile"=""
+     */
+    availability: $$rhino.Nilable<$$property.generic.Element<("on_both" | "on_desktop" | "on_mobile")>>;
+
+    /**
+     * Billable
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    billable: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Category
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_categoryFields, sc_categoryGlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to sc_category (Category)
+     */
+    category: $$rhino.Nilable<$$property.generic.Reference<sc_categoryFields, sc_categoryGlideRecord>>;
+
+    /**
+     * Cost
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sc_cat_itemFields
+     * @description Internal type is "decimal"
+     */
+    cost: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Cart
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to sys_ui_macro (Macro)
+     */
+    custom_cart: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Execution Plan
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to sc_cat_item_delivery_plan (Execution Plan)
+     */
+    delivery_plan: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Delivery plan script
+     * @type {$$rhino.Nilable<$$property.Script>}
+     * @memberof sc_cat_itemFields
+     */
+    delivery_plan_script: $$rhino.Nilable<$$property.Script>;
+
+    /**
+     * Delivery time
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sc_cat_itemFields
+     * @description Internal type is "glide_duration"
+     */
+    delivery_time: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.TranslatedHTML>}
+     * @memberof sc_cat_itemFields
+     */
+    description: $$rhino.Nilable<$$property.TranslatedHTML>;
+
+    /**
+     * Entitlement script
+     * @type {$$rhino.Nilable<$$property.Script>}
+     * @memberof sc_cat_itemFields
+     */
+    entitlement_script: $$rhino.Nilable<$$property.Script>;
+
+    /**
+     * Fulfillment group
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to sys_user_group (Group)
+     */
+    group: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+
+    /**
+     * Hide on Service Portal
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    hide_sp: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Icon
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sc_cat_itemFields
+     */
+    icon: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Ignore price
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    ignore_price: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Image
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_cat_itemFields
+     * @description Internal type is "image"
+     */
+    image: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * List Price
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof sc_cat_itemFields
+     */
+    list_price: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Location
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to cmn_location (Location)
+     */
+    location: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Meta
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sc_cat_itemFields
+     */
+    meta: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Hide price (mobile listings)
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    mobile_hide_price: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Mobile Picture
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sc_cat_itemFields
+     */
+    mobile_picture: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     *  Mobile Picture Type
+     * @type {$$rhino.Nilable<$$property.generic.Element<("use_desktop_picture" | "use_mobile_picture" | "use_no_picture")>>}
+     * @memberof sc_cat_itemFields
+     * @description "use_desktop_picture"=""; "use_mobile_picture"=""; "use_no_picture"=""
+     */
+    mobile_picture_type: $$rhino.Nilable<$$property.generic.Element<("use_desktop_picture" | "use_mobile_picture" | "use_no_picture")>>;
+
+    /**
+     * Model
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to cmdb_model (Product Model)
+     */
+    model: $$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.TranslatedText>}
+     * @memberof sc_cat_itemFields
+     */
+    name: $$rhino.Nilable<$$property.TranslatedText>;
+
+    /**
+     * No cart
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    no_cart: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * No order
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    no_order: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * No order now
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    no_order_now: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * No proceed checkout
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    no_proceed_checkout: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * No quantity
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    no_quantity: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * No search
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    no_search: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Omit price in cart
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    omit_price: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Order
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sc_cat_itemFields
+     */
+    order: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Ordered item link
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to sc_ordered_item_link (Ordered Item Link)
+     */
+    ordered_item_link: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Picture
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof sc_cat_itemFields
+     */
+    picture: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Preview link
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_cat_itemFields
+     * @description Internal type is "catalog_preview"
+     */
+    preview: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Price
+     * @type {$$rhino.Nilable<$$property.Price>}
+     * @memberof sc_cat_itemFields
+     */
+    price: $$rhino.Nilable<$$property.Price>;
+
+    /**
+     * Recurring Price Frequency
+     * @type {$$rhino.Nilable<$$property.generic.Element<("daily" | "weekly" | "weekly2" | "monthly" | "monthly2" | "quarterly" | "semiannual" | "yearly")>>}
+     * @memberof sc_cat_itemFields
+     * @description "daily"=""; "weekly"=""; "weekly2"=""; "monthly"=""; "monthly2"=""; "quarterly"=""; "semiannual"=""; "yearly"=""
+     */
+    recurring_frequency: $$rhino.Nilable<$$property.generic.Element<("daily" | "weekly" | "weekly2" | "monthly" | "monthly2" | "quarterly" | "semiannual" | "yearly")>>;
+
+    /**
+     * Recurring price
+     * @type {$$rhino.Nilable<$$property.Price>}
+     * @memberof sc_cat_itemFields
+     */
+    recurring_price: $$rhino.Nilable<$$property.Price>;
+
+    /**
+     * Roles
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_cat_itemFields
+     * @description Internal type is "user_roles"
+     */
+    roles: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Catalogs
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_cat_itemFields
+     * @description Internal type is "glide_list"
+     */
+    sc_catalogs: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Created from item design
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to sc_ic_item_staging (Item)
+     */
+    sc_ic_item_staging: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Published version
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sc_cat_itemFields
+     */
+    sc_ic_version: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Short description
+     * @type {$$rhino.Nilable<$$property.TranslatedText>}
+     * @memberof sc_cat_itemFields
+     */
+    short_description: $$rhino.Nilable<$$property.TranslatedText>;
+
+    /**
+     * Expand help for all questions
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    show_variable_help_on_load: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Start closed
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    start_closed: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Template
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to sys_template (Template)
+     */
+    template: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Type
+     * @type {$$rhino.Nilable<$$property.generic.Element<("item" | "task" | "bundle" | "template" | "package")>>}
+     * @memberof sc_cat_itemFields
+     * @description "item"=""; "task"=""; "bundle"=""; "template"=""; "package"=""
+     */
+    type: $$rhino.Nilable<$$property.generic.Element<("item" | "task" | "bundle" | "template" | "package")>>;
+
+    /**
+     * Use cart layout
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    use_sc_layout: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Vendor
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to core_company (Company)
+     */
+    vendor: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Visible on Bundles
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    visible_bundle: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Visible on Guides
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    visible_guide: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Visible elsewhere
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_cat_itemFields
+     */
+    visible_standalone: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Workflow
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_cat_itemFields
+     * @description Refers to wf_workflow (Workflow)
+     */
+    workflow: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+}
+declare type sc_cat_itemGlideRecord = sys_metadataGlideRecord & sc_cat_itemFields;
+
+/**
+ * GlideElement values from the Request table.
+ * @interface sc_requestFields
+ * @extends {taskFields}
+ */
+declare interface sc_requestFields extends taskFields {
+    /**
+     * Resolve Time
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sc_requestFields
+     */
+    calendar_stc: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Delivery address
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sc_requestFields
+     */
+    delivery_address: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Price
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof sc_requestFields
+     */
+    price: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Requested for date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sc_requestFields
+     * @description Internal type is "glide_date"
+     */
+    requested_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Requested for
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof sc_requestFields
+     * @description Refers to sys_user (User)
+     */
+    requested_for: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Request state
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sc_requestFields
+     */
+    request_state: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Sourceable
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_requestFields
+     */
+    sourceable: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Sourced
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_requestFields
+     */
+    sourced: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Special instructions
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof sc_requestFields
+     */
+    special_instructions: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Stage
+     * @type {$$rhino.Nilable<GlideElementWorkflow>}
+     * @memberof sc_requestFields
+     */
+    stage: $$rhino.Nilable<GlideElementWorkflow>;
+}
+declare type sc_requestGlideRecord = taskGlideRecord & sc_requestFields;
+
+/**
+ * GlideElement values from the Requested Item table.
+ * @interface sc_req_itemFields
+ * @extends {taskFields}
+ */
+declare interface sc_req_itemFields extends taskFields {
+    /**
+     * Backordered
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_req_itemFields
+     */
+    backordered: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Billable
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_req_itemFields
+     */
+    billable: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Item
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_cat_itemFields, sc_cat_itemGlideRecord>>}
+     * @memberof sc_req_itemFields
+     * @description Refers to sc_cat_item (Catalog Item)
+     */
+    cat_item: $$rhino.Nilable<$$property.generic.Reference<sc_cat_itemFields, sc_cat_itemGlideRecord>>;
+
+    /**
+     * Configuration item
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>}
+     * @memberof sc_req_itemFields
+     * @description Refers to cmdb_ci (Configuration Item)
+     */
+    configuration_item: $$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>;
+
+    /**
+     * Context
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_req_itemFields
+     * @description Refers to wf_context (Workflow context)
+     */
+    context: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Estimated delivery
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof sc_req_itemFields
+     */
+    estimated_delivery: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Order Guide
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof sc_req_itemFields
+     * @description Refers to sc_cat_item_guide (Order guide)
+     */
+    order_guide: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Price
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof sc_req_itemFields
+     */
+    price: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Quantity
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sc_req_itemFields
+     */
+    quantity: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Quantity Sourced
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sc_req_itemFields
+     */
+    quantity_sourced: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Received
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_req_itemFields
+     */
+    received: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Recurring Price Frequency
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof sc_req_itemFields
+     * @description Internal type is "choice"
+     */
+    recurring_frequency: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Recurring Price
+     * @type {$$rhino.Nilable<$$property.Price>}
+     * @memberof sc_req_itemFields
+     */
+    recurring_price: $$rhino.Nilable<$$property.Price>;
+
+    /**
+     * Request
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_requestFields, sc_requestGlideRecord>>}
+     * @memberof sc_req_itemFields
+     * @description Refers to sc_request (Request)
+     */
+    request: $$rhino.Nilable<$$property.generic.Reference<sc_requestFields, sc_requestGlideRecord>>;
+
+    /**
+     * Catalog
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_catalogFields, sc_catalogGlideRecord>>}
+     * @memberof sc_req_itemFields
+     * @description Refers to sc_catalog (Catalog)
+     */
+    sc_catalog: $$rhino.Nilable<$$property.generic.Reference<sc_catalogFields, sc_catalogGlideRecord>>;
+
+    /**
+     * Sourced
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof sc_req_itemFields
+     */
+    sourced: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Stage
+     * @type {$$rhino.Nilable<GlideElementWorkflow>}
+     * @memberof sc_req_itemFields
+     */
+    stage: $$rhino.Nilable<GlideElementWorkflow>;
+}
+declare type sc_req_itemGlideRecord = taskGlideRecord & sc_req_itemFields;
+
+/**
+ * GlideElement values from the Catalog Task table.
+ * @interface sc_taskFields
+ * @extends {taskFields}
+ */
+declare interface sc_taskFields extends taskFields {
+    /**
+     * Resolve Time
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof sc_taskFields
+     */
+    calendar_stc: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Request
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_requestFields, sc_requestGlideRecord>>}
+     * @memberof sc_taskFields
+     * @description Refers to sc_request (Request)
+     */
+    request: $$rhino.Nilable<$$property.generic.Reference<sc_requestFields, sc_requestGlideRecord>>;
+
+    /**
+     * Request item
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_req_itemFields, sc_req_itemGlideRecord>>}
+     * @memberof sc_taskFields
+     * @description Refers to sc_req_item (Requested Item)
+     */
+    request_item: $$rhino.Nilable<$$property.generic.Reference<sc_req_itemFields, sc_req_itemGlideRecord>>;
+
+    /**
+     * Catalog
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_catalogFields, sc_catalogGlideRecord>>}
+     * @memberof sc_taskFields
+     * @description Refers to sc_catalog (Catalog)
+     */
+    sc_catalog: $$rhino.Nilable<$$property.generic.Reference<sc_catalogFields, sc_catalogGlideRecord>>;
+}
+declare type sc_taskGlideRecord = taskGlideRecord & sc_taskFields;
+
+/**
+ * GlideElement values from the Service Offering table.
+ * @interface service_offeringFields
+ * @extends {cmdb_ci_serviceFields}
+ */
+declare interface service_offeringFields extends cmdb_ci_serviceFields {
+    /**
+     * Billing
+     * @type {$$rhino.Nilable<$$property.generic.Element<("monthly" | "weekly" | "yearly")>>}
+     * @memberof service_offeringFields
+     * @description "monthly"=""; "weekly"=""; "yearly"=""
+     */
+    billing: $$rhino.Nilable<$$property.generic.Element<("monthly" | "weekly" | "yearly")>>;
+
+    /**
+     * Contract
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof service_offeringFields
+     * @description Refers to ast_contract (Contract)
+     */
+    contract: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof service_offeringFields
+     */
+    description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Price
+     * @type {$$rhino.Nilable<$$property.Price>}
+     * @memberof service_offeringFields
+     */
+    price: $$rhino.Nilable<$$property.Price>;
+
+    /**
+     * Technical contact
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof service_offeringFields
+     * @description Refers to sys_user (User)
+     */
+    technical_contact: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+}
+declare type service_offeringGlideRecord = cmdb_ci_serviceGlideRecord & service_offeringFields;
+
+/**
+ * GlideElement values from the Model Category table.
+ * @interface cmdb_model_categoryFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface cmdb_model_categoryFields extends IGlideTableProperties {
+    /**
+     * Allow as master
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_model_categoryFields
+     */
+    allow_as_master: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Allow in bundle
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_model_categoryFields
+     */
+    allow_in_bundle: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Allow pre-allocation
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_model_categoryFields
+     */
+    allow_pre_allocation: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Asset class
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_model_categoryFields
+     * @description Internal type is "table_name"
+     */
+    asset_class: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Bundle
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_model_categoryFields
+     */
+    bundle: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * CI class
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_model_categoryFields
+     * @description Internal type is "table_name"
+     */
+    cmdb_ci_class: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Enforce CI verification
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_model_categoryFields
+     */
+    enforce_verification: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_model_categoryFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+}
+declare type cmdb_model_categoryGlideRecord = GlideRecord & cmdb_model_categoryFields;
+
+/**
+ * GlideElement values from the Model Component table.
+ * @interface cmdb_m2m_model_componentFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface cmdb_m2m_model_componentFields extends IGlideTableProperties {
+    /**
+     * Component
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>}
+     * @memberof cmdb_m2m_model_componentFields
+     * @description Refers to cmdb_model (Product Model)
+     */
+    child: $$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>;
+
+    /**
+     * Is main component
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_m2m_model_componentFields
+     */
+    master: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Model category of component
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_model_categoryFields, cmdb_model_categoryGlideRecord>>}
+     * @memberof cmdb_m2m_model_componentFields
+     * @description Refers to cmdb_model_category (Model Category)
+     */
+    model_category: $$rhino.Nilable<$$property.generic.Reference<cmdb_model_categoryFields, cmdb_model_categoryGlideRecord>>;
+
+    /**
+     * Bundle
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>}
+     * @memberof cmdb_m2m_model_componentFields
+     * @description Refers to cmdb_model (Product Model)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>;
+}
+declare type cmdb_m2m_model_componentGlideRecord = GlideRecord & cmdb_m2m_model_componentFields;
+
+/**
+ * GlideElement values from the Product Model table.
+ * @interface cmdb_modelFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface cmdb_modelFields extends IGlideTableProperties {
+    /**
+     * Acquisition method
+     * @type {$$rhino.Nilable<$$property.generic.Element<("Both" | "Buy" | "Lease")>>}
+     * @memberof cmdb_modelFields
+     */
+    acquisition_method: $$rhino.Nilable<$$property.generic.Element<("Both" | "Buy" | "Lease")>>;
+
+    /**
+     * Asset tracking strategy
+     * @type {$$rhino.Nilable<$$property.generic.Element<("leave_to_category" | "track_as_consumable" | "do_not_track")>>}
+     * @memberof cmdb_modelFields
+     * @description "leave_to_category"=""; "track_as_consumable"=""; "do_not_track"=""
+     */
+    asset_tracking_strategy: $$rhino.Nilable<$$property.generic.Element<("leave_to_category" | "track_as_consumable" | "do_not_track")>>;
+
+    /**
+     * Barcode
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    barcode: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Bundle
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_modelFields
+     */
+    bundle: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Certified
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_modelFields
+     */
+    certified: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * CMDB CI class
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    cmdb_ci_class: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Model categories
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof cmdb_modelFields
+     * @description Internal type is "glide_list"
+     */
+    cmdb_model_category: $$rhino.Nilable<IGlideElement>;
+
+    /**
+     * Comments
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    comments: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Cost
+     * @type {$$rhino.Nilable<$$property.Price>}
+     * @memberof cmdb_modelFields
+     */
+    cost: $$rhino.Nilable<$$property.Price>;
+
+    /**
+     * Depreciation
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof cmdb_modelFields
+     * @description Refers to cmdb_depreciation (Depreciation)
+     */
+    depreciation: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.TranslatedHTML>}
+     * @memberof cmdb_modelFields
+     */
+    description: $$rhino.Nilable<$$property.TranslatedHTML>;
+
+    /**
+     * Display name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    display_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Expenditure type
+     * @type {$$rhino.Nilable<$$property.generic.Element<("capex" | "opex")>>}
+     * @memberof cmdb_modelFields
+     * @description "capex"=""; "opex"=""
+     */
+    expenditure_type: $$rhino.Nilable<$$property.generic.Element<("capex" | "opex")>>;
+
+    /**
+     * Flow Rate (cfm)
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmdb_modelFields
+     */
+    flow_rate: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Full name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    full_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Main component
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_m2m_model_componentFields, cmdb_m2m_model_componentGlideRecord>>}
+     * @memberof cmdb_modelFields
+     * @description Refers to cmdb_m2m_model_component (Model Component)
+     */
+    main_component: $$rhino.Nilable<$$property.generic.Reference<cmdb_m2m_model_componentFields, cmdb_m2m_model_componentGlideRecord>>;
+
+    /**
+     * Manufacturer
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof cmdb_modelFields
+     * @description Refers to core_company (Company)
+     */
+    manufacturer: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Model number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    model_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Owner
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmdb_modelFields
+     * @description Refers to sys_user (User)
+     */
+    owner: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Picture
+     * @type {$$rhino.Nilable<$$property.UserImage>}
+     * @memberof cmdb_modelFields
+     */
+    picture: $$rhino.Nilable<$$property.UserImage>;
+
+    /**
+     * Power (watts)
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmdb_modelFields
+     */
+    power_consumption: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Product Catalog Item
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_cat_itemFields, sc_cat_itemGlideRecord>>}
+     * @memberof cmdb_modelFields
+     * @description Refers to sc_cat_item (Catalog Item)
+     */
+    product_catalog_item: $$rhino.Nilable<$$property.generic.Reference<sc_cat_itemFields, sc_cat_itemGlideRecord>>;
+
+    /**
+     * Height (U)
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmdb_modelFields
+     */
+    rack_units: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Salvage value
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof cmdb_modelFields
+     */
+    salvage_value: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Short description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    short_description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * SLA
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_modelFields
+     */
+    sla: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Sound Power (bels)
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmdb_modelFields
+     */
+    sound_power: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Status
+     * @type {$$rhino.Nilable<$$property.generic.Element<("In Production" | "Retired" | "Sold")>>}
+     * @memberof cmdb_modelFields
+     */
+    status: $$rhino.Nilable<$$property.generic.Element<("In Production" | "Retired" | "Sold")>>;
+
+    /**
+     * Type
+     * @type {$$rhino.Nilable<$$property.generic.Element<("Generic" | "Product" | "Scrum product")>>}
+     * @memberof cmdb_modelFields
+     */
+    type: $$rhino.Nilable<$$property.generic.Element<("Generic" | "Product" | "Scrum product")>>;
+
+    /**
+     * Weight (lbs)
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmdb_modelFields
+     */
+    weight: $$rhino.Nilable<$$property.Numeric>;
+}
+declare type cmdb_modelGlideRecord = GlideRecord & cmdb_modelFields;
+
+/**
+ * GlideElement values from the Asset table.
+ * @interface alm_assetFields
+ * @extends {IGlideTableProperties}
+ */
+declare interface alm_assetFields extends IGlideTableProperties {
+    /**
+     * Acquisition method
+     * @type {$$rhino.Nilable<$$property.generic.Element<("purchase" | "lease" | "rental" | "loan")>>}
+     * @memberof alm_assetFields
+     * @description "purchase"=""; "lease"=""; "rental"=""; "loan"=""
+     */
+    acquisition_method: $$rhino.Nilable<$$property.generic.Element<("purchase" | "lease" | "rental" | "loan")>>;
+
+    /**
+     * Active transfer order
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof alm_assetFields
+     */
+    active_to: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Asset tag
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    asset_tag: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Assigned
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     */
+    assigned: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Assigned to
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to sys_user (User)
+     */
+    assigned_to: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Beneficiary
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to core_company (Company)
+     */
+    beneficiary: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Checked in
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     */
+    checked_in: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Checked out
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     */
+    checked_out: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Configuration Item
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to cmdb_ci (Configuration Item)
+     */
+    ci: $$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>;
+
+    /**
+     * Comments
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    comments: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Company
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to core_company (Company)
+     */
+    company: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Cost
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof alm_assetFields
+     */
+    cost: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Cost center
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to cmn_cost_center (Cost Center)
+     */
+    cost_center: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Order received
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     */
+    delivery_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Department
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to cmn_department (Department)
+     */
+    department: $$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>;
+
+    /**
+     * Depreciated amount
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof alm_assetFields
+     */
+    depreciated_amount: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Depreciation
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to cmdb_depreciation (Depreciation)
+     */
+    depreciation: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Depreciation effective date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     */
+    depreciation_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Display name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    display_name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Disposal reason
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    disposal_reason: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Due
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     */
+    due: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Due in
+     * @type {$$rhino.Nilable<$$property.generic.Element<("1 Day" | "1 Hour" | "1 Week")>>}
+     * @memberof alm_assetFields
+     */
+    due_in: $$rhino.Nilable<$$property.generic.Element<("1 Day" | "1 Hour" | "1 Week")>>;
+
+    /**
+     * Expenditure type
+     * @type {$$rhino.Nilable<$$property.generic.Element<("capex" | "opex")>>}
+     * @memberof alm_assetFields
+     * @description "capex"=""; "opex"=""
+     */
+    expenditure_type: $$rhino.Nilable<$$property.generic.Element<("capex" | "opex")>>;
+
+    /**
+     * GL account
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    gl_account: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Installed
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     */
+    install_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * State
+     * @type {$$rhino.Nilable<$$property.generic.Element<("2" | "6" | "9" | "1" | "10" | "3" | "7" | "8")>>}
+     * @memberof alm_assetFields
+     * @description "2"=""; "6"=""; "9"=""; "1"=""; "10"=""; "3"=""; "7"=""; "8"=""
+     */
+    install_status: $$rhino.Nilable<$$property.generic.Element<("2" | "6" | "9" | "1" | "10" | "3" | "7" | "8")>>;
+
+    /**
+     * Invoice number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    invoice_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Justification
+     * @type {$$rhino.Nilable<$$property.generic.Element<("New employee hire" | "Replace in repair" | "Replace stolen" | "Replacement" | "Stock replenishment" | "Swap" | "Testing" | "Upgrade")>>}
+     * @memberof alm_assetFields
+     */
+    justification: $$rhino.Nilable<$$property.generic.Element<("New employee hire" | "Replace in repair" | "Replace stolen" | "Replacement" | "Stock replenishment" | "Swap" | "Testing" | "Upgrade")>>;
+
+    /**
+     * Lease contract
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    lease_id: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Location
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to cmn_location (Location)
+     */
+    location: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Managed by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to sys_user (User)
+     */
+    managed_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Model
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to cmdb_model (Product Model)
+     */
+    model: $$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>;
+
+    /**
+     * Model category
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_model_categoryFields, cmdb_model_categoryGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to cmdb_model_category (Model Category)
+     */
+    model_category: $$rhino.Nilable<$$property.generic.Reference<cmdb_model_categoryFields, cmdb_model_categoryGlideRecord>>;
+
+    /**
+     * Old status
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    old_status: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Old substatus
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    old_substatus: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Ordered
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     */
+    order_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Owned by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to sys_user (User)
+     */
+    owned_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<alm_assetFields, alm_assetGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to alm_asset (Asset)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<alm_assetFields, alm_assetGlideRecord>>;
+
+    /**
+     * PO number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    po_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Pre-allocated
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof alm_assetFields
+     */
+    pre_allocated: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Purchased
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     * @description Internal type is "glide_date"
+     */
+    purchase_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Purchase order line
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to proc_po_item (Purchase order line items)
+     */
+    purchase_line: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Quantity
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof alm_assetFields
+     */
+    quantity: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Receiving line
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to proc_rec_slip_item (Receiving Slip Line)
+     */
+    receiving_line: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Request line
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sc_req_itemFields, sc_req_itemGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to sc_req_item (Requested Item)
+     */
+    request_line: $$rhino.Nilable<$$property.generic.Reference<sc_req_itemFields, sc_req_itemGlideRecord>>;
+
+    /**
+     * Resale price
+     * @type {$$rhino.Nilable<$$property.Price>}
+     * @memberof alm_assetFields
+     */
+    resale_price: $$rhino.Nilable<$$property.Price>;
+
+    /**
+     * Reserved for
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to sys_user (User)
+     */
+    reserved_for: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Residual value
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof alm_assetFields
+     */
+    residual: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Residual date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     * @description Internal type is "glide_date"
+     */
+    residual_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Retired date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     * @description Internal type is "glide_date"
+     */
+    retired: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Scheduled retirement
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     * @description Internal type is "glide_date"
+     */
+    retirement_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Salvage value
+     * @type {$$rhino.Nilable<$$property.Currency>}
+     * @memberof alm_assetFields
+     */
+    salvage_value: $$rhino.Nilable<$$property.Currency>;
+
+    /**
+     * Serial number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     */
+    serial_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Skip sync
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof alm_assetFields
+     */
+    skip_sync: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Stockroom
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to alm_stockroom (Stockroom)
+     */
+    stockroom: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Substate
+     * @type {$$rhino.Nilable<$$property.generic.Element<("available" | "disposed" | "lost" | "reserved" | "sold" | "stolen" | "defective" | "donated" | "pending_repair" | "vendor_credit" | "pending_install" | "pending_disposal" | "pending_transfer" | "pre_allocated")>>}
+     * @memberof alm_assetFields
+     * @description "available"=""; "disposed"=""; "lost"=""; "reserved"=""; "sold"=""; "stolen"=""; "defective"=""; "donated"=""; "pending_repair"=""; "vendor_credit"=""; "pending_install"=""; "pending_disposal"=""; "pending_transfer"=""; "pre_allocated"=""
+     */
+    substatus: $$rhino.Nilable<$$property.generic.Element<("available" | "disposed" | "lost" | "reserved" | "sold" | "stolen" | "defective" | "donated" | "pending_repair" | "vendor_credit" | "pending_install" | "pending_disposal" | "pending_transfer" | "pre_allocated")>>;
+
+    /**
+     * Supported by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to sys_user (User)
+     */
+    supported_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Support group
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to sys_user_group (Group)
+     */
+    support_group: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+
+    /**
+     * Class
+     * @type {$$rhino.Nilable<$$property.SysClassName>}
+     * @memberof alm_assetFields
+     */
+    sys_class_name: $$rhino.Nilable<$$property.SysClassName>;
+
+    /**
+     * Domain
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     * @memberof alm_assetFields
+     */
+    sys_domain: $$rhino.Nilable<$$property.DomainId>;
+
+    /**
+     * Domain Path
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof alm_assetFields
+     * @description Internal type is "domain_path"
+     */
+    sys_domain_path: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Vendor
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof alm_assetFields
+     * @description Refers to core_company (Company)
+     */
+    vendor: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Warranty expiration
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof alm_assetFields
+     * @description Internal type is "glide_date"
+     */
+    warranty_expiration: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Work notes
+     * @type {$$rhino.Nilable<IGlideElement>}
+     * @memberof alm_assetFields
+     * @description Internal type is "journal_input"
+     */
+    work_notes: $$rhino.Nilable<IGlideElement>;
+}
+declare type alm_assetGlideRecord = GlideRecord & alm_assetFields;
+
+/**
+ * GlideElement values from the Base Configuration Item table.
+ * @interface cmdbFields
+ * @extends {IExtendedGlideTableProperties}
+ */
+declare interface cmdbFields extends IExtendedGlideTableProperties {
+    /**
+     * Asset
+     * @type {$$rhino.Nilable<$$property.generic.Reference<alm_assetFields, alm_assetGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to alm_asset (Asset)
+     */
+    asset: $$rhino.Nilable<$$property.generic.Reference<alm_assetFields, alm_assetGlideRecord>>;
+
+    /**
+     * Asset tag
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    asset_tag: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Assigned
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     */
+    assigned: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Assigned to
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to sys_user (User)
+     */
+    assigned_to: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Assignment group
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to sys_user_group (Group)
+     */
+    assignment_group: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+
+    /**
+     * Checked in
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     */
+    checked_in: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Checked out
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     */
+    checked_out: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Company
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to core_company (Company)
+     */
+    company: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Cost
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmdbFields
+     * @description Internal type is "float"
+     */
+    cost: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * Cost currency
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    cost_cc: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Cost center
+     * @type {$$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to cmn_cost_center (Cost Center)
+     */
+    cost_center: $$rhino.Nilable<$$property.generic.Reference<IGlideTableProperties, GlideRecord>>;
+
+    /**
+     * Order received
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     */
+    delivery_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Department
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to cmn_department (Department)
+     */
+    department: $$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>;
+
+    /**
+     * Due
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     */
+    due: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Due in
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    due_in: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * GL account
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    gl_account: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Installed
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     */
+    install_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Status
+     * @type {$$rhino.Nilable<$$property.generic.Element<("100" | "3" | "6" | "1" | "2" | "4" | "5" | "7" | "8")>>}
+     * @memberof cmdbFields
+     * @description "100"=""; "3"=""; "6"=""; "1"=""; "2"=""; "4"=""; "5"=""; "7"=""; "8"=""
+     */
+    install_status: $$rhino.Nilable<$$property.generic.Element<("100" | "3" | "6" | "1" | "2" | "4" | "5" | "7" | "8")>>;
+
+    /**
+     * Invoice number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    invoice_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Justification
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    justification: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Lease contract
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    lease_id: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Location
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to cmn_location (Location)
+     */
+    location: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Managed by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to sys_user (User)
+     */
+    managed_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Manufacturer
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to core_company (Company)
+     */
+    manufacturer: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Model ID
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to cmdb_model (Product Model)
+     */
+    model_id: $$rhino.Nilable<$$property.generic.Reference<cmdb_modelFields, cmdb_modelGlideRecord>>;
+
+    /**
+     * Name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    name: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Ordered
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     */
+    order_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Owned by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to sys_user (User)
+     */
+    owned_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * PO number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    po_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Purchased
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     * @description Internal type is "glide_date"
+     */
+    purchase_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Serial number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     */
+    serial_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Skip sync
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdbFields
+     */
+    skip_sync: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Supported by
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to sys_user (User)
+     */
+    supported_by: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Support group
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to sys_user_group (Group)
+     */
+    support_group: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+
+    /**
+     * Class
+     * @type {$$rhino.Nilable<$$property.SysClassName>}
+     * @memberof cmdbFields
+     */
+    sys_class_name: $$rhino.Nilable<$$property.SysClassName>;
+
+    /**
+     * Sys class path
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     * @description Internal type is "sys_class_path"
+     */
+    sys_class_path: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Domain
+     * @type {$$rhino.Nilable<$$property.DomainId>}
+     * @memberof cmdbFields
+     */
+    sys_domain: $$rhino.Nilable<$$property.DomainId>;
+
+    /**
+     * Domain Path
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdbFields
+     * @description Internal type is "domain_path"
+     */
+    sys_domain_path: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Requires verification
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdbFields
+     */
+    unverified: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Vendor
+     * @type {$$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>}
+     * @memberof cmdbFields
+     * @description Refers to core_company (Company)
+     */
+    vendor: $$rhino.Nilable<$$property.generic.Reference<core_companyFields, core_companyGlideRecord>>;
+
+    /**
+     * Warranty expiration
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdbFields
+     * @description Internal type is "glide_date"
+     */
+    warranty_expiration: $$rhino.Nilable<$$property.GlideObject>;
+}
+declare type cmdbGlideRecord = GlideRecord & cmdbFields;
+
+/**
+ * GlideElement values from the Configuration Item table.
+ * @interface cmdb_ciFields
+ * @extends {cmdbFields}
+ */
+declare interface cmdb_ciFields extends cmdbFields {
+    /**
+     * Attributes
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    attributes: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Can Print
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_ciFields
+     */
+    can_print: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Category
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    category: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Approval group
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof cmdb_ciFields
+     * @description Refers to sys_user_group (Group)
+     */
+    change_control: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+
+    /**
+     * Comments
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    comments: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Correlation ID
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    correlation_id: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Discovery source
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    discovery_source: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * DNS Domain
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    dns_domain: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Fault count
+     * @type {$$rhino.Nilable<$$property.Numeric>}
+     * @memberof cmdb_ciFields
+     */
+    fault_count: $$rhino.Nilable<$$property.Numeric>;
+
+    /**
+     * First discovered
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdb_ciFields
+     */
+    first_discovered: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Fully qualified domain name
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    fqdn: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * IP Address
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    ip_address: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Most recent discovery
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdb_ciFields
+     */
+    last_discovered: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * MAC Address
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    mac_address: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Maintenance schedule
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_scheduleFields, cmn_scheduleGlideRecord>>}
+     * @memberof cmdb_ciFields
+     * @description Refers to cmn_schedule (Schedule)
+     */
+    maintenance_schedule: $$rhino.Nilable<$$property.generic.Reference<cmn_scheduleFields, cmn_scheduleGlideRecord>>;
+
+    /**
+     * Model number
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    model_number: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Monitor
+     * @type {$$rhino.Nilable<$$property.Boolean>}
+     * @memberof cmdb_ciFields
+     */
+    monitor: $$rhino.Nilable<$$property.Boolean>;
+
+    /**
+     * Operational status
+     * @type {$$rhino.Nilable<$$property.generic.Element<("1" | "2" | "3" | "4" | "5" | "6")>>}
+     * @memberof cmdb_ciFields
+     * @description "1"=""; "2"=""; "3"=""; "4"=""; "5"=""; "6"=""
+     */
+    operational_status: $$rhino.Nilable<$$property.generic.Element<("1" | "2" | "3" | "4" | "5" | "6")>>;
+
+    /**
+     * Schedule
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_scheduleFields, cmn_scheduleGlideRecord>>}
+     * @memberof cmdb_ciFields
+     * @description Refers to cmn_schedule (Schedule)
+     */
+    schedule: $$rhino.Nilable<$$property.generic.Reference<cmn_scheduleFields, cmn_scheduleGlideRecord>>;
+
+    /**
+     * Description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    short_description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Start date
+     * @type {$$rhino.Nilable<$$property.GlideObject>}
+     * @memberof cmdb_ciFields
+     */
+    start_date: $$rhino.Nilable<$$property.GlideObject>;
+
+    /**
+     * Subcategory
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ciFields
+     */
+    subcategory: $$rhino.Nilable<$$property.Element>;
+}
+declare type cmdb_ciGlideRecord = cmdbGlideRecord & cmdb_ciFields;
+
+/**
+ * GlideElement values from the Business Service table.
+ * @interface cmdb_ci_serviceFields
+ * @extends {cmdb_ciFields}
+ */
+declare interface cmdb_ci_serviceFields extends cmdb_ciFields {
+    /**
+     * Business Criticality
+     * @type {$$rhino.Nilable<$$property.generic.Element<("1 - most critical" | "2 - somewhat critical" | "3 - less critical" | "4 - not critical")>>}
+     * @memberof cmdb_ci_serviceFields
+     */
+    busines_criticality: $$rhino.Nilable<$$property.generic.Element<("1 - most critical" | "2 - somewhat critical" | "3 - less critical" | "4 - not critical")>>;
+
+    /**
+     * Parent
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_ci_serviceFields, cmdb_ci_serviceGlideRecord>>}
+     * @memberof cmdb_ci_serviceFields
+     * @description Refers to cmdb_ci_service (Business Service)
+     */
+    parent: $$rhino.Nilable<$$property.generic.Reference<cmdb_ci_serviceFields, cmdb_ci_serviceGlideRecord>>;
+
+    /**
+     * Portfolio status
+     * @type {$$rhino.Nilable<$$property.generic.Element<("pipeline" | "catalog" | "retired")>>}
+     * @memberof cmdb_ci_serviceFields
+     * @description "pipeline"=""; "catalog"=""; "retired"=""
+     */
+    portfolio_status: $$rhino.Nilable<$$property.generic.Element<("pipeline" | "catalog" | "retired")>>;
+
+    /**
+     * Price model
+     * @type {$$rhino.Nilable<$$property.generic.Element<("fixed" | "per_unit")>>}
+     * @memberof cmdb_ci_serviceFields
+     * @description "fixed"=""; "per_unit"=""
+     */
+    price_model: $$rhino.Nilable<$$property.generic.Element<("fixed" | "per_unit")>>;
+
+    /**
+     * Price unit
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ci_serviceFields
+     */
+    price_unit: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Service classification
+     * @type {$$rhino.Nilable<$$property.generic.Element<("Business Service" | "Technical Service" | "Service Offering" | "Shared Service" | "Application Service" | "Billable Service")>>}
+     * @memberof cmdb_ci_serviceFields
+     */
+    service_classification: $$rhino.Nilable<$$property.generic.Element<("Business Service" | "Technical Service" | "Service Offering" | "Shared Service" | "Application Service" | "Billable Service")>>;
+
+    /**
+     * Service level requirement
+     * @type {$$rhino.Nilable<$$property.TranslatedHTML>}
+     * @memberof cmdb_ci_serviceFields
+     */
+    service_level_requirement: $$rhino.Nilable<$$property.TranslatedHTML>;
+
+    /**
+     * Service status
+     * @type {$$rhino.Nilable<$$property.generic.Element<("design" | "requirements" | "definition" | "development" | "analysis" | "buildtestrelease" | "approved" | "operational" | "chartered" | "retiring")>>}
+     * @memberof cmdb_ci_serviceFields
+     * @description "design"=""; "requirements"=""; "definition"=""; "development"=""; "analysis"=""; "buildtestrelease"=""; "approved"=""; "operational"=""; "chartered"=""; "retiring"=""
+     */
+    service_status: $$rhino.Nilable<$$property.generic.Element<("design" | "requirements" | "definition" | "development" | "analysis" | "buildtestrelease" | "approved" | "operational" | "chartered" | "retiring")>>;
+
+    /**
+     * SLA
+     * @type {$$rhino.Nilable<$$property.generic.Reference<slaFields, slaGlideRecord>>}
+     * @memberof cmdb_ci_serviceFields
+     * @description Refers to sla (Agreement)
+     */
+    sla: $$rhino.Nilable<$$property.generic.Reference<slaFields, slaGlideRecord>>;
+
+    /**
+     * Unit description
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ci_serviceFields
+     * @description Internal type is "html"
+     */
+    unit_description: $$rhino.Nilable<$$property.Element>;
+
+    /**
+     * Used for
+     * @type {$$rhino.Nilable<$$property.generic.Element<("Production" | "Staging" | "QA" | "Test" | "Development" | "Demonstration" | "Training" | "Disaster recovery")>>}
+     * @memberof cmdb_ci_serviceFields
+     */
+    used_for: $$rhino.Nilable<$$property.generic.Element<("Production" | "Staging" | "QA" | "Test" | "Development" | "Demonstration" | "Training" | "Disaster recovery")>>;
+
+    /**
+     * Users supported
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>}
+     * @memberof cmdb_ci_serviceFields
+     * @description Refers to sys_user_group (Group)
+     */
+    user_group: $$rhino.Nilable<$$property.generic.Reference<sys_user_groupFields, sys_user_groupGlideRecord>>;
+
+    /**
+     * Version
+     * @type {$$rhino.Nilable<$$property.Element>}
+     * @memberof cmdb_ci_serviceFields
+     */
+    version: $$rhino.Nilable<$$property.Element>;
+}
+declare type cmdb_ci_serviceGlideRecord = cmdb_ciGlideRecord & cmdb_ci_serviceFields;
+
+/**
+ * GlideElement values from the Physical Network table.
+ * @interface x_44813_phys_net_networkFields
+ * @extends {cmdb_ciFields}
+ */
+declare interface x_44813_phys_net_networkFields extends cmdb_ciFields {
+}
+declare type x_44813_phys_net_networkGlideRecord = cmdb_ciGlideRecord & x_44813_phys_net_networkFields;
+
+/**
+ * GlideElement values from the Security Classification table.
+ * @interface Ix_44813_sec_clsif_definitionFields
+ * @extends {Isys_metadataFields}
+ */
+declare interface x_44813_sec_clsif_definitionFields extends sys_metadataFields {
+	/**
+	 * Active
+	 * @type {$$property.Boolean}
+	 * @memberof x_44813_sec_clsif_definitionFields
+	 */
+    active: $$property.Boolean;
+	/**
+	 * Name
+	 * @type {$$property.Element}
+	 * @memberof x_44813_sec_clsif_definitionFields
+	 */
+    name: $$property.Element;
+	/**
+	 * Order
+	 * @type {$$rhino.Nilable<$$property.Numeric>}
+	 * @memberof x_44813_sec_clsif_definitionFields
+	 * @description Internal type is integer
+	 */
+    order: $$rhino.Nilable<$$property.Numeric>;
+	/**
+	 * Portion Marking
+	 * @type {$$property.Element}
+	 * @memberof x_44813_sec_clsif_definitionFields
+	 */
+    portion_marking: $$property.Element;
+}
+declare type x_44813_sec_clsif_definitionGlideRecord = sys_metadataGlideRecord & x_44813_sec_clsif_definitionFields;
+
+declare interface change_request_imacFields extends change_requestFields {
+    /**
+     * Move department
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>}
+     * @memberof change_request_imacFields
+     */
+    move_department: $$rhino.Nilable<$$property.generic.Reference<cmn_departmentFields, cmn_departmentGlideRecord>>;
+
+    /**
+     * Move from
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof change_request_imacFields
+     */
+    move_from: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Move from dc
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>}
+     * @memberof change_request_imacFields
+     */
+    move_from_dc: $$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>;
+
+    /**
+     * Move to
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>}
+     * @memberof change_request_imacFields
+     */
+    move_to: $$rhino.Nilable<$$property.generic.Reference<cmn_locationFields, cmn_locationGlideRecord>>;
+
+    /**
+     * Move to dc
+     * @type {$$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>}
+     * @memberof change_request_imacFields
+     */
+    move_to_dc: $$rhino.Nilable<$$property.generic.Reference<cmdb_ciFields, cmdb_ciGlideRecord>>;
+
+    /**
+     * Move user
+     * @type {$$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>}
+     * @memberof change_request_imacFields
+     */
+    move_user: $$rhino.Nilable<$$property.generic.Reference<sys_userFields, sys_userGlideRecord>>;
+
+    /**
+     * Network component
+     * @type {$$property.Boolean}
+     * @memberof change_request_imacFields
+     */
+    network_component: $$property.Boolean;
+}
+declare type change_request_imacGlideRecord = change_requestGlideRecord & change_request_imacFields;
+
+declare interface incident_taskFields extends taskFields {
+    /**
+     * Incident
+     * @type {$$rhino.Nilable<$$property.generic.Reference<incidentFields, incidentGlideRecord>>}
+     * @memberof incident_taskFields
+     */
+    incident: $$rhino.Nilable<$$property.generic.Reference<incidentFields, incidentGlideRecord>>;
+}
+declare type incident_taskGlideRecord = taskGlideRecord & incident_taskFields;
+
+declare interface kb_knowledgeFields extends IExtendedGlideTableProperties {
+
+}

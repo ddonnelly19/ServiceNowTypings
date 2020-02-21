@@ -1,7 +1,7 @@
-﻿# ServiceNowTypings/ServerScoped
-## JavaScript Typings for globally-scoped ServiceNow server-side development
+# ServiceNowTypings/ClientScoped
+## JavaScript Typings for ServiceNow client-side scoped application development
 
-This was created as a node.js console application so it can be opened and compiled in Visual Studio as a supported project type.
+This was created as a node.js web application so it can be opened and compiled in Visual Studio as a supported project type.
 
 ## Acknowledgements
 

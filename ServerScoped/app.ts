@@ -1,1 +1,1 @@
-﻿console.log('Hello world');
+﻿console.log('Not intended to be executed directly');
