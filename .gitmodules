@@ -1,0 +1,8 @@
+[submodule "sn_typings_server_global"]
+	path = ServerGlobal
+	url = https://github.com/erwinel/sn_typings_server_global
+	branch = master
+[submodule "sn_typings_server_scoped"]
+	path = ServerScoped
+	url = https://github.com/erwinel/sn_typings_server_scoped
+	branch = master
