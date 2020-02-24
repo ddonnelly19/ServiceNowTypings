@@ -6,3 +6,11 @@
 	path = ServerScoped
 	url = https://github.com/erwinel/sn_typings_server_scoped
 	branch = master
+[submodule "sn_typings_client_global"]
+	path = ClientGlobal
+	url = https://github.com/erwinel/sn_typings_client_global
+	branch = master
+[submodule "sn_typings_client_scoped"]
+	path = ClientScoped
+	url = https://github.com/erwinel/sn_typings_client_scoped
+	branch = master
