@@ -41,9 +41,7 @@
     <TypeScriptCompile Include="base.d.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="GlobalScope.d.ts" />
     <TypeScriptCompile Include="projectManagement.d.ts" />
-    <TypeScriptCompile Include="x_44813_usasoc_cst\globals.d.ts" />
     <TypeScriptCompile Include="x_44813_usasoc_cst\UsasocUserNotificationManager.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
